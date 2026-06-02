@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080c18">
+  <title>¡Reserva confirmada! — Dridanna</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080c18;--bg2:#0d1225;
+  --pink:#dda0b8;--blue:#5eb8f5;--gold:#f5c842;--coral:#e8614e;
+  --text:rgba(255,255,255,0.92);--text2:rgba(255,255,255,0.55);--text3:rgba(255,255,255,0.32);
+  --glass:rgba(255,255,255,0.04);--glass2:rgba(255,255,255,0.07);
+  --gborder:rgba(255,255,255,0.09);--gborder2:rgba(255,255,255,0.16);
+  --grad:linear-gradient(135deg,#dda0b8 0%,#a87cba 48%,#5eb8f5 100%);
+  --ease:cubic-bezier(0.25,0.8,0.25,1);
+  --font:'Outfit',system-ui,sans-serif;
+  --serif:'Cormorant Garamond',serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:var(--font);background:var(--bg);
+  color:var(--text);min-height:100vh;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;align-items:center;
+  padding:0 16px 60px;
+}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+
+/* Canvas confetti */
+#confetti-canvas{
+  position:fixed;inset:0;pointer-events:none;z-index:999;
+}
+
+/* BG orbs */
+.bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);animation:of 9s ease-in-out infinite;}
+.o1{width:55vw;height:55vw;max-width:680px;top:-18%;right:-8%;background:radial-gradient(circle,rgba(94,184,245,0.15) 0%,transparent 68%);animation-delay:0s;}
+.o2{width:45vw;height:45vw;max-width:580px;bottom:-12%;left:-6%;background:radial-gradient(circle,rgba(221,160,184,0.12) 0%,transparent 68%);animation-delay:3s;}
+@keyframes of{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
+
+/* Nav */
+.nav{
+  width:100%;max-width:760px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 0;margin-bottom:8px;position:relative;z-index:1;
+}
+.nav img{height:38px;object-fit:contain;}
+.nav-back{
+  font-size:0.8rem;font-weight:500;color:var(--text2);
+  padding:7px 16px;border-radius:100px;
+  border:1px solid var(--gborder);background:var(--glass);
+  transition:all 0.2s var(--ease);
+}
+.nav-back:hover{color:var(--text);border-color:var(--gborder2);}
+
+/* Success icon */
+.success-wrap{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  margin:24px 0 28px;
+  animation:popIn 0.55s var(--ease) both;
+}
+.success-icon{
+  width:88px;height:88px;border-radius:50%;
+  background:linear-gradient(135deg,#dda0b8,#5eb8f5);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.4rem;
+  box-shadow:0 0 0 12px rgba(221,160,184,0.12),0 0 0 24px rgba(221,160,184,0.05);
+  animation:successPulse 2s ease-in-out 0.5s infinite;
+}
+@keyframes successPulse{
+  0%,100%{box-shadow:0 0 0 12px rgba(221,160,184,0.12),0 0 0 24px rgba(221,160,184,0.05);}
+  50%{box-shadow:0 0 0 18px rgba(221,160,184,0.08),0 0 0 36px rgba(221,160,184,0.03);}
+}
+.success-title{
+  font-family:var(--serif);font-size:clamp(1.8rem,5vw,2.6rem);
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;text-align:center;line-height:1.15;
+}
+.success-subtitle{font-size:0.95rem;color:var(--text2);text-align:center;max-width:400px;line-height:1.6;}
+
+@keyframes popIn{from{opacity:0;transform:scale(0.8)translateY(20px);}to{opacity:1;transform:scale(1)translateY(0);}}
+
+/* Card */
+.confirm-card{
+  width:100%;max-width:600px;position:relative;z-index:1;
+  background:var(--glass2);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--gborder2);border-radius:24px;
+  overflow:hidden;
+  animation:fadeUp 0.55s 0.2s var(--ease) both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+.card-header{
+  background:linear-gradient(135deg,rgba(221,160,184,0.12) 0%,rgba(94,184,245,0.08) 100%);
+  border-bottom:1px solid var(--gborder);
+  padding:20px 24px;display:flex;align-items:center;gap:14px;
+}
+.card-header-thumb{
+  width:56px;height:56px;border-radius:12px;
+  background-size:cover;background-position:center;
+  border:1px solid var(--gborder2);flex-shrink:0;
+}
+.card-header-info{flex:1;}
+.card-header-product{font-family:var(--serif);font-size:1.2rem;color:var(--text);line-height:1.2;}
+.card-header-meta{font-size:0.76rem;color:var(--text3);margin-top:3px;}
+.card-header-price{
+  font-family:var(--serif);font-size:1.6rem;font-weight:600;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;white-space:nowrap;
+}
+
+.card-body{padding:20px 24px;display:flex;flex-direction:column;gap:0;}
+
+.detail-row{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:13px 0;border-bottom:1px solid var(--gborder);
+}
+.detail-row:last-of-type{border-bottom:none;}
+.detail-icon{
+  width:34px;height:34px;border-radius:10px;flex-shrink:0;
+  background:var(--glass);border:1px solid var(--gborder);
+  display:flex;align-items:center;justify-content:center;font-size:0.95rem;
+}
+.detail-label{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:3px;}
+.detail-value{font-size:0.92rem;color:var(--text);font-weight:500;line-height:1.4;}
+
+/* Important notice */
+.notice{
+  margin:0 24px 20px;padding:14px 16px;
+  background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.2);
+  border-radius:12px;
+}
+.notice-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold);margin-bottom:5px;}
+.notice-text{font-size:0.82rem;color:rgba(245,200,66,0.75);line-height:1.5;}
+
+/* Actions */
+.card-actions{padding:0 24px 24px;display:flex;flex-direction:column;gap:10px;}
+.btn-wa{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:15px;border-radius:14px;
+  background:#25D366;color:#fff;
+  font-weight:700;font-size:0.95rem;
+  box-shadow:0 6px 22px rgba(37,211,102,0.35);
+  transition:all 0.25s var(--ease);
+}
+.btn-wa svg{width:20px;height:20px;flex-shrink:0;}
+.btn-wa:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(37,211,102,0.48);}
+.btn-modify{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px;border-radius:14px;
+  border:1px solid var(--gborder);background:var(--glass);
+  color:var(--text2);font-size:0.88rem;font-weight:500;
+  transition:all 0.2s var(--ease);
+}
+.btn-modify:hover{border-color:var(--gborder2);background:var(--glass2);color:var(--text);}
+
+/* Floating WA */
+.wa-float{
+  position:fixed;bottom:28px;right:24px;z-index:900;
+  display:flex;align-items:center;gap:10px;
+  background:#25D366;color:#fff;border-radius:100px;
+  padding:13px 20px 13px 16px;
+  box-shadow:0 6px 24px rgba(37,211,102,0.45);
+  font-weight:600;font-size:0.84rem;
+  animation:waPulse 2.8s ease-in-out infinite;
+}
+.wa-float svg{width:22px;height:22px;}
+@keyframes waPulse{
+  0%,100%{box-shadow:0 6px 24px rgba(37,211,102,0.45),0 0 0 0 rgba(37,211,102,0.4);}
+  50%{box-shadow:0 6px 24px rgba(37,211,102,0.45),0 0 0 10px rgba(37,211,102,0);}
+}
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<div class="bg-orbs" aria-hidden="true">
+  <div class="orb o1"></div><div class="orb o2"></div>
+</div>
+
+<nav class="nav">
+  <a href="./index.html"><img src="./img/logo.png" alt="Dridanna"></a>
+  <a href="./index.html" class="nav-back">← Inicio</a>
+</nav>
+
+<!-- Success -->
+<div class="success-wrap">
+  <div class="success-icon">🎉</div>
+  <h1 class="success-title">¡Tu reserva está<br>casi lista!</h1>
+  <p class="success-subtitle">Revisá los detalles y confirmala por WhatsApp para asegurar tu fecha.</p>
+</div>
+
+<!-- Summary card -->
+<div class="confirm-card" id="confirmCard">
+  <div class="card-header">
+    <div class="card-header-thumb" id="cardThumb"></div>
+    <div class="card-header-info">
+      <div class="card-header-product" id="cardProducto">—</div>
+      <div class="card-header-meta" id="cardMeta">—</div>
+    </div>
+    <div class="card-header-price" id="cardPrecio">—</div>
+  </div>
+  <div class="card-body" id="cardBody">
+    <!-- populated by JS -->
+  </div>
+  <div class="notice">
+    <div class="notice-title">⚠ Importante</div>
+    <div class="notice-text">Esta pre-reserva queda pendiente hasta que confirmes por WhatsApp. El pago se coordina directamente con Driadanna.</div>
+  </div>
+  <div class="card-actions">
+    <a id="btnWa" class="btn-wa" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Confirmar por WhatsApp
+    </a>
+    <a href="javascript:history.back()" class="btn-modify">← Modificar datos</a>
+  </div>
+</div>
+
+<!-- Floating WA -->
+<a class="wa-float" id="waFloat" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  ¡Confirmar!
+</a>
+
+<script>
+/* ── Confetti ──────────────────────────────────────── */
+(function(){
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx    = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  window.addEventListener('resize', ()=>{ canvas.width=window.innerWidth; canvas.height=window.innerHeight; });
+
+  const COLORS = ['#dda0b8','#5eb8f5','#f5c842','#e8614e','#a87cba','#ffffff'];
+  const particles = [];
+
+  function rand(a,b){ return Math.random()*(b-a)+a; }
+
+  for(let i=0;i<180;i++){
+    particles.push({
+      x: rand(0, canvas.width),
+      y: rand(-canvas.height, 0),
+      w: rand(6, 14),
+      h: rand(4, 9),
+      color: COLORS[Math.floor(Math.random()*COLORS.length)],
+      vx: rand(-2, 2),
+      vy: rand(2, 6),
+      angle: rand(0, Math.PI*2),
+      spin: rand(-0.12, 0.12),
+      alpha: 1,
+      shape: Math.random() > 0.5 ? 'rect' : 'circle',
+    });
+  }
+
+  let frame = 0, maxFrames = 260;
+  function draw(){
+    if(frame > maxFrames){ ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      p.x += p.vx; p.y += p.vy;
+      p.angle += p.spin;
+      p.vy += 0.06;
+      p.alpha = Math.max(0, 1 - frame/maxFrames);
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      ctx.fillStyle = p.color;
+      if(p.shape === 'circle'){
+        ctx.beginPath(); ctx.arc(0,0,p.w/2,0,Math.PI*2); ctx.fill();
+      } else {
+        ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      }
+      ctx.restore();
+      if(p.y > canvas.height + 20) p.y = -20;
+    });
+    frame++;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── Render summary ────────────────────────────────── */
+const WA = '5493757671088';
+const CATALOGO_MAP = {
+  'castillo-3x3':     { fotos:['castillo inflable 3 por 3/castillo inflable.jpg'] },
+  'princesas-3x3':    { fotos:['Inflable Princesas 3 por 3/Inflable Princesas.jpg'] },
+  'jirafa-tobogan':   { fotos:['Inflable Jirafa con tobogan 3 coma 5 por 6 coma 5/Inflable Jirafa con tobogan.jpg'] },
+  'gato-tobogan-4x7': { fotos:['Inflable Gato Silvestre con Tobogán 4x7/gatosilvestre.jpg'] },
+  'gato-pio-3x5':     { fotos:['Gato Silvestre y Pio Pio  3 por 5/inflable pio y silvestre.jpg'] },
+  'rana-4x3':         { fotos:['inflable rana 4 por 3/inflable rana.jpg'] },
+  'tigre':            { fotos:['inflable tigre/inflable tigre.jpg'] },
+  'mickey-minnie':    { fotos:['mickey and minii/mickey and minie.jpg'] },
+  'toy-story':        { fotos:['toy story/Toy  Story.jpg'] },
+  'super-rampa':      { fotos:['Super Rampa Brasile/super rampa.jpg'] },
+  'rampa-lila':       { fotos:['Rampa Lila/rampainflable.jpg'] },
+  'rampa-azul':       { fotos:['rampa inflable azul/rampa inflable azul.jpg'] },
+  'inflable-azul-rampa': { fotos:['inflable azul con rampa 3 po 3/inflable azul.jpg'] },
+  'inflable-naranja': { fotos:['inflable naranja 3 po 3/inflable naranja.jpg'] },
+  'metegol':          { fotos:['metegol/metegol.png'] },
+};
+
+const data = JSON.parse(sessionStorage.getItem('dridanna_pending_reserva') || 'null');
+
+if(!data){
+  document.getElementById('confirmCard').innerHTML = '<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.5)">No hay reserva pendiente.<br><a href="./index.html" style="color:#dda0b8">← Volver al inicio</a></div>';
+} else {
+  const thumb = CATALOGO_MAP[data.productoId]?.fotos?.[0] || '';
+  document.getElementById('cardThumb').style.backgroundImage = `url('./img/${thumb}')`;
+  document.getElementById('cardProducto').textContent = data.productoNombre;
+  document.getElementById('cardMeta').textContent = (data.productoDims ? data.productoDims + ' · ' : '') + data.turnoLabel;
+  document.getElementById('cardPrecio').textContent = data.productoPrecio;
+
+  const rows = [
+    { icon:'📅', label:'Fecha',      value: data.fechaLabel },
+    { icon:'⏰', label:'Turno',      value: data.turnoLabel },
+    { icon:'👤', label:'Cliente',    value: data.nombre + ' ' + data.apellido },
+    { icon:'📱', label:'Celular',    value: data.celular },
+    { icon:'📍', label:'Dirección',  value: data.direccion + ' — Barrio ' + data.barrio },
+    { icon:'🗺', label:'Referencia', value: data.referencia },
+  ];
+
+  document.getElementById('cardBody').innerHTML = rows.map(r=>`
+    <div class="detail-row">
+      <div class="detail-icon">${r.icon}</div>
+      <div>
+        <div class="detail-label">${r.label}</div>
+        <div class="detail-value">${r.value}</div>
+      </div>
+    </div>`).join('');
+
+  /* ── WhatsApp message ── */
+  const msg =
+`🎉 *Pre-reserva Driadanna*
+
+📦 *Inflable:* ${data.productoNombre}${data.productoDims?' ('+data.productoDims+')':''}
+📅 *Fecha:* ${data.fechaLabel}
+⏰ *Turno:* ${data.turnoLabel}
+💰 *Precio estimado:* ${data.productoPrecio}
+
+👤 *Nombre:* ${data.nombre} ${data.apellido}
+📱 *Celular:* ${data.celular}
+📍 *Dirección:* ${data.direccion}
+🏘 *Barrio:* ${data.barrio}
+🗺 *Referencia:* ${data.referencia}
+
+¡Quiero confirmar esta reserva! 🎈`;
+
+  const waUrl = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg);
+  document.getElementById('btnWa').href = waUrl;
+  document.getElementById('waFloat').href = waUrl;
+
+  /* ── Save to localStorage on WA click ── */
+  document.getElementById('btnWa').addEventListener('click', ()=>{
+    try {
+      const rv = JSON.parse(localStorage.getItem('dridanna_reservas')||'[]');
+      rv.push({
+        id:       Date.now().toString(36),
+        nombre:   data.nombre + ' ' + data.apellido,
+        celular:  data.celular,
+        barrio:   data.barrio,
+        direccion:data.direccion,
+        referencia:data.referencia,
+        fecha:    data.fecha,
+        turno:    data.turno,
+        producto: data.productoNombre,
+        precio:   data.productoPrecio,
+        estado:   'pendiente',
+        creada:   new Date().toISOString(),
+      });
+      localStorage.setItem('dridanna_reservas', JSON.stringify(rv));
+    } catch(e){}
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080c18">
+  <title>Reservar fecha — Dridanna</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Tokens ──────────────────────────────────── */
+:root{
+  --bg:#080c18; --bg2:#0d1225;
+  --pink:#dda0b8; --blue:#5eb8f5; --gold:#f5c842; --coral:#e8614e;
+  --text:rgba(255,255,255,0.92); --text2:rgba(255,255,255,0.55); --text3:rgba(255,255,255,0.30);
+  --glass:rgba(255,255,255,0.04); --glass2:rgba(255,255,255,0.07);
+  --gborder:rgba(255,255,255,0.09); --gborder2:rgba(255,255,255,0.16);
+  --grad:linear-gradient(135deg,#dda0b8 0%,#a87cba 48%,#5eb8f5 100%);
+  --ease:cubic-bezier(0.25,0.8,0.25,1);
+  --font:'Outfit',system-ui,sans-serif;
+  --serif:'Cormorant Garamond',serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font); background:var(--bg);
+  color:var(--text); min-height:100vh; overflow-x:hidden;
+  -webkit-font-smoothing:antialiased; padding-bottom:60px;
+}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+input,select,textarea{font-family:inherit;}
+
+/* ── Background orbs ────────────────────────── */
+.bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);animation:orbF 9s ease-in-out infinite;}
+.o1{width:55vw;height:55vw;max-width:700px;max-height:700px;top:-18%;right:-8%;
+  background:radial-gradient(circle,rgba(94,184,245,0.15) 0%,transparent 68%);animation-delay:0s;}
+.o2{width:45vw;height:45vw;max-width:600px;max-height:600px;bottom:-12%;left:-6%;
+  background:radial-gradient(circle,rgba(221,160,184,0.12) 0%,transparent 68%);animation-delay:3s;}
+.o3{width:28vw;height:28vw;max-width:400px;max-height:400px;top:40%;right:30%;
+  background:radial-gradient(circle,rgba(245,200,66,0.07) 0%,transparent 68%);animation-delay:6s;}
+@keyframes orbF{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
+
+/* ── Nav ─────────────────────────────────────── */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(8,12,24,0.88);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  border-bottom:1px solid var(--gborder);
+  padding:14px clamp(16px,5vw,60px);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.nav-logo img{height:40px;width:auto;object-fit:contain;}
+.nav-back{
+  display:flex;align-items:center;gap:8px;font-size:0.84rem;font-weight:500;
+  color:var(--text2);padding:8px 18px;border-radius:100px;
+  border:1px solid var(--gborder);background:var(--glass);
+  transition:all 0.2s var(--ease);
+}
+.nav-back:hover{color:var(--text);border-color:var(--gborder2);background:var(--glass2);}
+
+/* ── Layout ──────────────────────────────────── */
+.main-wrapper{
+  position:relative;z-index:1;
+  max-width:860px;margin-inline:auto;
+  padding:clamp(24px,5vw,48px) clamp(16px,5vw,40px);
+}
+
+/* ── Producto info banner ────────────────────── */
+.prod-banner{
+  display:flex;align-items:center;gap:18px;
+  background:var(--glass2);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--gborder2);border-radius:20px;
+  padding:18px 22px;margin-bottom:36px;
+  animation:fadeUp 0.4s var(--ease);
+}
+.prod-thumb{
+  width:72px;height:72px;border-radius:14px;
+  background-size:cover;background-position:center;
+  flex-shrink:0;border:1px solid var(--gborder);
+}
+.prod-banner-info{flex:1;min-width:0;}
+.prod-banner-name{font-family:var(--serif);font-size:1.3rem;color:var(--text);line-height:1.2;margin-bottom:4px;}
+.prod-banner-meta{font-size:0.8rem;color:var(--text3);}
+.prod-banner-price{
+  font-family:var(--serif);font-size:1.5rem;font-weight:600;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;white-space:nowrap;
+}
+
+/* ── Steps indicator ─────────────────────────── */
+.steps{display:flex;gap:0;align-items:center;margin-bottom:32px;justify-content:center;}
+.step-dot{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  position:relative;
+}
+.step-dot-circle{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.78rem;font-weight:700;
+  border:2px solid var(--gborder);background:var(--glass);
+  color:var(--text3);transition:all 0.3s var(--ease);
+}
+.step-dot.active .step-dot-circle{
+  background:var(--grad);border-color:transparent;color:#fff;
+  box-shadow:0 4px 16px rgba(221,160,184,0.35);
+}
+.step-dot.done .step-dot-circle{
+  background:rgba(94,184,245,0.2);border-color:rgba(94,184,245,0.4);color:var(--blue);
+}
+.step-dot-label{font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);}
+.step-dot.active .step-dot-label{color:var(--pink);}
+.step-connector{width:60px;height:2px;background:var(--gborder);margin:0 8px;margin-bottom:22px;flex-shrink:0;}
+.step-connector.done{background:linear-gradient(to right,var(--pink),var(--blue));}
+
+/* ── Castle Calendar ─────────────────────────── */
+.castle-wrapper{
+  position:relative;
+  margin-bottom:28px;
+}
+
+/* Battlements (merlons) on top */
+.battlements{
+  display:flex;justify-content:space-around;
+  padding:0 40px;margin-bottom:-1px;
+}
+.merlon{
+  width:clamp(18px,3vw,26px);height:clamp(22px,4vw,32px);
+  background:rgba(221,160,184,0.18);
+  border:1px solid rgba(221,160,184,0.25);
+  border-bottom:none;
+  border-radius:6px 6px 0 0;
+  animation:castleFloat 4s ease-in-out infinite;
+}
+.merlon:nth-child(2){animation-delay:0.3s;}
+.merlon:nth-child(3){animation-delay:0.6s;}
+.merlon:nth-child(4){animation-delay:0.9s;}
+.merlon:nth-child(5){animation-delay:1.2s;}
+.merlon:nth-child(6){animation-delay:1.5s;}
+.merlon:nth-child(7){animation-delay:1.8s;}
+@keyframes castleFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
+
+/* Side towers */
+.castle-card{
+  position:relative;
+  background:var(--glass2);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(221,160,184,0.18);
+  border-radius:0 0 20px 20px;
+  padding:22px 20px 24px;
+}
+.tower{
+  position:absolute;top:-44px;
+  width:44px;background:rgba(221,160,184,0.12);
+  border:1px solid rgba(221,160,184,0.22);
+  border-bottom:none;border-radius:8px 8px 0 0;
+  overflow:hidden;
+}
+.tower::before{
+  content:'';display:block;padding-bottom:80%;
+}
+.tower::after{
+  content:'';position:absolute;
+  top:-12px;left:50%;transform:translateX(-50%);
+  width:20px;height:20px;
+  background:rgba(221,160,184,0.3);
+  clip-path:polygon(50% 0%,100% 100%,0% 100%);
+}
+.tower-flag{
+  position:absolute;top:-28px;left:50%;transform:translateX(-50%);
+  font-size:1rem;animation:flagWave 2s ease-in-out infinite;
+}
+@keyframes flagWave{0%,100%{transform:translateX(-50%) rotate(-5deg);}50%{transform:translateX(-50%) rotate(5deg);}}
+.tower-left{left:-2px;}
+.tower-right{right:-2px;}
+.tower-windows{
+  position:absolute;top:20%;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;gap:5px;
+}
+.tower-window{
+  width:8px;height:10px;
+  background:rgba(94,184,245,0.3);
+  border:1px solid rgba(94,184,245,0.4);
+  border-radius:4px 4px 0 0;
+}
+
+/* Calendar inside castle */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.cal-month-title{
+  font-family:var(--serif);font-size:1.35rem;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  text-transform:capitalize;letter-spacing:0.02em;
+}
+.cal-nav{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--glass);border:1px solid var(--gborder);
+  color:var(--text2);font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s var(--ease);
+}
+.cal-nav:hover{background:var(--glass2);border-color:var(--gborder2);color:var(--text);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center;}
+.cal-dn{
+  font-size:0.62rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.1em;color:var(--text3);padding-bottom:8px;
+}
+.cal-day{
+  aspect-ratio:1;border-radius:12px;
+  font-size:0.84rem;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--gborder);background:var(--glass);
+  color:var(--text2);cursor:pointer;
+  transition:all 0.2s var(--ease);font-weight:500;
+  position:relative;
+}
+.cal-day:hover:not(.empty):not(.pasado):not(.bloqueado){
+  background:rgba(221,160,184,0.15);
+  border-color:rgba(221,160,184,0.4);
+  color:var(--text);transform:scale(1.05);
+}
+.cal-day.empty{pointer-events:none;background:transparent;border:none;}
+.cal-day.today{border-color:rgba(94,184,245,0.5);color:var(--blue);font-weight:700;}
+.cal-day.bloqueado{
+  background:rgba(232,97,78,0.08);border-color:rgba(232,97,78,0.25);
+  color:rgba(232,97,78,0.4);cursor:not-allowed;
+  text-decoration:line-through;
+}
+.cal-day.seleccionado{
+  background:var(--grad);border-color:transparent;color:#fff;
+  box-shadow:0 4px 16px rgba(221,160,184,0.4);
+  transform:scale(1.08);
+}
+.cal-day.pasado{opacity:0.28;pointer-events:none;}
+.cal-day.parcial::after{
+  content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);
+  width:5px;height:5px;border-radius:50%;background:var(--gold);
+}
+.cal-legend{
+  display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;justify-content:center;
+}
+.cal-leg-item{display:flex;align-items:center;gap:6px;font-size:0.68rem;color:var(--text3);}
+.cal-leg-dot{width:10px;height:10px;border-radius:3px;}
+.dot-lib{background:var(--glass);border:1px solid var(--gborder);}
+.dot-bloq{background:rgba(232,97,78,0.3);}
+.dot-parc{background:var(--gold);opacity:0.6;}
+
+/* ── Turnos ──────────────────────────────────── */
+.turnos-section{animation:fadeUp 0.35s var(--ease);}
+.turnos-title{
+  font-family:var(--serif);font-size:1.2rem;color:var(--text);
+  margin-bottom:14px;text-align:center;
+}
+.turnos-date{font-size:0.84rem;color:var(--pink);text-align:center;margin-bottom:18px;font-weight:500;}
+.turnos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:8px;}
+.turno-card{
+  border:1px solid var(--gborder);background:var(--glass);
+  border-radius:16px;padding:18px 12px;text-align:center;
+  cursor:pointer;transition:all 0.25s var(--ease);
+}
+.turno-card:hover:not(.bloqueado):not(.reservado){
+  border-color:rgba(221,160,184,0.4);background:rgba(221,160,184,0.08);
+  transform:translateY(-4px);
+}
+.turno-card.seleccionado{
+  border-color:var(--pink);background:rgba(221,160,184,0.15);
+  box-shadow:0 6px 20px rgba(221,160,184,0.25);
+}
+.turno-card.bloqueado{
+  opacity:0.35;cursor:not-allowed;
+  border-color:rgba(232,97,78,0.2);
+}
+.turno-card.reservado{
+  opacity:0.5;cursor:not-allowed;
+  border-color:rgba(245,200,66,0.25);
+}
+.turno-emoji{font-size:1.6rem;margin-bottom:6px;}
+.turno-nombre{font-size:0.9rem;font-weight:700;color:var(--text);margin-bottom:3px;}
+.turno-horas{font-size:0.72rem;color:var(--text3);}
+.turno-status{font-size:0.65rem;font-weight:700;margin-top:6px;text-transform:uppercase;letter-spacing:0.08em;}
+.turno-status.disponible{color:var(--blue);}
+.turno-status.bloqueado{color:var(--coral);}
+.turno-status.reservado{color:var(--gold);}
+
+/* ── Form ────────────────────────────────────── */
+.form-section{
+  background:var(--glass2);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--gborder);border-radius:20px;
+  padding:28px 24px;
+  animation:fadeUp 0.4s var(--ease);
+}
+.form-title{font-family:var(--serif);font-size:1.3rem;color:var(--text);margin-bottom:6px;}
+.form-subtitle{font-size:0.83rem;color:var(--text3);margin-bottom:22px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-field{display:flex;flex-direction:column;gap:6px;}
+.form-field.full{grid-column:1/-1;}
+.form-label{
+  font-size:0.68rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.1em;color:var(--text3);
+}
+.form-label .req{color:var(--coral);margin-left:2px;}
+.form-input,.form-select,.form-textarea{
+  padding:12px 15px;border-radius:12px;
+  border:1px solid var(--gborder);background:rgba(255,255,255,0.05);
+  color:var(--text);font-size:0.9rem;outline:none;
+  transition:border-color 0.2s,box-shadow 0.2s;
+  -webkit-appearance:none;appearance:none;
+}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text3);}
+.form-input:focus,.form-select:focus,.form-textarea:focus{
+  border-color:rgba(221,160,184,0.45);
+  box-shadow:0 0 0 3px rgba(221,160,184,0.1);
+  background:rgba(255,255,255,0.07);
+}
+.form-input.error,.form-select.error,.form-textarea.error{
+  border-color:rgba(232,97,78,0.5);
+  box-shadow:0 0 0 3px rgba(232,97,78,0.1);
+}
+.form-textarea{resize:vertical;min-height:96px;}
+.form-select option{background:var(--bg2);}
+.form-hint{font-size:0.7rem;color:var(--text3);margin-top:3px;}
+.form-hint.error-msg{color:var(--coral);display:none;}
+.form-hint.error-msg.show{display:block;}
+
+/* Referencia word counter */
+.ref-counter{
+  display:flex;justify-content:flex-end;
+  font-size:0.68rem;margin-top:3px;
+  transition:color 0.2s;
+}
+.ref-counter.ok{color:var(--blue);}
+.ref-counter.warn{color:var(--coral);}
+
+/* ── Reservation summary ─────────────────────── */
+.resumen-pill{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  background:rgba(221,160,184,0.08);border:1px solid rgba(221,160,184,0.2);
+  border-radius:14px;padding:12px 16px;margin-bottom:18px;
+  font-size:0.84rem;color:var(--text2);
+}
+.resumen-pill strong{color:var(--pink);}
+
+/* ── Btn ─────────────────────────────────────── */
+.btn-reservar{
+  width:100%;padding:15px;border-radius:14px;
+  background:var(--grad);border:none;color:#fff;
+  font-family:var(--font);font-size:0.95rem;font-weight:700;
+  letter-spacing:0.03em;cursor:pointer;margin-top:18px;
+  box-shadow:0 6px 22px rgba(221,160,184,0.35);
+  transition:all 0.25s var(--ease);
+}
+.btn-reservar:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(221,160,184,0.5);}
+.btn-reservar:active{transform:scale(0.98);}
+.btn-reservar:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+
+/* ── Animations ──────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.hidden{display:none!important;}
+
+/* ── Responsive ──────────────────────────────── */
+@media(max-width:600px){
+  .turnos-grid{grid-template-columns:1fr;}
+  .form-grid{grid-template-columns:1fr;}
+  .form-field.full{grid-column:auto;}
+  .tower{display:none;}
+  .battlements{padding:0 20px;}
+  .prod-banner{flex-direction:column;gap:12px;text-align:center;}
+  .steps{gap:0;}
+  .step-connector{width:36px;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-orbs" aria-hidden="true">
+  <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+</div>
+
+<nav class="nav">
+  <a href="./index.html" class="nav-logo">
+    <img src="./img/logo.png" alt="Dridanna">
+  </a>
+  <a href="./index.html" class="nav-back">← Volver al catálogo</a>
+</nav>
+
+<div class="main-wrapper">
+
+  <!-- Producto banner -->
+  <div class="prod-banner" id="prodBanner">
+    <div class="prod-thumb" id="prodThumb"></div>
+    <div class="prod-banner-info">
+      <div class="prod-banner-name" id="prodNombre">Cargando...</div>
+      <div class="prod-banner-meta" id="prodMeta"></div>
+    </div>
+    <div class="prod-banner-price" id="prodPrecio">$35.000</div>
+  </div>
+
+  <!-- Steps -->
+  <div class="steps">
+    <div class="step-dot active" id="step1">
+      <div class="step-dot-circle">1</div>
+      <div class="step-dot-label">Fecha</div>
+    </div>
+    <div class="step-connector" id="conn1"></div>
+    <div class="step-dot" id="step2">
+      <div class="step-dot-circle">2</div>
+      <div class="step-dot-label">Turno</div>
+    </div>
+    <div class="step-connector" id="conn2"></div>
+    <div class="step-dot" id="step3">
+      <div class="step-dot-circle">3</div>
+      <div class="step-dot-label">Datos</div>
+    </div>
+  </div>
+
+  <!-- STEP 1: Calendario -->
+  <div id="stepCalendar">
+    <div class="castle-wrapper">
+      <!-- Battlements -->
+      <div class="battlements">
+        <div class="merlon"></div><div class="merlon"></div><div class="merlon"></div>
+        <div class="merlon"></div><div class="merlon"></div><div class="merlon"></div>
+        <div class="merlon"></div><div class="merlon"></div>
+      </div>
+      <!-- Castle card -->
+      <div class="castle-card">
+        <!-- Left tower -->
+        <div class="tower tower-left">
+          <div class="tower-windows"><div class="tower-window"></div><div class="tower-window"></div></div>
+          <div class="tower-flag">🏴</div>
+        </div>
+        <!-- Right tower -->
+        <div class="tower tower-right">
+          <div class="tower-windows"><div class="tower-window"></div><div class="tower-window"></div></div>
+          <div class="tower-flag">🏴</div>
+        </div>
+
+        <div class="cal-header">
+          <button class="cal-nav" id="calPrev">‹</button>
+          <span class="cal-month-title" id="calTitle"></span>
+          <button class="cal-nav" id="calNext">›</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="cal-legend">
+          <div class="cal-leg-item"><div class="cal-leg-dot dot-lib"></div> Disponible</div>
+          <div class="cal-leg-item"><div class="cal-leg-dot dot-bloq"></div> No disponible</div>
+          <div class="cal-leg-item"><div class="cal-leg-dot dot-parc"></div> Parcialmente libre</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Turnos -->
+  <div id="stepTurnos" class="hidden turnos-section">
+    <div class="turnos-title">Elegí tu turno</div>
+    <div class="turnos-date" id="turnosDateLabel"></div>
+    <div class="turnos-grid" id="turnosGrid"></div>
+    <div style="text-align:center;margin-top:10px">
+      <button style="font-size:0.8rem;color:var(--text3);background:none;border:none;cursor:pointer;text-decoration:underline" onclick="volverAlCalendario()">← Cambiar fecha</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Formulario -->
+  <div id="stepForm" class="hidden">
+    <div class="form-section">
+      <div class="form-title">Tus datos para la reserva</div>
+      <div class="form-subtitle">Completá todos los campos para confirmar tu lugar.</div>
+
+      <!-- Resumen de la reserva -->
+      <div class="resumen-pill" id="resumenPill"></div>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <label class="form-label" for="fNombre">Nombre <span class="req">*</span></label>
+          <input type="text" class="form-input" id="fNombre" placeholder="Tu nombre">
+          <span class="form-hint error-msg" id="errNombre">Campo obligatorio</span>
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="fApellido">Apellido <span class="req">*</span></label>
+          <input type="text" class="form-input" id="fApellido" placeholder="Tu apellido">
+          <span class="form-hint error-msg" id="errApellido">Campo obligatorio</span>
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="fCelular">Celular / WhatsApp <span class="req">*</span></label>
+          <input type="tel" class="form-input" id="fCelular" placeholder="3757 xxxxxx">
+          <span class="form-hint error-msg" id="errCelular">Ingresá un número válido</span>
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="fBarrio">Barrio <span class="req">*</span></label>
+          <input type="text" class="form-input" id="fBarrio" placeholder="Ej: Centro, San Martín...">
+          <span class="form-hint error-msg" id="errBarrio">Campo obligatorio</span>
+        </div>
+        <div class="form-field full">
+          <label class="form-label" for="fDireccion">Dirección <span class="req">*</span></label>
+          <input type="text" class="form-input" id="fDireccion" placeholder="Calle, número, piso/dpto...">
+          <span class="form-hint error-msg" id="errDireccion">Campo obligatorio</span>
+        </div>
+        <div class="form-field full">
+          <label class="form-label" for="fReferencia">
+            Referencia de ubicación <span class="req">*</span>
+            <span style="font-weight:400;text-transform:none;letter-spacing:0"> (mínimo 10 palabras)</span>
+          </label>
+          <textarea class="form-textarea" id="fReferencia"
+            placeholder="Ej: Casa de color verde con rejas negras, a media cuadra de la plaza principal, frente al almacén de Don Pedro..."></textarea>
+          <div class="ref-counter warn" id="refCounter">0 / 10 palabras mínimas</div>
+          <span class="form-hint error-msg" id="errReferencia">La referencia debe tener al menos 10 palabras</span>
+        </div>
+      </div>
+
+      <button class="btn-reservar" id="btnConfirmar" onclick="confirmarReserva()">
+        Confirmar reserva →
+      </button>
+
+      <div style="text-align:center;margin-top:12px">
+        <button style="font-size:0.78rem;color:var(--text3);background:none;border:none;cursor:pointer;text-decoration:underline" onclick="volverATurnos()">← Cambiar turno</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main-wrapper -->
+
+<script>
+const WA = '5493757671088';
+const TURNOS = [
+  { id:'manana', label:'Mañana',  horas:'9:00 – 13:00', emoji:'🌅' },
+  { id:'tarde',  label:'Tarde',   horas:'14:00 – 18:00', emoji:'☀️' },
+  { id:'noche',  label:'Noche',   horas:'19:00 – 23:00', emoji:'🌙' },
+];
+
+const CATALOGO = [
+  { id:'castillo-3x3',     nombre:'Castillo Inflable',               dims:'3 × 3 m',    tipo:'Castillo',
+    fotos:['castillo inflable 3 por 3/castillo inflable.jpg'] },
+  { id:'princesas-3x3',    nombre:'Inflable Princesas',              dims:'3 × 3 m',    tipo:'Castillo',
+    fotos:['Inflable Princesas 3 por 3/Inflable Princesas.jpg'] },
+  { id:'jirafa-tobogan',   nombre:'Inflable Jirafa con Tobogán',     dims:'3.5 × 6.5 m',tipo:'Tobogán',
+    fotos:['Inflable Jirafa con tobogan 3 coma 5 por 6 coma 5/Inflable Jirafa con tobogan.jpg'] },
+  { id:'gato-tobogan-4x7', nombre:'Gato Silvestre con Tobogán',      dims:'4 × 7 m',    tipo:'Tobogán',
+    fotos:['Inflable Gato Silvestre con Tobogán 4x7/gatosilvestre.jpg'] },
+  { id:'gato-pio-3x5',     nombre:'Gato Silvestre y Pío Pío',        dims:'3 × 5 m',    tipo:'Castillo',
+    fotos:['Gato Silvestre y Pio Pio  3 por 5/inflable pio y silvestre.jpg'] },
+  { id:'rana-4x3',         nombre:'Inflable Rana',                   dims:'4 × 3 m',    tipo:'Castillo',
+    fotos:['inflable rana 4 por 3/inflable rana.jpg'] },
+  { id:'tigre',            nombre:'Inflable Tigre',                  dims:'',           tipo:'Castillo',
+    fotos:['inflable tigre/inflable tigre.jpg'] },
+  { id:'mickey-minnie',    nombre:'Mickey & Minnie',                 dims:'',           tipo:'Castillo',
+    fotos:['mickey and minii/mickey and minie.jpg'] },
+  { id:'toy-story',        nombre:'Toy Story',                       dims:'',           tipo:'Castillo',
+    fotos:['toy story/Toy  Story.jpg'] },
+  { id:'super-rampa',      nombre:'Super Rampa',                     dims:'',           tipo:'Tobogán',
+    fotos:['Super Rampa Brasile/super rampa.jpg'] },
+  { id:'rampa-lila',       nombre:'Rampa Lila',                      dims:'',           tipo:'Tobogán',
+    fotos:['Rampa Lila/rampainflable.jpg'] },
+  { id:'rampa-azul',       nombre:'Rampa Inflable Azul',             dims:'',           tipo:'Tobogán',
+    fotos:['rampa inflable azul/rampa inflable azul.jpg'] },
+  { id:'inflable-azul-rampa', nombre:'Inflable Azul con Rampa',      dims:'3 × 3 m',    tipo:'Tobogán',
+    fotos:['inflable azul con rampa 3 po 3/inflable azul.jpg'] },
+  { id:'inflable-naranja', nombre:'Inflable Naranja',                dims:'3 × 3 m',    tipo:'Castillo',
+    fotos:['inflable naranja 3 po 3/inflable naranja.jpg'] },
+  { id:'metegol',          nombre:'Metegol',                         dims:'',           tipo:'Metegol',
+    fotos:['metegol/metegol.png'] },
+];
+
+const LS = {
+  get: k => { try { return JSON.parse(localStorage.getItem('dridanna_'+k)||'null'); } catch { return null; } },
+};
+
+/* ── Init ───────────────────────────────── */
+const params = new URLSearchParams(location.search);
+const prodId = params.get('producto') || '';
+const prod   = CATALOGO.find(p => p.id === prodId) || CATALOGO[0];
+const status = LS.get('productos_status') || {};
+const precio = status[prod.id]?.precio || '$35.000';
+
+document.getElementById('prodNombre').textContent = prod.nombre;
+document.getElementById('prodMeta').textContent   = prod.tipo + (prod.dims ? ' · ' + prod.dims : '');
+document.getElementById('prodPrecio').textContent  = precio;
+document.getElementById('prodThumb').style.backgroundImage = `url('./img/${prod.fotos[0]}')`;
+
+/* ── State ──────────────────────────────── */
+let selFecha = null, selTurno = null;
+let calYear, calMonth;
+
+function initCal(){
+  const n = new Date();
+  calYear = n.getFullYear(); calMonth = n.getMonth();
+}
+
+/* ── Calendar ───────────────────────────── */
+function renderCal(){
+  if(!calYear) initCal();
+  const fechasBloq   = LS.get('fechas_bloqueadas') || [];
+  const turnosBloq   = LS.get('turnos_bloqueados')  || {};
+  const reservas     = LS.get('reservas')            || [];
+  const now          = new Date(); now.setHours(0,0,0,0);
+  const today        = ds(now);
+  const mn = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+  document.getElementById('calTitle').textContent = mn[calMonth] + ' ' + calYear;
+
+  const first  = new Date(calYear, calMonth, 1).getDay();
+  const days   = new Date(calYear, calMonth+1, 0).getDate();
+  const offset = first === 0 ? 6 : first - 1;
+  const dns    = ['Lu','Ma','Mi','Ju','Vi','Sa','Do'];
+
+  let h = dns.map(d=>`<div class="cal-dn">${d}</div>`).join('');
+  for(let i=0;i<offset;i++) h+=`<div class="cal-day empty"></div>`;
+
+  for(let d=1;d<=days;d++){
+    const dstr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isPast  = dstr < today;
+    const isBloq  = fechasBloq.includes(dstr);
+    const isToday = dstr === today;
+    const isSel   = dstr === selFecha;
+
+    // Check parcial: some turnos blocked/reserved but not all
+    const tBloq = turnosBloq[dstr] || [];
+    const tRes  = reservas.filter(r => r.fecha===dstr && r.estado!=='cancelada').map(r=>r.turno);
+    const totalBlocked = [...new Set([...tBloq,...tRes])].length;
+    const isParcial = !isBloq && totalBlocked > 0 && totalBlocked < 3;
+
+    let cls = 'cal-day';
+    if(isPast)    cls += ' pasado';
+    if(isToday)   cls += ' today';
+    if(isBloq)    cls += ' bloqueado';
+    if(isParcial) cls += ' parcial';
+    if(isSel)     cls += ' seleccionado';
+
+    h += `<div class="${cls}" data-date="${dstr}">${d}</div>`;
+  }
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = h;
+  grid.querySelectorAll('.cal-day:not(.empty):not(.pasado):not(.bloqueado)').forEach(el=>{
+    el.addEventListener('click', ()=>selectFecha(el.dataset.date));
+  });
+}
+
+function selectFecha(dstr){
+  selFecha = dstr;
+  renderCal();
+  showTurnos(dstr);
+  updateSteps(2);
+}
+
+document.getElementById('calPrev').onclick = ()=>{
+  calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCal();
+};
+document.getElementById('calNext').onclick = ()=>{
+  calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCal();
+};
+
+/* ── Turnos ─────────────────────────────── */
+function showTurnos(dstr){
+  const turnosBloq = LS.get('turnos_bloqueados') || {};
+  const reservas   = LS.get('reservas')           || [];
+  const bloq = turnosBloq[dstr] || [];
+  const resv = reservas.filter(r=>r.fecha===dstr&&r.estado!=='cancelada').map(r=>r.turno);
+
+  document.getElementById('stepCalendar').classList.add('hidden');
+  document.getElementById('stepTurnos').classList.remove('hidden');
+  document.getElementById('stepForm').classList.add('hidden');
+
+  const [y,m,d] = dstr.split('-');
+  const mNames=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const dNames=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const dateObj = new Date(+y,+m-1,+d);
+  document.getElementById('turnosDateLabel').textContent =
+    dNames[dateObj.getDay()] + ' ' + d + ' de ' + mNames[+m-1] + ' de ' + y;
+
+  const grid = document.getElementById('turnosGrid');
+  grid.innerHTML = TURNOS.map(t=>{
+    const isBloq = bloq.includes(t.id);
+    const isResv = resv.includes(t.id);
+    const isDisp = !isBloq && !isResv;
+    const isSel  = t.id === selTurno;
+    let cls = 'turno-card';
+    if(isBloq) cls += ' bloqueado';
+    if(isResv) cls += ' reservado';
+    if(isSel && isDisp) cls += ' seleccionado';
+    const statusLabel = isBloq
+      ? `<div class="turno-status bloqueado">No disponible</div>`
+      : isResv
+        ? `<div class="turno-status reservado">Reservado</div>`
+        : `<div class="turno-status disponible">✓ Disponible</div>`;
+    return `<div class="${cls}" data-turno="${t.id}" ${(!isDisp)?'':''}>
+      <div class="turno-emoji">${t.emoji}</div>
+      <div class="turno-nombre">${t.label}</div>
+      <div class="turno-horas">${t.horas}</div>
+      ${statusLabel}
+    </div>`;
+  }).join('');
+
+  grid.querySelectorAll('.turno-card:not(.bloqueado):not(.reservado)').forEach(el=>{
+    el.addEventListener('click', ()=>selectTurno(el.dataset.turno));
+  });
+}
+
+function selectTurno(tid){
+  selTurno = tid;
+  showTurnos(selFecha);
+  setTimeout(()=>showForm(), 300);
+  updateSteps(3);
+}
+
+function volverAlCalendario(){
+  selFecha = null; selTurno = null;
+  document.getElementById('stepCalendar').classList.remove('hidden');
+  document.getElementById('stepTurnos').classList.add('hidden');
+  document.getElementById('stepForm').classList.add('hidden');
+  updateSteps(1);
+  renderCal();
+}
+function volverATurnos(){
+  selTurno = null;
+  document.getElementById('stepForm').classList.add('hidden');
+  document.getElementById('stepTurnos').classList.remove('hidden');
+  document.getElementById('stepCalendar').classList.add('hidden');
+  showTurnos(selFecha);
+  updateSteps(2);
+}
+
+/* ── Form ───────────────────────────────── */
+function showForm(){
+  document.getElementById('stepTurnos').classList.add('hidden');
+  document.getElementById('stepForm').classList.remove('hidden');
+
+  const t = TURNOS.find(x=>x.id===selTurno);
+  const [y,m,d] = selFecha.split('-');
+  const mN=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  document.getElementById('resumenPill').innerHTML =
+    `<strong>${prod.nombre}</strong> · ${d} de ${mN[+m-1]} de ${y} · <strong>${t.label}</strong> (${t.horas}) · <strong>${precio}</strong>`;
+}
+
+/* ── Referencia word counter ────────────── */
+document.getElementById('fReferencia').addEventListener('input', function(){
+  const words = this.value.trim().split(/\s+/).filter(Boolean).length;
+  const el = document.getElementById('refCounter');
+  el.textContent = words + (words===1?' palabra':' palabras') + ' (mínimo 10)';
+  el.className = 'ref-counter ' + (words >= 10 ? 'ok' : 'warn');
+});
+
+/* ── Validation & Confirm ───────────────── */
+function confirmarReserva(){
+  let ok = true;
+  const fields = [
+    { id:'fNombre',    err:'errNombre',    check: v=>v.trim().length>1 },
+    { id:'fApellido',  err:'errApellido',  check: v=>v.trim().length>1 },
+    { id:'fCelular',   err:'errCelular',   check: v=>/^\d{6,}$/.test(v.replace(/[\s\-\+]/g,'')) },
+    { id:'fBarrio',    err:'errBarrio',    check: v=>v.trim().length>1 },
+    { id:'fDireccion', err:'errDireccion', check: v=>v.trim().length>3 },
+    { id:'fReferencia',err:'errReferencia',check: v=>v.trim().split(/\s+/).filter(Boolean).length>=10 },
+  ];
+
+  fields.forEach(f=>{
+    const el  = document.getElementById(f.id);
+    const err = document.getElementById(f.err);
+    const valid = f.check(el.value);
+    el.classList.toggle('error', !valid);
+    err.classList.toggle('show', !valid);
+    if(!valid) ok = false;
+  });
+
+  if(!ok){ document.querySelector('.form-input.error')?.focus(); return; }
+
+  const t = TURNOS.find(x=>x.id===selTurno);
+  const [y,m,d] = selFecha.split('-');
+  const mN=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+  const data = {
+    productoId:     prod.id,
+    productoNombre: prod.nombre,
+    productoDims:   prod.dims,
+    productoPrecio: precio,
+    fecha:          selFecha,
+    fechaLabel:     d + ' de ' + mN[+m-1] + ' de ' + y,
+    turno:          selTurno,
+    turnoLabel:     t.label + ' (' + t.horas + ')',
+    nombre:         document.getElementById('fNombre').value.trim(),
+    apellido:       document.getElementById('fApellido').value.trim(),
+    celular:        document.getElementById('fCelular').value.trim(),
+    barrio:         document.getElementById('fBarrio').value.trim(),
+    direccion:      document.getElementById('fDireccion').value.trim(),
+    referencia:     document.getElementById('fReferencia').value.trim(),
+  };
+
+  sessionStorage.setItem('dridanna_pending_reserva', JSON.stringify(data));
+  location.href = './confirmacion.html';
+}
+
+/* ── Steps UI ───────────────────────────── */
+function updateSteps(active){
+  [1,2,3].forEach(i=>{
+    const dot  = document.getElementById('step'+i);
+    const conn = document.getElementById('conn'+(i-1));
+    dot.classList.toggle('active', i===active);
+    dot.classList.toggle('done',   i<active);
+    if(conn){ conn.classList.toggle('done', i<=active); }
+  });
+}
+
+/* ── Utils ──────────────────────────────── */
+function ds(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+/* ── Run ────────────────────────────────── */
+renderCal();
+</script>
+</body>
+</html>

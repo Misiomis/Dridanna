@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080c18">
+  <title>Dridanna — Panel Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Tokens ──────────────────────────────── */
+:root {
+  --bg:      #080c18; --bg2:   #0d1225; --bg3:  #111827;
+  --pink:    #dda0b8; --blue:  #5eb8f5; --gold: #f5c842; --coral: #e8614e;
+  --text:    rgba(255,255,255,0.90); --text2: rgba(255,255,255,0.54); --text3: rgba(255,255,255,0.30);
+  --glass:   rgba(255,255,255,0.04); --glass2: rgba(255,255,255,0.07);
+  --gborder: rgba(255,255,255,0.09); --gborder2: rgba(255,255,255,0.15);
+  --grad:    linear-gradient(135deg,#dda0b8 0%,#a87cba 48%,#5eb8f5 100%);
+  --ease:    cubic-bezier(0.25,0.8,0.25,1);
+  --font:    'Outfit',system-ui,sans-serif;
+  --serif:   'Cormorant Garamond',serif;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:var(--font); background:var(--bg);
+  color:var(--text); min-height:100vh;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  padding-bottom:40px; font-size:15px;
+}
+img { max-width:100%; height:auto; display:block; }
+a { text-decoration:none; color:inherit; }
+button { font-family:inherit; cursor:pointer; border:none; background:none; }
+ul { list-style:none; }
+input,select,textarea { font-family:inherit; }
+
+/* ── Orbs BG ─────────────────────────────── */
+.bg-orbs { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.orb { position:absolute; border-radius:50%; filter:blur(90px); animation:orbFloat 9s ease-in-out infinite; }
+.orb1 { width:60vw; height:60vw; max-width:700px; max-height:700px; top:-20%; right:-10%; background:radial-gradient(circle,rgba(94,184,245,0.14) 0%,transparent 68%); animation-delay:0s; }
+.orb2 { width:50vw; height:50vw; max-width:600px; max-height:600px; bottom:-15%; left:-8%; background:radial-gradient(circle,rgba(221,160,184,0.12) 0%,transparent 68%); animation-delay:3s; }
+.orb3 { width:30vw; height:30vw; max-width:380px; max-height:380px; top:40%; left:55%; background:radial-gradient(circle,rgba(245,200,66,0.07) 0%,transparent 68%); animation-delay:6s; }
+@keyframes orbFloat { 0%,100%{transform:scale(1);} 50%{transform:scale(1.06);} }
+
+/* ── Login overlay ───────────────────────── */
+#login-overlay {
+  position:fixed; inset:0; z-index:9999;
+  background:linear-gradient(145deg,#060c15 0%,#0c1a2e 50%,#0a1020 100%);
+  display:flex; align-items:center; justify-content:center; padding:20px;
+}
+.login-box {
+  width:100%; max-width:340px; text-align:center;
+  background:var(--glass2); backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px);
+  border:1px solid var(--gborder2); border-radius:24px;
+  padding:40px 32px;
+  box-shadow:0 24px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+.login-logo { height:64px; width:auto; margin:0 auto 20px; object-fit:contain; }
+.login-box h2 { font-family:var(--serif); font-size:1.8rem; color:var(--pink); margin-bottom:4px; }
+.login-box .sub { font-size:0.7rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--text3); margin-bottom:28px; }
+.login-input {
+  width:100%; padding:13px 16px; margin-bottom:12px;
+  border:1px solid var(--gborder2); border-radius:12px;
+  background:rgba(255,255,255,0.07); color:var(--text);
+  font-size:14px; outline:none;
+  transition:border-color 0.2s, box-shadow 0.2s;
+}
+.login-input::placeholder { color:var(--text3); }
+.login-input:focus { border-color:rgba(221,160,184,0.5); box-shadow:0 0 0 3px rgba(221,160,184,0.1); }
+.login-btn {
+  width:100%; padding:14px;
+  background:var(--grad); color:#fff;
+  border-radius:12px; font-weight:700; font-size:14px;
+  letter-spacing:0.05em; cursor:pointer;
+  box-shadow:0 6px 20px rgba(221,160,184,0.3);
+  transition:all 0.2s var(--ease);
+}
+.login-btn:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(221,160,184,0.44); }
+#login-error { display:none; margin-top:12px; font-size:12px; color:var(--coral); font-weight:600; }
+
+/* ── Admin content ───────────────────────── */
+#admin-content { display:none; position:relative; z-index:1; }
+
+/* ── Header ──────────────────────────────── */
+.a-header {
+  position:sticky; top:0; z-index:100;
+  background:rgba(8,12,24,0.92);
+  backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px);
+  border-bottom:1px solid var(--gborder);
+  padding:12px clamp(16px,4vw,48px);
+}
+.a-header-row {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  max-width:1280px; margin-inline:auto;
+}
+.a-header-logo { height:38px; object-fit:contain; }
+.a-header-title { font-family:var(--serif); font-size:1.3rem; color:var(--pink); letter-spacing:0.02em; }
+.a-logout-btn {
+  font-size:0.78rem; font-weight:600; color:var(--text2);
+  padding:7px 16px; border-radius:100px;
+  border:1px solid var(--gborder); background:var(--glass);
+  transition:all 0.2s var(--ease);
+}
+.a-logout-btn:hover { border-color:var(--gborder2); color:var(--text); }
+
+/* ── Tab nav ─────────────────────────────── */
+.a-tabs {
+  background:rgba(8,12,24,0.7);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--gborder);
+  padding:0 clamp(16px,4vw,48px);
+  position:sticky; top:62px; z-index:99;
+}
+.a-tabs-inner {
+  display:flex; gap:0; max-width:1280px; margin-inline:auto;
+  overflow-x:auto; scrollbar-width:none;
+}
+.a-tabs-inner::-webkit-scrollbar { display:none; }
+.tab-btn {
+  flex-shrink:0; padding:14px 22px;
+  font-size:0.84rem; font-weight:500; color:var(--text2);
+  border-bottom:2px solid transparent;
+  transition:color 0.2s, border-color 0.2s;
+  white-space:nowrap;
+}
+.tab-btn:hover { color:var(--text); }
+.tab-btn.active { color:var(--pink); border-bottom-color:var(--pink); }
+
+/* ── Container ───────────────────────────── */
+.a-container { max-width:1280px; margin-inline:auto; padding:clamp(20px,4vw,40px) clamp(16px,4vw,48px); }
+.a-section { display:none; }
+.a-section.active { display:block; }
+
+/* ── KPIs ────────────────────────────────── */
+.kpi-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:14px; margin-bottom:28px;
+}
+.kpi-card {
+  background:var(--glass2);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--gborder); border-radius:18px;
+  padding:20px 18px; position:relative; overflow:hidden;
+  transition:transform 0.2s var(--ease), box-shadow 0.2s;
+}
+.kpi-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:var(--grad); border-radius:18px 18px 0 0;
+}
+.kpi-card:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(0,0,0,0.3); }
+.kpi-label { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:var(--text3); margin-bottom:8px; }
+.kpi-val { font-family:var(--serif); font-size:2rem; font-weight:600; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; }
+
+/* ── Quick actions ───────────────────────── */
+.quick-actions { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px; }
+.qa-btn {
+  padding:9px 18px; border-radius:100px;
+  border:1px solid var(--gborder); background:var(--glass);
+  font-size:0.82rem; font-weight:500; color:var(--text2);
+  transition:all 0.2s var(--ease);
+}
+.qa-btn:hover { background:var(--glass2); border-color:var(--gborder2); color:var(--text); }
+.qa-btn.danger { border-color:rgba(232,97,78,0.3); color:rgba(232,97,78,0.8); }
+.qa-btn.danger:hover { background:rgba(232,97,78,0.1); border-color:rgba(232,97,78,0.5); }
+
+/* ── Card glass ──────────────────────────── */
+.a-card {
+  background:var(--glass);
+  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--gborder); border-radius:18px; padding:22px;
+}
+.a-card + .a-card { margin-top:16px; }
+.a-card-title {
+  font-size:0.7rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.14em; color:var(--text3); margin-bottom:16px;
+}
+
+/* ── Productos admin grid ────────────────── */
+.prod-admin-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:16px;
+}
+.prod-admin-card {
+  background:var(--glass2);
+  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--gborder); border-radius:18px;
+  overflow:hidden; transition:all 0.25s var(--ease);
+}
+.prod-admin-card:hover { border-color:var(--gborder2); transform:translateY(-4px); box-shadow:0 12px 28px rgba(0,0,0,0.3); }
+.prod-admin-card.pausado { opacity:0.65; border-color:rgba(232,97,78,0.3); }
+.prod-admin-card.oculto  { opacity:0.35; border-style:dashed; }
+.prod-thumb {
+  aspect-ratio:4/3; background:var(--bg3);
+  background-size:cover; background-position:center;
+  position:relative;
+}
+.prod-status-badge {
+  position:absolute; top:8px; right:8px;
+  font-size:0.65rem; font-weight:700; letter-spacing:0.06em;
+  padding:3px 10px; border-radius:100px;
+}
+.prod-status-badge.activo  { background:rgba(94,184,245,0.2); color:var(--blue); border:1px solid rgba(94,184,245,0.35); }
+.prod-status-badge.pausado { background:rgba(232,97,78,0.2); color:var(--coral); border:1px solid rgba(232,97,78,0.35); }
+.prod-status-badge.oculto  { background:rgba(255,255,255,0.1); color:var(--text3); border:1px solid var(--gborder); }
+.prod-admin-body { padding:16px; }
+.prod-admin-name { font-size:0.96rem; font-weight:600; color:var(--text); margin-bottom:4px; }
+.prod-admin-dims { font-size:0.72rem; color:var(--text3); margin-bottom:12px; }
+.prod-admin-controls { display:flex; flex-direction:column; gap:8px; }
+.prod-field-label { font-size:0.68rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:4px; }
+.prod-input {
+  width:100%; padding:9px 12px;
+  border:1px solid var(--gborder); border-radius:10px;
+  background:rgba(255,255,255,0.05); color:var(--text);
+  font-size:0.84rem; outline:none;
+  transition:border-color 0.2s, box-shadow 0.2s;
+}
+.prod-input::placeholder { color:var(--text3); }
+.prod-input:focus { border-color:rgba(221,160,184,0.4); box-shadow:0 0 0 3px rgba(221,160,184,0.1); }
+.prod-btn-row { display:flex; gap:6px; margin-top:4px; }
+.prod-btn {
+  flex:1; padding:8px 6px; border-radius:10px; font-size:0.75rem; font-weight:600;
+  border:1px solid var(--gborder); background:var(--glass);
+  color:var(--text2); transition:all 0.2s var(--ease);
+}
+.prod-btn:hover { border-color:var(--gborder2); color:var(--text); background:var(--glass2); }
+.prod-btn.btn-toggle-pausar { border-color:rgba(245,200,66,0.3); color:rgba(245,200,66,0.8); }
+.prod-btn.btn-toggle-pausar:hover { background:rgba(245,200,66,0.1); }
+.prod-btn.btn-toggle-ocultar { border-color:rgba(232,97,78,0.3); color:rgba(232,97,78,0.8); }
+.prod-btn.btn-toggle-ocultar:hover { background:rgba(232,97,78,0.1); }
+.prod-btn.btn-save-prod { border-color:rgba(94,184,245,0.3); color:rgba(94,184,245,0.8); }
+.prod-btn.btn-save-prod:hover { background:rgba(94,184,245,0.1); }
+
+/* ── Toggle switch ───────────────────────── */
+.toggle-row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.toggle-label { font-size:0.82rem; color:var(--text2); }
+.toggle-switch { position:relative; width:42px; height:22px; flex-shrink:0; }
+.toggle-switch input { opacity:0; width:0; height:0; }
+.toggle-track {
+  position:absolute; inset:0; border-radius:22px;
+  background:rgba(255,255,255,0.12);
+  transition:background 0.25s var(--ease); cursor:pointer;
+}
+.toggle-track::after {
+  content:''; position:absolute;
+  top:3px; left:3px; width:16px; height:16px;
+  border-radius:50%; background:#fff;
+  transition:transform 0.25s var(--ease);
+}
+.toggle-switch input:checked + .toggle-track { background:var(--grad); }
+.toggle-switch input:checked + .toggle-track::after { transform:translateX(20px); }
+
+/* ── Calendario ──────────────────────────── */
+.cal-wrapper { max-width:560px; margin-inline:auto; }
+.cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.cal-title { font-family:var(--serif); font-size:1.4rem; color:var(--text); text-transform:capitalize; }
+.cal-nav-btn {
+  width:36px; height:36px; border-radius:50%;
+  background:var(--glass); border:1px solid var(--gborder);
+  color:var(--text2); font-size:1.1rem; display:flex;
+  align-items:center; justify-content:center;
+  transition:all 0.2s var(--ease);
+}
+.cal-nav-btn:hover { background:var(--glass2); color:var(--text); border-color:var(--gborder2); }
+.cal-grid {
+  display:grid; grid-template-columns:repeat(7,1fr);
+  gap:6px; text-align:center;
+}
+.cal-day-name { font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--text3); padding-bottom:6px; }
+.cal-day {
+  aspect-ratio:1; border-radius:10px;
+  font-size:0.84rem; display:flex; align-items:center; justify-content:center;
+  border:1px solid var(--gborder); background:var(--glass);
+  color:var(--text2); cursor:pointer;
+  transition:all 0.2s var(--ease); font-weight:500;
+  position:relative;
+}
+.cal-day:hover { background:var(--glass2); border-color:var(--gborder2); color:var(--text); }
+.cal-day.empty { pointer-events:none; background:transparent; border:none; }
+.cal-day.today { border-color:rgba(94,184,245,0.5); color:var(--blue); font-weight:700; }
+.cal-day.bloqueado { background:rgba(232,97,78,0.15); border-color:rgba(232,97,78,0.4); color:var(--coral); }
+.cal-day.bloqueado:hover { background:rgba(232,97,78,0.25); }
+.cal-day.con-reserva { background:rgba(94,184,245,0.12); border-color:rgba(94,184,245,0.35); color:var(--blue); }
+.cal-day.con-reserva::after { content:'•'; position:absolute; bottom:3px; left:50%; transform:translateX(-50%); font-size:0.5rem; color:var(--blue); }
+.cal-day.pasado { opacity:0.3; pointer-events:none; }
+.cal-legend { display:flex; gap:16px; margin-top:16px; flex-wrap:wrap; justify-content:center; }
+.cal-legend-item { display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--text3); }
+.cal-legend-dot { width:10px; height:10px; border-radius:3px; }
+.dot-libre    { background:var(--glass); border:1px solid var(--gborder); }
+.dot-bloq     { background:rgba(232,97,78,0.3); }
+.dot-reserva  { background:rgba(94,184,245,0.3); }
+.dot-parcial  { background:rgba(245,200,66,0.4); }
+.day.parcial  { background:rgba(245,200,66,0.10); border-color:rgba(245,200,66,0.35); color:var(--gold); }
+.cal-info-box {
+  margin-top:16px; padding:16px; border-radius:14px;
+  background:var(--glass); border:1px solid var(--gborder);
+  animation:fadeIn 0.2s var(--ease);
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.cal-selected-date { font-family:var(--serif); font-size:1.15rem; color:var(--text); margin-bottom:12px; text-transform:capitalize; }
+.cal-block-nota {
+  width:100%; padding:10px 13px; border-radius:10px; resize:none; min-height:72px;
+  border:1px solid var(--gborder); background:rgba(255,255,255,0.05); color:var(--text);
+  font-size:0.84rem; outline:none; margin-bottom:10px;
+  transition:border-color 0.2s;
+}
+.cal-block-nota:focus { border-color:rgba(221,160,184,0.4); }
+.cal-actions { display:flex; gap:8px; }
+.cal-btn {
+  flex:1; padding:10px; border-radius:10px; font-size:0.82rem; font-weight:600;
+  border:1px solid var(--gborder); background:var(--glass); color:var(--text2);
+  transition:all 0.2s var(--ease);
+}
+.cal-btn:hover { background:var(--glass2); border-color:var(--gborder2); color:var(--text); }
+.cal-btn.danger { border-color:rgba(232,97,78,0.3); color:rgba(232,97,78,0.8); }
+.cal-btn.danger:hover { background:rgba(232,97,78,0.12); }
+.cal-btn.primary { background:var(--grad); border:none; color:#fff; }
+.cal-btn.primary:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(221,160,184,0.3); }
+
+/* ── Reservas ────────────────────────────── */
+.reservas-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
+.reservas-title { font-family:var(--serif); font-size:1.4rem; color:var(--text); }
+.btn-nueva-reserva {
+  padding:10px 22px; border-radius:100px;
+  background:var(--grad); color:#fff; font-size:0.84rem; font-weight:600;
+  box-shadow:0 4px 16px rgba(221,160,184,0.28);
+  transition:all 0.2s var(--ease);
+}
+.btn-nueva-reserva:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(221,160,184,0.4); }
+.reservas-filtros { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+.rfiltro {
+  padding:7px 16px; border-radius:100px; font-size:0.78rem; font-weight:500;
+  border:1px solid var(--gborder); background:var(--glass); color:var(--text2);
+  transition:all 0.2s var(--ease);
+}
+.rfiltro:hover { background:var(--glass2); color:var(--text); }
+.rfiltro.active { background:var(--grad); border-color:transparent; color:#fff; }
+.reservas-busqueda {
+  width:100%; padding:11px 16px; border-radius:12px;
+  border:1px solid var(--gborder); background:var(--glass);
+  color:var(--text); font-size:0.88rem; outline:none; margin-bottom:16px;
+  transition:border-color 0.2s;
+}
+.reservas-busqueda::placeholder { color:var(--text3); }
+.reservas-busqueda:focus { border-color:rgba(221,160,184,0.4); }
+.reservas-list { display:flex; flex-direction:column; gap:12px; }
+.reserva-item {
+  background:var(--glass); border:1px solid var(--gborder); border-radius:16px;
+  padding:16px 18px; display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:14px; align-items:center;
+  transition:all 0.2s var(--ease);
+}
+.reserva-item:hover { background:var(--glass2); border-color:var(--gborder2); }
+.reserva-fecha-col { text-align:center; min-width:48px; }
+.reserva-fecha-day { font-family:var(--serif); font-size:1.6rem; font-weight:600; line-height:1; color:var(--pink); }
+.reserva-fecha-month { font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text3); }
+.reserva-info { min-width:0; }
+.reserva-nombre { font-size:0.95rem; font-weight:600; color:var(--text); margin-bottom:3px; }
+.reserva-detail { font-size:0.78rem; color:var(--text3); }
+.reserva-actions { display:flex; gap:6px; flex-shrink:0; }
+.r-btn {
+  width:32px; height:32px; border-radius:8px;
+  border:1px solid var(--gborder); background:var(--glass);
+  color:var(--text2); display:flex; align-items:center; justify-content:center;
+  font-size:0.85rem; transition:all 0.18s var(--ease);
+}
+.r-btn:hover { background:var(--glass2); border-color:var(--gborder2); color:var(--text); }
+.r-btn.danger:hover { background:rgba(232,97,78,0.15); border-color:rgba(232,97,78,0.4); color:var(--coral); }
+.r-btn.confirm:hover { background:rgba(94,184,245,0.15); border-color:rgba(94,184,245,0.4); color:var(--blue); }
+.r-estado {
+  display:inline-block; font-size:0.65rem; font-weight:700; letter-spacing:0.08em;
+  padding:2px 8px; border-radius:100px; margin-top:4px;
+}
+.r-estado.pendiente { background:rgba(245,200,66,0.15); color:var(--gold); border:1px solid rgba(245,200,66,0.3); }
+.r-estado.confirmada { background:rgba(94,184,245,0.15); color:var(--blue); border:1px solid rgba(94,184,245,0.3); }
+.r-estado.cancelada  { background:rgba(232,97,78,0.12); color:var(--coral); border:1px solid rgba(232,97,78,0.25); }
+.empty-state { text-align:center; padding:32px; color:var(--text3); font-size:0.9rem; }
+
+/* ── Config ──────────────────────────────── */
+.config-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+.config-field { display:flex; flex-direction:column; gap:6px; }
+.config-label { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:var(--text3); }
+.config-input {
+  padding:11px 14px; border-radius:12px;
+  border:1px solid var(--gborder); background:var(--glass);
+  color:var(--text); font-size:0.9rem; outline:none;
+  transition:border-color 0.2s, box-shadow 0.2s;
+}
+.config-input:focus { border-color:rgba(221,160,184,0.4); box-shadow:0 0 0 3px rgba(221,160,184,0.1); }
+.config-save-btn {
+  margin-top:20px; padding:12px 32px; border-radius:100px;
+  background:var(--grad); color:#fff; font-weight:600; font-size:0.88rem;
+  box-shadow:0 4px 16px rgba(221,160,184,0.25);
+  transition:all 0.2s var(--ease);
+}
+.config-save-btn:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(221,160,184,0.38); }
+.config-danger-zone { margin-top:28px; padding:20px; border-radius:14px; border:1px solid rgba(232,97,78,0.25); background:rgba(232,97,78,0.04); }
+.config-danger-title { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:var(--coral); margin-bottom:12px; }
+
+/* ── Modal ───────────────────────────────── */
+.modal-overlay {
+  position:fixed; inset:0; z-index:5000;
+  background:rgba(0,0,0,0.65); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  display:flex; align-items:center; justify-content:center; padding:16px;
+  animation:fadeIn 0.18s var(--ease);
+}
+.modal-card {
+  width:100%; max-width:480px;
+  background:rgba(8,12,24,0.97); border:1px solid var(--gborder2);
+  border-radius:22px; padding:26px 24px;
+  box-shadow:0 28px 60px rgba(0,0,0,0.5);
+  backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+  animation:popIn 0.22s var(--ease);
+}
+@keyframes popIn { from{opacity:0;transform:translateY(12px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+.modal-title { font-family:var(--serif); font-size:1.4rem; color:var(--pink); margin-bottom:18px; }
+.modal-field { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+.modal-label { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:var(--text3); }
+.modal-input, .modal-select, .modal-textarea {
+  padding:11px 14px; border-radius:12px;
+  border:1px solid var(--gborder); background:rgba(255,255,255,0.06);
+  color:var(--text); font-size:0.9rem; outline:none;
+  transition:border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance:none; appearance:none;
+}
+.modal-input::placeholder, .modal-textarea::placeholder { color:var(--text3); }
+.modal-input:focus, .modal-select:focus, .modal-textarea:focus {
+  border-color:rgba(221,160,184,0.4); box-shadow:0 0 0 3px rgba(221,160,184,0.1);
+}
+.modal-select option { background:var(--bg2); }
+.modal-textarea { resize:vertical; min-height:72px; }
+.modal-actions { display:flex; gap:10px; margin-top:20px; }
+.modal-cancel {
+  flex:1; padding:12px; border-radius:12px;
+  border:1px solid var(--gborder); background:var(--glass);
+  color:var(--text2); font-size:0.88rem; font-weight:600;
+  transition:all 0.2s var(--ease);
+}
+.modal-cancel:hover { background:var(--glass2); border-color:var(--gborder2); color:var(--text); }
+.modal-confirm {
+  flex:2; padding:12px; border-radius:12px;
+  background:var(--grad); border:none; color:#fff;
+  font-size:0.88rem; font-weight:700;
+  box-shadow:0 4px 16px rgba(221,160,184,0.25);
+  transition:all 0.2s var(--ease);
+}
+.modal-confirm:hover { transform:translateY(-1px); box-shadow:0 8px 22px rgba(221,160,184,0.38); }
+.modal-confirm:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+
+/* ── Toast ───────────────────────────────── */
+#toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(8px);
+  background:rgba(8,18,30,0.95); color:var(--text);
+  padding:12px 24px; border-radius:100px;
+  border:1px solid var(--gborder2);
+  backdrop-filter:blur(14px);
+  font-size:0.84rem; font-weight:500;
+  opacity:0; transition:all 0.28s var(--ease);
+  pointer-events:none; z-index:9999; white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,0.3);
+}
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ── Responsive ──────────────────────────── */
+@media (max-width:640px) {
+  .prod-admin-grid { grid-template-columns:1fr 1fr; }
+  .reserva-item { grid-template-columns:auto 1fr; }
+  .reserva-actions { grid-column:1/-1; justify-content:flex-end; }
+  .a-tabs-inner { gap:0; }
+  .tab-btn { padding:12px 14px; font-size:0.78rem; }
+  .kpi-grid { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:420px) {
+  .prod-admin-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-orbs" aria-hidden="true">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-overlay">
+  <div class="login-box">
+    <img src="./img/logo.png" alt="Logo Dridanna" class="login-logo">
+    <h2>Panel Admin</h2>
+    <p class="sub">Dridanna — Acceso restringido</p>
+    <input type="text"     id="loginUser" class="login-input" placeholder="Usuario">
+    <input type="password" id="loginPass" class="login-input" placeholder="Contraseña" autocomplete="current-password">
+    <button class="login-btn" id="loginBtn">Ingresar →</button>
+    <p id="login-error">Usuario o contraseña incorrectos.</p>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin-content">
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Header -->
+  <header class="a-header">
+    <div class="a-header-row">
+      <img src="./img/logo.png" alt="Dridanna" class="a-header-logo">
+      <span class="a-header-title">Panel de Administración</span>
+      <button class="a-logout-btn" id="logoutBtn">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <!-- Tabs -->
+  <nav class="a-tabs" aria-label="Secciones del panel">
+    <div class="a-tabs-inner">
+      <button class="tab-btn active" data-tab="dashboard">📊 Dashboard</button>
+      <button class="tab-btn" data-tab="productos">🎪 Productos</button>
+      <button class="tab-btn" data-tab="calendario">📅 Calendario</button>
+      <button class="tab-btn" data-tab="reservas">📋 Reservas</button>
+      <button class="tab-btn" data-tab="clientes">👥 Clientes</button>
+      <button class="tab-btn" data-tab="config">⚙️ Config</button>
+    </div>
+  </nav>
+
+  <div class="a-container">
+
+    <!-- ── DASHBOARD ── -->
+    <section class="a-section active" id="tab-dashboard">
+      <div class="kpi-grid" id="kpiGrid"></div>
+      <div class="quick-actions">
+        <button class="qa-btn" onclick="switchTab('productos')">🎪 Gestionar productos</button>
+        <button class="qa-btn" onclick="switchTab('calendario')">📅 Bloquear fecha</button>
+        <button class="qa-btn" onclick="openNuevaReserva()">➕ Nueva reserva</button>
+        <button class="qa-btn" onclick="switchTab('reservas')">📋 Ver reservas</button>
+      </div>
+      <div class="a-card">
+        <p class="a-card-title">Próximas reservas</p>
+        <div id="dash-proximas"></div>
+      </div>
+      <div class="a-card" style="margin-top:16px">
+        <p class="a-card-title">Fechas bloqueadas</p>
+        <div id="dash-bloqueadas"></div>
+      </div>
+    </section>
+
+    <!-- ── PRODUCTOS ── -->
+    <section class="a-section" id="tab-productos">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px;flex-wrap:wrap">
+        <h2 style="font-family:var(--serif);font-size:1.5rem;color:var(--text)">Gestión de Productos</h2>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="qa-btn" onclick="toggleTodosProductos(true)">✅ Activar todos</button>
+          <button class="qa-btn" onclick="toggleTodosProductos(false)">⏸ Pausar todos</button>
+        </div>
+      </div>
+      <div class="prod-admin-grid" id="prodAdminGrid"></div>
+    </section>
+
+    <!-- ── CALENDARIO ── -->
+    <section class="a-section" id="tab-calendario">
+      <div class="cal-wrapper">
+        <div class="a-card">
+          <div class="cal-header">
+            <button class="cal-nav-btn" id="calPrev">‹</button>
+            <span class="cal-title" id="calTitle"></span>
+            <button class="cal-nav-btn" id="calNext">›</button>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+          <div class="cal-legend">
+            <div class="cal-legend-item"><div class="cal-legend-dot dot-libre"></div> Libre</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot dot-bloq"></div> Bloqueado</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot dot-reserva"></div> Con reserva</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot dot-parcial"></div> Parcialmente bloqueado</div>
+          </div>
+        </div>
+        <div id="calInfoBox"></div>
+      </div>
+    </section>
+
+    <!-- ── RESERVAS ── -->
+    <section class="a-section" id="tab-reservas">
+      <div class="reservas-header">
+        <h2 class="reservas-title">Reservas</h2>
+        <button class="btn-nueva-reserva" onclick="openNuevaReserva()">+ Nueva reserva</button>
+      </div>
+      <input type="search" class="reservas-busqueda" id="reservasBusq" placeholder="Buscar por nombre, producto o fecha...">
+      <div class="reservas-filtros">
+        <button class="rfiltro active" data-rf="todas">Todas</button>
+        <button class="rfiltro" data-rf="pendiente">Pendientes</button>
+        <button class="rfiltro" data-rf="confirmada">Confirmadas</button>
+        <button class="rfiltro" data-rf="cancelada">Canceladas</button>
+      </div>
+      <div class="reservas-list" id="reservasList"></div>
+    </section>
+
+    <!-- ── CLIENTES ── -->
+    <section class="a-section" id="tab-clientes">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px;flex-wrap:wrap">
+        <h2 style="font-family:var(--serif);font-size:1.5rem;color:var(--text)">Clientes</h2>
+        <input type="search" class="reservas-busqueda" id="clientesBusq" placeholder="Buscar cliente..." style="max-width:280px;margin:0">
+      </div>
+      <div id="clientesList"></div>
+    </section>
+
+    <!-- ── CONFIG ── -->
+    <section class="a-section" id="tab-config">
+      <h2 style="font-family:var(--serif);font-size:1.5rem;color:var(--text);margin-bottom:22px">Configuración</h2>
+      <div class="a-card">
+        <p class="a-card-title">Datos de contacto (landing page)</p>
+        <div class="config-grid">
+          <div class="config-field">
+            <label class="config-label">Número WhatsApp (sin +)</label>
+            <input type="tel" class="config-input" id="cfgWhatsapp" placeholder="5491112345678">
+          </div>
+          <div class="config-field">
+            <label class="config-label">Usuario Instagram</label>
+            <input type="text" class="config-input" id="cfgInstagram" placeholder="dridanna">
+          </div>
+          <div class="config-field">
+            <label class="config-label">Ciudad / Zona</label>
+            <input type="text" class="config-input" id="cfgZona" placeholder="Comandante Andresito, Misiones">
+          </div>
+        </div>
+        <button class="config-save-btn" onclick="saveConfig()">Guardar cambios</button>
+      </div>
+      <div class="a-card" style="margin-top:16px">
+        <p class="a-card-title">Seguridad</p>
+        <div class="config-grid">
+          <div class="config-field">
+            <label class="config-label">Cambiar contraseña</label>
+            <input type="password" class="config-input" id="cfgPassNueva" placeholder="Nueva contraseña">
+          </div>
+          <div class="config-field">
+            <label class="config-label">Confirmar contraseña</label>
+            <input type="password" class="config-input" id="cfgPassConfirm" placeholder="Repetir contraseña">
+          </div>
+        </div>
+        <button class="config-save-btn" onclick="changePassword()">Cambiar contraseña</button>
+      </div>
+      <div class="config-danger-zone a-card" style="margin-top:16px">
+        <p class="config-danger-title">Zona de peligro</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="qa-btn danger" onclick="borrarTodasReservas()">🗑 Borrar todas las reservas</button>
+          <button class="qa-btn danger" onclick="borrarFechasBloqueadas()">🗑 Quitar todos los bloqueos</button>
+          <button class="qa-btn danger" onclick="resetearProductos()">🔄 Resetear productos al estado original</button>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /a-container -->
+</div><!-- /admin-content -->
+
+<!-- MODAL NUEVA RESERVA -->
+<div id="modalReserva" class="modal-overlay" style="display:none">
+  <div class="modal-card" style="max-width:540px;max-height:90vh;overflow-y:auto">
+    <h3 class="modal-title">Nueva Reserva</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="modal-field">
+        <label class="modal-label">Nombre</label>
+        <input type="text" class="modal-input" id="rNombre" placeholder="Nombre">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Apellido</label>
+        <input type="text" class="modal-input" id="rApellido" placeholder="Apellido">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Celular / WhatsApp</label>
+        <input type="tel" class="modal-input" id="rTelefono" placeholder="3757 xxxxxx">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Barrio</label>
+        <input type="text" class="modal-input" id="rBarrio" placeholder="Ej: Centro">
+      </div>
+      <div class="modal-field" style="grid-column:1/-1">
+        <label class="modal-label">Dirección</label>
+        <input type="text" class="modal-input" id="rDireccion" placeholder="Calle, número...">
+      </div>
+      <div class="modal-field" style="grid-column:1/-1">
+        <label class="modal-label">Referencia de ubicación</label>
+        <textarea class="modal-textarea" id="rReferencia" placeholder="Al menos 10 palabras de referencia..."></textarea>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Fecha del evento</label>
+        <input type="date" class="modal-input" id="rFecha">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Turno</label>
+        <select class="modal-select" id="rTurno">
+          <option value="manana">Mañana (9:00–13:00)</option>
+          <option value="tarde">Tarde (14:00–18:00)</option>
+          <option value="noche">Noche (19:00–23:00)</option>
+        </select>
+      </div>
+      <div class="modal-field" style="grid-column:1/-1">
+        <label class="modal-label">Producto</label>
+        <select class="modal-select" id="rProducto"></select>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Precio acordado</label>
+        <input type="text" class="modal-input" id="rPrecio" placeholder="$35.000">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Estado</label>
+        <select class="modal-select" id="rEstado">
+          <option value="pendiente">Pendiente</option>
+          <option value="confirmada">Confirmada</option>
+        </select>
+      </div>
+      <div class="modal-field" style="grid-column:1/-1">
+        <label class="modal-label">Notas internas</label>
+        <textarea class="modal-textarea" id="rNotas" placeholder="Notas adicionales..." style="min-height:56px"></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal('modalReserva')">Cancelar</button>
+      <button class="modal-confirm" id="modalReservaConfirm" onclick="guardarReserva()">Guardar reserva</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAR BORRADO -->
+<div id="modalConfirm" class="modal-overlay" style="display:none">
+  <div class="modal-card" style="max-width:360px;text-align:center">
+    <h3 class="modal-title" id="modalConfirmTitle">Confirmar acción</h3>
+    <p style="color:var(--text2);font-size:0.9rem;margin-bottom:20px" id="modalConfirmText"></p>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal('modalConfirm')">Cancelar</button>
+      <button class="modal-confirm" id="modalConfirmBtn" style="flex:1">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   DATOS
+══════════════════════════════════════════════ */
+const CATALOGO = [
+  { id:'castillo-3x3',     nombre:'Castillo Inflable',               dims:'3×3 m',    tipo:'Castillo',
+    fotos:['castillo inflable 3 por 3/castillo inflable.jpg'] },
+  { id:'princesas-3x3',    nombre:'Inflable Princesas',              dims:'3×3 m',    tipo:'Castillo',
+    fotos:['Inflable Princesas 3 por 3/Inflable Princesas.jpg'] },
+  { id:'jirafa-tobogan',   nombre:'Inflable Jirafa con Tobogán',     dims:'3.5×6.5 m',tipo:'Tobogán',
+    fotos:['Inflable Jirafa con tobogan 3 coma 5 por 6 coma 5/Inflable Jirafa con tobogan.jpg'] },
+  { id:'gato-tobogan-4x7', nombre:'Gato Silvestre con Tobogán',      dims:'4×7 m',    tipo:'Tobogán',
+    fotos:['Inflable Gato Silvestre con Tobogán 4x7/gatosilvestre.jpg'] },
+  { id:'gato-pio-3x5',     nombre:'Gato Silvestre y Pío Pío',        dims:'3×5 m',    tipo:'Castillo',
+    fotos:['Gato Silvestre y Pio Pio  3 por 5/inflable pio y silvestre.jpg'] },
+  { id:'rana-4x3',         nombre:'Inflable Rana',                   dims:'4×3 m',    tipo:'Castillo',
+    fotos:['inflable rana 4 por 3/inflable rana.jpg'] },
+  { id:'tigre',            nombre:'Inflable Tigre',                  dims:'',         tipo:'Castillo',
+    fotos:['inflable tigre/inflable tigre.jpg'] },
+  { id:'mickey-minnie',    nombre:'Mickey & Minnie',                 dims:'',         tipo:'Castillo',
+    fotos:['mickey and minii/mickey and minie.jpg'] },
+  { id:'toy-story',        nombre:'Toy Story',                       dims:'',         tipo:'Castillo',
+    fotos:['toy story/Toy  Story.jpg'] },
+  { id:'super-rampa',      nombre:'Super Rampa',                     dims:'',         tipo:'Tobogán',
+    fotos:['Super Rampa Brasile/super rampa.jpg'] },
+  { id:'rampa-lila',       nombre:'Rampa Lila',                      dims:'',         tipo:'Tobogán',
+    fotos:['Rampa Lila/rampainflable.jpg'] },
+  { id:'rampa-azul',       nombre:'Rampa Inflable Azul',             dims:'',         tipo:'Tobogán',
+    fotos:['rampa inflable azul/rampa inflable azul.jpg'] },
+  { id:'inflable-azul-rampa', nombre:'Inflable Azul con Rampa',      dims:'3×3 m',    tipo:'Tobogán',
+    fotos:['inflable azul con rampa 3 po 3/inflable azul.jpg'] },
+  { id:'inflable-naranja', nombre:'Inflable Naranja',                dims:'3×3 m',    tipo:'Castillo',
+    fotos:['inflable naranja 3 po 3/inflable naranja.jpg'] },
+  { id:'metegol',          nombre:'Metegol',                         dims:'',         tipo:'Metegol',
+    fotos:['metegol/metegol.png'] },
+];
+
+const LS = {
+  get: k => { try { return JSON.parse(localStorage.getItem('dridanna_'+k) || 'null'); } catch { return null; } },
+  set: (k,v) => localStorage.setItem('dridanna_'+k, JSON.stringify(v)),
+};
+
+function getProdStatus()    { return LS.get('productos_status')   || {}; }
+function getFechasBloq()    { return LS.get('fechas_bloqueadas')  || []; }
+function getTurnosBloq()    { return LS.get('turnos_bloqueados')  || {}; }
+function getReservas()      { return LS.get('reservas')           || []; }
+function getConfig()        { return LS.get('config')             || { whatsapp:'5493757671088', instagram:'dridanna_juegos', zona:'Comandante Andresito, Misiones' }; }
+function getCredentials()   { return LS.get('credentials')        || { user:'admin', pass:'dridanna2025' }; }
+
+const TURNOS = [
+  { id:'manana', label:'Mañana',  horas:'9:00–13:00', emoji:'🌅' },
+  { id:'tarde',  label:'Tarde',   horas:'14:00–18:00', emoji:'☀️' },
+  { id:'noche',  label:'Noche',   horas:'19:00–23:00', emoji:'🌙' },
+];
+
+/* ═══════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════════ */
+function checkLogin() {
+  if (sessionStorage.getItem('dridanna_admin_logged') === '1') showAdmin();
+}
+
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+[document.getElementById('loginUser'), document.getElementById('loginPass')].forEach(el =>
+  el.addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); })
+);
+
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const c = getCredentials();
+  if (u === c.user && p === c.pass) {
+    sessionStorage.setItem('dridanna_admin_logged','1');
+    showAdmin();
+  } else {
+    const err = document.getElementById('login-error');
+    err.style.display = 'block';
+    setTimeout(() => err.style.display='none', 3000);
+  }
+}
+
+function showAdmin() {
+  document.getElementById('login-overlay').style.display = 'none';
+  document.getElementById('admin-content').style.display = 'block';
+  renderAll();
+}
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  sessionStorage.removeItem('dridanna_admin_logged');
+  location.reload();
+});
+
+/* ═══════════════════════════════════════════
+   TABS
+══════════════════════════════════════════════ */
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+  document.querySelectorAll('.a-section').forEach(s => s.classList.toggle('active', s.id === 'tab-'+tabId));
+  if (tabId==='calendario') renderCalendar();
+  if (tabId==='reservas')   renderReservas();
+  if (tabId==='dashboard')  renderDashboard();
+  if (tabId==='config')     loadConfig();
+  if (tabId==='clientes')   renderClientes();
+}
+
+document.querySelectorAll('.tab-btn').forEach(b =>
+  b.addEventListener('click', () => switchTab(b.dataset.tab))
+);
+
+/* ═══════════════════════════════════════════
+   RENDER ALL
+══════════════════════════════════════════════ */
+function renderAll() {
+  renderDashboard();
+  renderProductos();
+  renderCalendar();
+  renderReservas();
+  loadConfig();
+}
+
+/* ═══════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════════ */
+function renderDashboard() {
+  const s = getProdStatus();
+  const r = getReservas();
+  const f = getFechasBloq();
+
+  const activos  = CATALOGO.filter(p => !s[p.id]?.pausado && !s[p.id]?.oculto).length;
+  const pausados = CATALOGO.filter(p =>  s[p.id]?.pausado).length;
+  const pendientes = r.filter(rv => rv.estado==='pendiente').length;
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const proximas = r.filter(rv => rv.estado !== 'cancelada' && new Date(rv.fecha+'T00:00:00') >= today)
+                    .sort((a,b) => a.fecha.localeCompare(b.fecha)).slice(0,5);
+
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kpi-card"><div class="kpi-label">Productos activos</div><div class="kpi-val">${activos}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Pausados</div><div class="kpi-val">${pausados}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Reservas totales</div><div class="kpi-val">${r.length}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Pendientes</div><div class="kpi-val">${pendientes}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Fechas bloqueadas</div><div class="kpi-val">${f.length}</div></div>
+  `;
+
+  const dashProx = document.getElementById('dash-proximas');
+  if (!proximas.length) {
+    dashProx.innerHTML = '<p class="empty-state">Sin reservas próximas</p>';
+  } else {
+    dashProx.innerHTML = proximas.map(rv => `
+      <div style="padding:10px 0;border-bottom:1px solid var(--gborder);display:flex;gap:12px;align-items:center">
+        <div style="min-width:42px;text-align:center">
+          <div style="font-family:var(--serif);font-size:1.4rem;line-height:1;color:var(--pink)">${rv.fecha.split('-')[2]}</div>
+          <div style="font-size:0.62rem;color:var(--text3);text-transform:uppercase">${monthName(rv.fecha.split('-')[1])}</div>
+        </div>
+        <div>
+          <div style="font-weight:600;font-size:0.9rem">${rv.nombre}</div>
+          <div style="font-size:0.76rem;color:var(--text3)">${rv.producto} · <span class="r-estado ${rv.estado}">${rv.estado}</span></div>
+        </div>
+      </div>`).join('');
+  }
+
+  const bloqueadas = f.sort().filter(d => d >= dateStr(today)).slice(0,8);
+  const dashBloq = document.getElementById('dash-bloqueadas');
+  if (!bloqueadas.length) {
+    dashBloq.innerHTML = '<p class="empty-state">Sin fechas bloqueadas próximas</p>';
+  } else {
+    dashBloq.innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">` +
+      bloqueadas.map(d => `<span style="padding:5px 13px;border-radius:100px;font-size:0.76rem;font-weight:600;background:rgba(232,97,78,0.12);color:var(--coral);border:1px solid rgba(232,97,78,0.28)">${formatDate(d)}</span>`).join('') +
+      `</div>`;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   PRODUCTOS
+══════════════════════════════════════════════ */
+function renderProductos() {
+  const status = getProdStatus();
+  document.getElementById('prodAdminGrid').innerHTML = CATALOGO.map(p => {
+    const s = status[p.id] || {};
+    const pausado = !!s.pausado, oculto = !!s.oculto;
+    const badge = oculto ? 'oculto' : pausado ? 'pausado' : 'activo';
+    const badgeLabel = oculto ? 'Oculto' : pausado ? 'Pausado' : 'Activo';
+    const thumb = './img/' + p.fotos[0];
+    return `
+    <div class="prod-admin-card ${pausado?'pausado':''} ${oculto?'oculto':''}" data-id="${p.id}">
+      <div class="prod-thumb" style="background-image:url('${thumb}')">
+        <div class="prod-status-badge ${badge}">${badgeLabel}</div>
+      </div>
+      <div class="prod-admin-body">
+        <div class="prod-admin-name">${p.nombre}</div>
+        <div class="prod-admin-dims">${p.tipo}${p.dims?' · '+p.dims:''}</div>
+        <div class="prod-admin-controls">
+          <div>
+            <div class="prod-field-label">Precio</div>
+            <input type="text" class="prod-input" id="precio_${p.id}" value="${s.precio||''}" placeholder="Ej: $15.000">
+          </div>
+          <div>
+            <div class="prod-field-label">Nota visible</div>
+            <input type="text" class="prod-input" id="nota_${p.id}" value="${s.nota||''}" placeholder="Info adicional...">
+          </div>
+          <div class="prod-btn-row">
+            <button class="prod-btn btn-save-prod" onclick="saveProducto('${p.id}')">💾 Guardar</button>
+            <button class="prod-btn btn-toggle-pausar" onclick="togglePausar('${p.id}')">${pausado?'▶ Activar':'⏸ Pausar'}</button>
+            <button class="prod-btn btn-toggle-ocultar" onclick="toggleOcultar('${p.id}')">${oculto?'👁 Mostrar':'🙈 Ocultar'}</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function saveProducto(id) {
+  const s = getProdStatus();
+  s[id] = s[id] || {};
+  s[id].precio = document.getElementById('precio_'+id)?.value.trim() || '';
+  s[id].nota   = document.getElementById('nota_'+id)?.value.trim()   || '';
+  LS.set('productos_status', s);
+  toast('✓ Guardado');
+}
+
+function togglePausar(id) {
+  const s = getProdStatus();
+  s[id] = s[id] || {};
+  s[id].pausado = !s[id].pausado;
+  LS.set('productos_status', s);
+  renderProductos();
+  toast(s[id].pausado ? '⏸ Producto pausado' : '▶ Producto activado');
+}
+
+function toggleOcultar(id) {
+  const s = getProdStatus();
+  s[id] = s[id] || {};
+  s[id].oculto = !s[id].oculto;
+  LS.set('productos_status', s);
+  renderProductos();
+  toast(s[id].oculto ? '🙈 Producto oculto en la web' : '👁 Producto visible en la web');
+}
+
+function toggleTodosProductos(activar) {
+  const s = getProdStatus();
+  CATALOGO.forEach(p => { s[p.id] = s[p.id] || {}; s[p.id].pausado = !activar; });
+  LS.set('productos_status', s);
+  renderProductos();
+  toast(activar ? '✅ Todos los productos activados' : '⏸ Todos los productos pausados');
+}
+
+/* ═══════════════════════════════════════════
+   CALENDARIO
+══════════════════════════════════════════════ */
+let calYear, calMonth, calSelected = null;
+
+function initCal() {
+  const now = new Date();
+  calYear  = now.getFullYear();
+  calMonth = now.getMonth();
+}
+
+function renderCalendar() {
+  if (!calYear) initCal();
+  const bloqueadas  = getFechasBloq();
+  const turnosBloq  = getTurnosBloq();
+  const reservas    = getReservas();
+  const now = new Date(); now.setHours(0,0,0,0);
+  const today = dateStr(now);
+
+  const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('calTitle').textContent = monthNames[calMonth] + ' ' + calYear;
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const startOffset = firstDay === 0 ? 6 : firstDay - 1;
+
+  const dayNames = ['Lu','Ma','Mi','Ju','Vi','Sa','Do'];
+  let html = dayNames.map(d => `<div class="cal-day-name">${d}</div>`).join('');
+
+  for (let i=0; i<startOffset; i++) html += `<div class="cal-day empty"></div>`;
+
+  for (let d=1; d<=daysInMonth; d++) {
+    const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isPast    = ds < today;
+    const isToday   = ds === today;
+    const isBloq    = bloqueadas.includes(ds);
+    const hasReserva = reservas.some(r => r.fecha === ds && r.estado !== 'cancelada');
+    const isSel        = ds === calSelected;
+    const hasTurnoBloq = !isBloq && (turnosBloq[ds]||[]).length > 0;
+    let cls = 'cal-day';
+    if (isPast)         cls += ' pasado';
+    if (isToday)        cls += ' today';
+    if (isBloq)         cls += ' bloqueado';
+    if (hasReserva)     cls += ' con-reserva';
+    if (hasTurnoBloq)   cls += ' parcial';
+    if (isSel)          cls += ' selected';
+    html += `<div class="${cls}" data-date="${ds}">${d}</div>`;
+  }
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = html;
+  grid.querySelectorAll('.cal-day:not(.empty):not(.pasado)').forEach(el => {
+    el.addEventListener('click', () => selectCalDay(el.dataset.date));
+  });
+
+  document.getElementById('calPrev').onclick = () => {
+    calMonth--; if (calMonth<0) { calMonth=11; calYear--; }
+    renderCalendar();
+  };
+  document.getElementById('calNext').onclick = () => {
+    calMonth++; if (calMonth>11) { calMonth=0; calYear++; }
+    renderCalendar();
+  };
+}
+
+function selectCalDay(ds) {
+  calSelected = ds;
+  const bloqueadas  = getFechasBloq();
+  const turnosBloq  = getTurnosBloq();
+  const reservas    = getReservas();
+  const isBloqDia   = bloqueadas.includes(ds);
+  const dayReservas = reservas.filter(r => r.fecha === ds && r.estado !== 'cancelada');
+  const tBloq       = turnosBloq[ds] || [];
+
+  let html = `<div class="cal-info-box" style="animation:fadeIn 0.2s var(--ease)">
+    <div class="cal-selected-date">${formatDateLong(ds)}</div>`;
+
+  /* Reservas del día */
+  if (dayReservas.length) {
+    html += `<div style="margin-bottom:14px">
+      <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:8px">Reservas</div>`;
+    dayReservas.forEach(r => {
+      const ti = TURNOS.find(t=>t.id===r.turno);
+      html += `<div style="padding:9px 13px;background:rgba(94,184,245,0.08);border:1px solid rgba(94,184,245,0.2);border-radius:10px;margin-bottom:6px;font-size:0.83rem;display:flex;gap:8px;align-items:center">
+        <span>${ti?.emoji||'📅'}</span>
+        <div>
+          <strong>${r.nombre}</strong> · ${r.producto}
+          <div style="font-size:0.72rem;color:var(--text3)">${ti?.label||r.turno} · ${ti?.horas||''}</div>
+        </div>
+        <span class="r-estado ${r.estado}" style="margin-left:auto">${r.estado}</span>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  /* Bloqueo de día completo */
+  if (isBloqDia) {
+    html += `<div style="padding:10px 14px;background:rgba(232,97,78,0.09);border:1px solid rgba(232,97,78,0.28);border-radius:10px;margin-bottom:12px;font-size:0.84rem;color:var(--coral)">
+      🚫 Día bloqueado completo</div>
+      <div class="cal-actions" style="margin-bottom:14px">
+        <button class="cal-btn primary" onclick="desbloquearFecha('${ds}')">✅ Quitar bloqueo de día</button>
+      </div>`;
+  } else {
+    /* Turnos */
+    html += `<div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:10px">Bloqueo por turno</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">`;
+    TURNOS.forEach(t => {
+      const isTBloq = tBloq.includes(t.id);
+      const hasRes  = dayReservas.some(r=>r.turno===t.id);
+      const disabl  = hasRes ? 'opacity:0.5;cursor:not-allowed' : '';
+      const bg      = isTBloq ? 'rgba(232,97,78,0.12)' : 'rgba(94,184,245,0.07)';
+      const bc      = isTBloq ? 'rgba(232,97,78,0.35)' : 'rgba(94,184,245,0.2)';
+      const lbl     = isTBloq ? '🔴 Bloqueado' : (hasRes ? '📋 Reservado' : '🟢 Libre');
+      html += `<div style="background:${bg};border:1px solid ${bc};border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;${disabl}"
+        onclick="${!hasRes ? `toggleTurnoBloqueo('${ds}','${t.id}')` : ''}">
+        <div style="font-size:1.3rem">${t.emoji}</div>
+        <div style="font-size:0.8rem;font-weight:700;color:var(--text);margin:3px 0">${t.label}</div>
+        <div style="font-size:0.62rem;color:var(--text3);margin-bottom:5px">${t.horas}</div>
+        <div style="font-size:0.62rem;font-weight:700">${lbl}</div>
+      </div>`;
+    });
+    html += `</div>`;
+    /* Bloquear día completo */
+    html += `<div class="cal-actions">
+        <button class="cal-btn danger" onclick="bloquearFecha('${ds}')">🚫 Bloquear día completo</button>
+      </div>`;
+  }
+
+  html += `</div>`;
+  document.getElementById('calInfoBox').innerHTML = html;
+  renderCalendar();
+}
+
+function toggleTurnoBloqueo(ds, turnoId) {
+  const tb = getTurnosBloq();
+  tb[ds] = tb[ds] || [];
+  const idx = tb[ds].indexOf(turnoId);
+  if (idx >= 0) { tb[ds].splice(idx, 1); if (!tb[ds].length) delete tb[ds]; toast('✅ Turno desbloqueado'); }
+  else          { tb[ds].push(turnoId); toast('🚫 Turno bloqueado'); }
+  LS.set('turnos_bloqueados', tb);
+  selectCalDay(ds);
+  renderDashboard();
+}
+
+function bloquearFecha(ds) {
+  const f = getFechasBloq();
+  if (!f.includes(ds)) { f.push(ds); LS.set('fechas_bloqueadas', f); }
+  calSelected = null;
+  document.getElementById('calInfoBox').innerHTML = '';
+  renderCalendar();
+  renderDashboard();
+  toast('🚫 Fecha bloqueada: ' + formatDate(ds));
+}
+
+function desbloquearFecha(ds) {
+  const f = getFechasBloq().filter(d => d !== ds);
+  LS.set('fechas_bloqueadas', f);
+  calSelected = null;
+  document.getElementById('calInfoBox').innerHTML = '';
+  renderCalendar();
+  renderDashboard();
+  toast('✅ Bloqueo eliminado: ' + formatDate(ds));
+}
+
+/* ═══════════════════════════════════════════
+   RESERVAS
+══════════════════════════════════════════════ */
+let rfiltroActual = 'todas';
+
+function renderReservas() {
+  const busq = (document.getElementById('reservasBusq')?.value||'').toLowerCase();
+  let rv = getReservas();
+
+  if (rfiltroActual !== 'todas') rv = rv.filter(r => r.estado === rfiltroActual);
+  if (busq) rv = rv.filter(r =>
+    r.nombre.toLowerCase().includes(busq) ||
+    r.producto.toLowerCase().includes(busq) ||
+    r.fecha.includes(busq)
+  );
+
+  rv = rv.sort((a,b) => b.fecha.localeCompare(a.fecha));
+
+  const list = document.getElementById('reservasList');
+  if (!rv.length) {
+    list.innerHTML = '<p class="empty-state">Sin reservas para mostrar</p>';
+    return;
+  }
+
+  list.innerHTML = rv.map(r => `
+    <div class="reserva-item" data-id="${r.id}">
+      <div class="reserva-fecha-col">
+        <div class="reserva-fecha-day">${r.fecha.split('-')[2]}</div>
+        <div class="reserva-fecha-month">${monthName(r.fecha.split('-')[1])}</div>
+      </div>
+      <div class="reserva-info">
+        <div class="reserva-nombre">${r.nombre}</div>
+        <div class="reserva-detail">${r.producto}${r.telefono?' · '+r.telefono:''}</div>
+        <span class="r-estado ${r.estado}">${r.estado}</span>
+        ${r.notas ? `<div style="font-size:0.74rem;color:var(--text3);margin-top:3px">${r.notas}</div>` : ''}
+      </div>
+      <div class="reserva-actions">
+        ${r.telefono ? `<button class="r-btn" title="WhatsApp" onclick="window.open('https://wa.me/${r.telefono.replace(/\D/g,'')}','_blank')">💬</button>` : ''}
+        ${r.estado==='pendiente' ? `<button class="r-btn confirm" title="Confirmar" onclick="cambiarEstadoReserva('${r.id}','confirmada')">✓</button>` : ''}
+        ${r.estado!=='cancelada' ? `<button class="r-btn danger" title="Cancelar" onclick="cambiarEstadoReserva('${r.id}','cancelada')">✕</button>` : ''}
+        <button class="r-btn danger" title="Borrar" onclick="borrarReserva('${r.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+document.getElementById('reservasBusq')?.addEventListener('input', renderReservas);
+
+document.querySelectorAll('.rfiltro').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.rfiltro').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  rfiltroActual = b.dataset.rf;
+  renderReservas();
+}));
+
+function openNuevaReserva() {
+  const sel = document.getElementById('rProducto');
+  const status = getProdStatus();
+  sel.innerHTML = CATALOGO.map(p => {
+    const pr = status[p.id]?.precio || '$35.000';
+    return `<option value="${p.nombre}">${p.nombre}${p.dims?' ('+p.dims+')':''} — ${pr}</option>`;
+  }).join('');
+  ['rFecha','rNombre','rApellido','rTelefono','rBarrio','rDireccion','rReferencia','rNotas'].forEach(id=>{
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('rPrecio').value  = '$35.000';
+  document.getElementById('rTurno').value  = 'manana';
+  document.getElementById('rEstado').value = 'pendiente';
+  document.getElementById('modalReserva').style.display = 'flex';
+}
+
+/* ── Clientes ─────────────────────────── */
+function renderClientes() {
+  const busq = (document.getElementById('clientesBusq')?.value||'').toLowerCase();
+  const rv   = getReservas();
+  const map  = {};
+  rv.forEach(r => {
+    const key = (r.telefono||r.celular||r.nombre||'').replace(/\s/g,'');
+    if (!key) return;
+    if (!map[key]) map[key] = { nombre:r.nombre, telefono:r.telefono||r.celular||'', reservas:[] };
+    map[key].reservas.push(r);
+  });
+  let clientes = Object.values(map);
+  if (busq) clientes = clientes.filter(c =>
+    c.nombre.toLowerCase().includes(busq) || c.telefono.includes(busq)
+  );
+  clientes.sort((a,b) => a.nombre.localeCompare(b.nombre));
+
+  const el = document.getElementById('clientesList');
+  if (!clientes.length) { el.innerHTML = '<p class="empty-state">Sin clientes registrados</p>'; return; }
+
+  el.innerHTML = clientes.map(c => {
+    const total  = c.reservas.length;
+    const ultima = c.reservas.sort((a,b)=>b.fecha.localeCompare(a.fecha))[0];
+    return `<div class="reserva-item" style="grid-template-columns:auto 1fr auto;margin-bottom:10px">
+      <div class="reserva-fecha-col">
+        <div class="author-avatar" style="width:42px;height:42px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;color:#fff;flex-shrink:0">
+          ${c.nombre.split(' ').map(x=>x[0]||'').slice(0,2).join('').toUpperCase()}
+        </div>
+      </div>
+      <div class="reserva-info">
+        <div class="reserva-nombre">${c.nombre}</div>
+        <div class="reserva-detail">${c.telefono||'Sin teléfono'} · ${total} reserva${total!==1?'s':''}</div>
+        <div style="font-size:0.72rem;color:var(--text3)">Última: ${ultima?.producto||''} — ${formatDate(ultima?.fecha||'')}</div>
+      </div>
+      <div class="reserva-actions">
+        ${c.telefono ? `<button class="r-btn confirm" title="WhatsApp" onclick="window.open('https://wa.me/${c.telefono.replace(/\D/g,'')}','_blank')">💬</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+document.getElementById('clientesBusq')?.addEventListener('input', renderClientes);
+
+function guardarReserva() {
+  const nombre   = document.getElementById('rNombre').value.trim();
+  const apellido = document.getElementById('rApellido').value.trim();
+  const fecha    = document.getElementById('rFecha').value;
+  const producto = document.getElementById('rProducto').value;
+  if (!nombre || !fecha || !producto) { toast('⚠ Completá nombre, fecha y producto'); return; }
+
+  const rv = getReservas();
+  rv.push({
+    id:         Date.now().toString(36),
+    nombre:     nombre + (apellido ? ' ' + apellido : ''),
+    apellido,
+    telefono:   document.getElementById('rTelefono').value.trim(),
+    barrio:     document.getElementById('rBarrio').value.trim(),
+    direccion:  document.getElementById('rDireccion').value.trim(),
+    referencia: document.getElementById('rReferencia').value.trim(),
+    fecha,
+    turno:      document.getElementById('rTurno').value,
+    producto,
+    precio:     document.getElementById('rPrecio').value.trim() || '$35.000',
+    notas:      document.getElementById('rNotas').value.trim(),
+    estado:     document.getElementById('rEstado').value,
+    creada:     new Date().toISOString(),
+  });
+  LS.set('reservas', rv);
+  closeModal('modalReserva');
+  renderReservas();
+  renderDashboard();
+  renderCalendar();
+  toast('✓ Reserva guardada para ' + nombre);
+}
+
+function cambiarEstadoReserva(id, estado) {
+  const rv = getReservas();
+  const item = rv.find(r => r.id === id);
+  if (item) { item.estado = estado; LS.set('reservas', rv); renderReservas(); renderDashboard(); renderCalendar(); toast('Estado actualizado: ' + estado); }
+}
+
+function borrarReserva(id) {
+  showConfirm('Borrar reserva', '¿Querés eliminar esta reserva permanentemente?', () => {
+    const rv = getReservas().filter(r => r.id !== id);
+    LS.set('reservas', rv);
+    renderReservas(); renderDashboard(); renderCalendar();
+    toast('🗑 Reserva eliminada');
+  });
+}
+
+/* ═══════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════════ */
+function loadConfig() {
+  const c = getConfig();
+  document.getElementById('cfgWhatsapp').value  = c.whatsapp  || '';
+  document.getElementById('cfgInstagram').value = c.instagram || '';
+  document.getElementById('cfgZona').value      = c.zona      || '';
+}
+
+function saveConfig() {
+  const c = getConfig();
+  c.whatsapp  = document.getElementById('cfgWhatsapp').value.trim();
+  c.instagram = document.getElementById('cfgInstagram').value.trim();
+  c.zona      = document.getElementById('cfgZona').value.trim();
+  LS.set('config', c);
+  toast('✓ Configuración guardada');
+}
+
+function changePassword() {
+  const p1 = document.getElementById('cfgPassNueva').value;
+  const p2 = document.getElementById('cfgPassConfirm').value;
+  if (!p1) { toast('⚠ Ingresá una nueva contraseña'); return; }
+  if (p1 !== p2) { toast('⚠ Las contraseñas no coinciden'); return; }
+  const c = getCredentials();
+  c.pass = p1;
+  LS.set('credentials', c);
+  document.getElementById('cfgPassNueva').value = '';
+  document.getElementById('cfgPassConfirm').value = '';
+  toast('✓ Contraseña actualizada');
+}
+
+/* ═══════════════════════════════════════════
+   ZONA DE PELIGRO
+══════════════════════════════════════════════ */
+function borrarTodasReservas() {
+  showConfirm('Borrar TODAS las reservas', 'Esta acción no se puede deshacer. ¿Continuar?', () => {
+    LS.set('reservas', []);
+    renderAll(); toast('🗑 Todas las reservas eliminadas');
+  });
+}
+function borrarFechasBloqueadas() {
+  showConfirm('Quitar todos los bloqueos', '¿Desbloqueás todas las fechas?', () => {
+    LS.set('fechas_bloqueadas', []);
+    renderAll(); toast('✅ Todos los bloqueos eliminados');
+  });
+}
+function resetearProductos() {
+  showConfirm('Resetear productos', 'Se perderán precios, notas y estados configurados. ¿Continuar?', () => {
+    LS.set('productos_status', {});
+    renderAll(); toast('🔄 Productos reseteados al estado original');
+  });
+}
+
+/* ═══════════════════════════════════════════
+   MODAL / TOAST / UTILS
+══════════════════════════════════════════════ */
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+function showConfirm(title, text, callback) {
+  document.getElementById('modalConfirmTitle').textContent = title;
+  document.getElementById('modalConfirmText').textContent  = text;
+  const btn = document.getElementById('modalConfirmBtn');
+  const newBtn = btn.cloneNode(true);
+  btn.parentNode.replaceChild(newBtn, btn);
+  newBtn.addEventListener('click', () => { closeModal('modalConfirm'); callback(); });
+  document.getElementById('modalConfirm').style.display = 'flex';
+}
+
+document.querySelectorAll('.modal-overlay').forEach(m =>
+  m.addEventListener('click', e => { if (e.target === m) m.style.display = 'none'; })
+);
+
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function dateStr(d) {
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function formatDate(ds) {
+  const [y,m,d] = ds.split('-');
+  const mn = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return `${d} ${mn[parseInt(m)-1]} ${y}`;
+}
+function formatDateLong(ds) {
+  const [y,m,d] = ds.split('-');
+  const mn = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const dn = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const date = new Date(parseInt(y), parseInt(m)-1, parseInt(d));
+  return `${dn[date.getDay()]} ${d} de ${mn[parseInt(m)-1]} de ${y}`;
+}
+function monthName(m) {
+  return ['','ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][parseInt(m)];
+}
+
+/* ── Init ─── */
+checkLogin();
+</script>
+</body>
+</html>
