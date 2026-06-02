@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -7,7 +7,7 @@
   <title>Dridanna — Panel Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ── Tokens ──────────────────────────────── */
 :root {
@@ -18,7 +18,7 @@
   --gborder: rgba(255,255,255,0.09); --gborder2: rgba(255,255,255,0.15);
   --grad:    linear-gradient(135deg,#dda0b8 0%,#a87cba 48%,#5eb8f5 100%);
   --ease:    cubic-bezier(0.25,0.8,0.25,1);
-  --font:    'Outfit',system-ui,sans-serif;
+  --font:    'Inter',system-ui,sans-serif;
   --serif:   'Cormorant Garamond',serif;
 }
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
@@ -289,8 +289,10 @@ input,select,textarea { font-family:inherit; }
 .dot-libre    { background:var(--glass); border:1px solid var(--gborder); }
 .dot-bloq     { background:rgba(232,97,78,0.3); }
 .dot-reserva  { background:rgba(94,184,245,0.3); }
-.dot-parcial  { background:rgba(245,200,66,0.4); }
-.day.parcial  { background:rgba(245,200,66,0.10); border-color:rgba(245,200,66,0.35); color:var(--gold); }
+.dot-parcial  { background:rgba(245,150,50,0.5); }
+.dot-full     { background:rgba(232,97,78,0.6); }
+.day.parcial  { background:rgba(245,150,50,0.13); border-color:rgba(245,150,50,0.50); color:rgb(245,170,80); font-weight:600; }
+.day.full     { background:rgba(232,97,78,0.18); border-color:rgba(232,97,78,0.55); color:var(--coral); font-weight:700; }
 .cal-info-box {
   margin-top:16px; padding:16px; border-radius:14px;
   background:var(--glass); border:1px solid var(--gborder);
@@ -513,12 +515,12 @@ input,select,textarea { font-family:inherit; }
   <!-- Tabs -->
   <nav class="a-tabs" aria-label="Secciones del panel">
     <div class="a-tabs-inner">
-      <button class="tab-btn active" data-tab="dashboard">📊 Dashboard</button>
-      <button class="tab-btn" data-tab="productos">🎪 Productos</button>
-      <button class="tab-btn" data-tab="calendario">📅 Calendario</button>
-      <button class="tab-btn" data-tab="reservas">📋 Reservas</button>
-      <button class="tab-btn" data-tab="clientes">👥 Clientes</button>
-      <button class="tab-btn" data-tab="config">⚙️ Config</button>
+      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+      <button class="tab-btn" data-tab="productos">Productos</button>
+      <button class="tab-btn" data-tab="calendario">Calendario</button>
+      <button class="tab-btn" data-tab="reservas">Reservas</button>
+      <button class="tab-btn" data-tab="clientes">Clientes</button>
+      <button class="tab-btn" data-tab="config">Config</button>
     </div>
   </nav>
 
@@ -528,10 +530,10 @@ input,select,textarea { font-family:inherit; }
     <section class="a-section active" id="tab-dashboard">
       <div class="kpi-grid" id="kpiGrid"></div>
       <div class="quick-actions">
-        <button class="qa-btn" onclick="switchTab('productos')">🎪 Gestionar productos</button>
-        <button class="qa-btn" onclick="switchTab('calendario')">📅 Bloquear fecha</button>
-        <button class="qa-btn" onclick="openNuevaReserva()">➕ Nueva reserva</button>
-        <button class="qa-btn" onclick="switchTab('reservas')">📋 Ver reservas</button>
+        <button class="qa-btn" onclick="switchTab('productos')">Gestionar productos</button>
+        <button class="qa-btn" onclick="switchTab('calendario')">Bloquear fecha</button>
+        <button class="qa-btn" onclick="openNuevaReserva()">Nueva reserva</button>
+        <button class="qa-btn" onclick="switchTab('reservas')">Ver reservas</button>
       </div>
       <div class="a-card">
         <p class="a-card-title">Próximas reservas</p>
@@ -548,8 +550,8 @@ input,select,textarea { font-family:inherit; }
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px;flex-wrap:wrap">
         <h2 style="font-family:var(--serif);font-size:1.5rem;color:var(--text)">Gestión de Productos</h2>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="qa-btn" onclick="toggleTodosProductos(true)">✅ Activar todos</button>
-          <button class="qa-btn" onclick="toggleTodosProductos(false)">⏸ Pausar todos</button>
+          <button class="qa-btn" onclick="toggleTodosProductos(true)">Activar todos</button>
+          <button class="qa-btn" onclick="toggleTodosProductos(false)">Pausar todos</button>
         </div>
       </div>
       <div class="prod-admin-grid" id="prodAdminGrid"></div>
@@ -567,9 +569,9 @@ input,select,textarea { font-family:inherit; }
           <div class="cal-grid" id="calGrid"></div>
           <div class="cal-legend">
             <div class="cal-legend-item"><div class="cal-legend-dot dot-libre"></div> Libre</div>
-            <div class="cal-legend-item"><div class="cal-legend-dot dot-bloq"></div> Bloqueado</div>
-            <div class="cal-legend-item"><div class="cal-legend-dot dot-reserva"></div> Con reserva</div>
-            <div class="cal-legend-item"><div class="cal-legend-dot dot-parcial"></div> Parcialmente bloqueado</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot dot-parcial"></div> Parcialmente ocupado</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot dot-full"></div> Sin disponibilidad</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot dot-bloq"></div> Bloqueado (admin)</div>
           </div>
         </div>
         <div id="calInfoBox"></div>
@@ -580,7 +582,7 @@ input,select,textarea { font-family:inherit; }
     <section class="a-section" id="tab-reservas">
       <div class="reservas-header">
         <h2 class="reservas-title">Reservas</h2>
-        <button class="btn-nueva-reserva" onclick="openNuevaReserva()">+ Nueva reserva</button>
+        <button class="btn-nueva-reserva" onclick="openNuevaReserva()">Nueva reserva</button>
       </div>
       <input type="search" class="reservas-busqueda" id="reservasBusq" placeholder="Buscar por nombre, producto o fecha...">
       <div class="reservas-filtros">
@@ -639,9 +641,9 @@ input,select,textarea { font-family:inherit; }
       <div class="config-danger-zone a-card" style="margin-top:16px">
         <p class="config-danger-title">Zona de peligro</p>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="qa-btn danger" onclick="borrarTodasReservas()">🗑 Borrar todas las reservas</button>
-          <button class="qa-btn danger" onclick="borrarFechasBloqueadas()">🗑 Quitar todos los bloqueos</button>
-          <button class="qa-btn danger" onclick="resetearProductos()">🔄 Resetear productos al estado original</button>
+          <button class="qa-btn danger" onclick="borrarTodasReservas()">Borrar todas las reservas</button>
+          <button class="qa-btn danger" onclick="borrarFechasBloqueadas()">Quitar todos los bloqueos</button>
+          <button class="qa-btn danger" onclick="resetearProductos()">Resetear productos al estado original</button>
         </div>
       </div>
     </section>
@@ -930,9 +932,9 @@ function renderProductos() {
             <input type="text" class="prod-input" id="nota_${p.id}" value="${s.nota||''}" placeholder="Info adicional...">
           </div>
           <div class="prod-btn-row">
-            <button class="prod-btn btn-save-prod" onclick="saveProducto('${p.id}')">💾 Guardar</button>
-            <button class="prod-btn btn-toggle-pausar" onclick="togglePausar('${p.id}')">${pausado?'▶ Activar':'⏸ Pausar'}</button>
-            <button class="prod-btn btn-toggle-ocultar" onclick="toggleOcultar('${p.id}')">${oculto?'👁 Mostrar':'🙈 Ocultar'}</button>
+            <button class="prod-btn btn-save-prod" onclick="saveProducto('${p.id}')">Guardar</button>
+            <button class="prod-btn btn-toggle-pausar" onclick="togglePausar('${p.id}')">${pausado?'Activar':'Pausar'}</button>
+            <button class="prod-btn btn-toggle-ocultar" onclick="toggleOcultar('${p.id}')">${oculto?'Mostrar':'Ocultar'}</button>
           </div>
         </div>
       </div>
@@ -946,7 +948,7 @@ function saveProducto(id) {
   s[id].precio = document.getElementById('precio_'+id)?.value.trim() || '';
   s[id].nota   = document.getElementById('nota_'+id)?.value.trim()   || '';
   LS.set('productos_status', s);
-  toast('✓ Guardado');
+  toast('Guardado');
 }
 
 function togglePausar(id) {
@@ -1012,15 +1014,19 @@ function renderCalendar() {
     const isToday   = ds === today;
     const isBloq    = bloqueadas.includes(ds);
     const hasReserva = reservas.some(r => r.fecha === ds && r.estado !== 'cancelada');
-    const isSel        = ds === calSelected;
-    const hasTurnoBloq = !isBloq && (turnosBloq[ds]||[]).length > 0;
+    const isSel   = ds === calSelected;
+    const tBloqDs = turnosBloq[ds] || [];
+    const tResDs  = reservas.filter(r => r.fecha===ds && r.estado!=='cancelada').map(r=>r.turno);
+    const takenDs = new Set([...tBloqDs,...tResDs]);
+    const isFull  = !isBloq && takenDs.size >= 3;
+    const isParc  = !isBloq && takenDs.size > 0 && takenDs.size < 3;
     let cls = 'cal-day';
-    if (isPast)         cls += ' pasado';
-    if (isToday)        cls += ' today';
-    if (isBloq)         cls += ' bloqueado';
-    if (hasReserva)     cls += ' con-reserva';
-    if (hasTurnoBloq)   cls += ' parcial';
-    if (isSel)          cls += ' selected';
+    if (isPast)  cls += ' pasado';
+    if (isToday) cls += ' today';
+    if (isBloq)  cls += ' bloqueado';
+    else if (isFull) cls += ' full';
+    else if (isParc) cls += ' parcial';
+    if (isSel)   cls += ' selected';
     html += `<div class="${cls}" data-date="${ds}">${d}</div>`;
   }
 
@@ -1059,7 +1065,7 @@ function selectCalDay(ds) {
     dayReservas.forEach(r => {
       const ti = TURNOS.find(t=>t.id===r.turno);
       html += `<div style="padding:9px 13px;background:rgba(94,184,245,0.08);border:1px solid rgba(94,184,245,0.2);border-radius:10px;margin-bottom:6px;font-size:0.83rem;display:flex;gap:8px;align-items:center">
-        <span>${ti?.emoji||'📅'}</span>
+        <span>${ti?.emoji||''}</span>
         <div>
           <strong>${r.nombre}</strong> · ${r.producto}
           <div style="font-size:0.72rem;color:var(--text3)">${ti?.label||r.turno} · ${ti?.horas||''}</div>
@@ -1073,9 +1079,9 @@ function selectCalDay(ds) {
   /* Bloqueo de día completo */
   if (isBloqDia) {
     html += `<div style="padding:10px 14px;background:rgba(232,97,78,0.09);border:1px solid rgba(232,97,78,0.28);border-radius:10px;margin-bottom:12px;font-size:0.84rem;color:var(--coral)">
-      🚫 Día bloqueado completo</div>
+      Día bloqueado por el administrador</div>
       <div class="cal-actions" style="margin-bottom:14px">
-        <button class="cal-btn primary" onclick="desbloquearFecha('${ds}')">✅ Quitar bloqueo de día</button>
+        <button class="cal-btn primary" onclick="desbloquearFecha('${ds}')">Quitar bloqueo de día</button>
       </div>`;
   } else {
     /* Turnos */
@@ -1087,19 +1093,19 @@ function selectCalDay(ds) {
       const disabl  = hasRes ? 'opacity:0.5;cursor:not-allowed' : '';
       const bg      = isTBloq ? 'rgba(232,97,78,0.12)' : 'rgba(94,184,245,0.07)';
       const bc      = isTBloq ? 'rgba(232,97,78,0.35)' : 'rgba(94,184,245,0.2)';
-      const lbl     = isTBloq ? '🔴 Bloqueado' : (hasRes ? '📋 Reservado' : '🟢 Libre');
+      const lbl     = isTBloq ? 'Bloqueado' : (hasRes ? 'Reservado' : 'Disponible');
       html += `<div style="background:${bg};border:1px solid ${bc};border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;${disabl}"
-        onclick="${!hasRes ? `toggleTurnoBloqueo('${ds}','${t.id}')` : ''}">
-        <div style="font-size:1.3rem">${t.emoji}</div>
-        <div style="font-size:0.8rem;font-weight:700;color:var(--text);margin:3px 0">${t.label}</div>
-        <div style="font-size:0.62rem;color:var(--text3);margin-bottom:5px">${t.horas}</div>
+
+        <div style="font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:3px">${t.label}</div>
+        <div style="font-size:0.62rem;color:var(--text3);margin-bottom:6px">${t.horas}</div>
+        <div style="font-size:0.65rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase">${lbl}</div>
         <div style="font-size:0.62rem;font-weight:700">${lbl}</div>
       </div>`;
     });
     html += `</div>`;
     /* Bloquear día completo */
     html += `<div class="cal-actions">
-        <button class="cal-btn danger" onclick="bloquearFecha('${ds}')">🚫 Bloquear día completo</button>
+        <button class="cal-btn danger" onclick="bloquearFecha('${ds}')">Bloquear día completo</button>
       </div>`;
   }
 
@@ -1112,8 +1118,8 @@ function toggleTurnoBloqueo(ds, turnoId) {
   const tb = getTurnosBloq();
   tb[ds] = tb[ds] || [];
   const idx = tb[ds].indexOf(turnoId);
-  if (idx >= 0) { tb[ds].splice(idx, 1); if (!tb[ds].length) delete tb[ds]; toast('✅ Turno desbloqueado'); }
-  else          { tb[ds].push(turnoId); toast('🚫 Turno bloqueado'); }
+  if (idx >= 0) { tb[ds].splice(idx, 1); if (!tb[ds].length) delete tb[ds]; toast('Turno desbloqueado'); }
+  else          { tb[ds].push(turnoId); toast('Turno bloqueado'); }
   LS.set('turnos_bloqueados', tb);
   selectCalDay(ds);
   renderDashboard();
@@ -1126,7 +1132,7 @@ function bloquearFecha(ds) {
   document.getElementById('calInfoBox').innerHTML = '';
   renderCalendar();
   renderDashboard();
-  toast('🚫 Fecha bloqueada: ' + formatDate(ds));
+  toast('Fecha bloqueada: ' + formatDate(ds));
 }
 
 function desbloquearFecha(ds) {
@@ -1136,7 +1142,7 @@ function desbloquearFecha(ds) {
   document.getElementById('calInfoBox').innerHTML = '';
   renderCalendar();
   renderDashboard();
-  toast('✅ Bloqueo eliminado: ' + formatDate(ds));
+  toast('Bloqueo eliminado: ' + formatDate(ds));
 }
 
 /* ═══════════════════════════════════════════
@@ -1176,10 +1182,10 @@ function renderReservas() {
         ${r.notas ? `<div style="font-size:0.74rem;color:var(--text3);margin-top:3px">${r.notas}</div>` : ''}
       </div>
       <div class="reserva-actions">
-        ${r.telefono ? `<button class="r-btn" title="WhatsApp" onclick="window.open('https://wa.me/${r.telefono.replace(/\D/g,'')}','_blank')">💬</button>` : ''}
-        ${r.estado==='pendiente' ? `<button class="r-btn confirm" title="Confirmar" onclick="cambiarEstadoReserva('${r.id}','confirmada')">✓</button>` : ''}
-        ${r.estado!=='cancelada' ? `<button class="r-btn danger" title="Cancelar" onclick="cambiarEstadoReserva('${r.id}','cancelada')">✕</button>` : ''}
-        <button class="r-btn danger" title="Borrar" onclick="borrarReserva('${r.id}')">🗑</button>
+        ${r.telefono ? `<button class="r-btn" title="WhatsApp" onclick="window.open('https://wa.me/${r.telefono.replace(/\D/g,'')}','_blank')">WA</button>` : ''}
+        ${r.estado==='pendiente' ? `<button class="r-btn confirm" title="Confirmar" onclick="cambiarEstadoReserva('${r.id}','confirmada')">Confirmar</button>` : ''}
+        ${r.estado!=='cancelada' ? `<button class="r-btn danger" title="Cancelar" onclick="cambiarEstadoReserva('${r.id}','cancelada')">Cancelar</button>` : ''}
+        <button class="r-btn danger" title="Borrar" onclick="borrarReserva('${r.id}')">Borrar</button>
       </div>
     </div>`).join('');
 }
@@ -1244,7 +1250,7 @@ function renderClientes() {
         <div style="font-size:0.72rem;color:var(--text3)">Última: ${ultima?.producto||''} — ${formatDate(ultima?.fecha||'')}</div>
       </div>
       <div class="reserva-actions">
-        ${c.telefono ? `<button class="r-btn confirm" title="WhatsApp" onclick="window.open('https://wa.me/${c.telefono.replace(/\D/g,'')}','_blank')">💬</button>` : ''}
+        ${c.telefono ? `<button class="r-btn confirm" title="WhatsApp" onclick="window.open('https://wa.me/${c.telefono.replace(/\D/g,'')}','_blank')">WA</button>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -1256,7 +1262,7 @@ function guardarReserva() {
   const apellido = document.getElementById('rApellido').value.trim();
   const fecha    = document.getElementById('rFecha').value;
   const producto = document.getElementById('rProducto').value;
-  if (!nombre || !fecha || !producto) { toast('⚠ Completá nombre, fecha y producto'); return; }
+  if (!nombre || !fecha || !producto) { toast('Completá nombre, fecha y producto'); return; }
 
   const rv = getReservas();
   rv.push({
@@ -1280,7 +1286,7 @@ function guardarReserva() {
   renderReservas();
   renderDashboard();
   renderCalendar();
-  toast('✓ Reserva guardada para ' + nombre);
+  toast('Reserva guardada: ' + nombre);
 }
 
 function cambiarEstadoReserva(id, estado) {
@@ -1294,7 +1300,7 @@ function borrarReserva(id) {
     const rv = getReservas().filter(r => r.id !== id);
     LS.set('reservas', rv);
     renderReservas(); renderDashboard(); renderCalendar();
-    toast('🗑 Reserva eliminada');
+    toast('Reserva eliminada');
   });
 }
 
@@ -1314,20 +1320,20 @@ function saveConfig() {
   c.instagram = document.getElementById('cfgInstagram').value.trim();
   c.zona      = document.getElementById('cfgZona').value.trim();
   LS.set('config', c);
-  toast('✓ Configuración guardada');
+  toast('Configuración guardada');
 }
 
 function changePassword() {
   const p1 = document.getElementById('cfgPassNueva').value;
   const p2 = document.getElementById('cfgPassConfirm').value;
-  if (!p1) { toast('⚠ Ingresá una nueva contraseña'); return; }
-  if (p1 !== p2) { toast('⚠ Las contraseñas no coinciden'); return; }
+  if (!p1) { toast('Ingresá una nueva contraseña'); return; }
+  if (p1 !== p2) { toast('Las contraseñas no coinciden'); return; }
   const c = getCredentials();
   c.pass = p1;
   LS.set('credentials', c);
   document.getElementById('cfgPassNueva').value = '';
   document.getElementById('cfgPassConfirm').value = '';
-  toast('✓ Contraseña actualizada');
+  toast('Contraseña actualizada');
 }
 
 /* ═══════════════════════════════════════════
@@ -1336,19 +1342,19 @@ function changePassword() {
 function borrarTodasReservas() {
   showConfirm('Borrar TODAS las reservas', 'Esta acción no se puede deshacer. ¿Continuar?', () => {
     LS.set('reservas', []);
-    renderAll(); toast('🗑 Todas las reservas eliminadas');
+    renderAll(); toast('Todas las reservas eliminadas');
   });
 }
 function borrarFechasBloqueadas() {
   showConfirm('Quitar todos los bloqueos', '¿Desbloqueás todas las fechas?', () => {
     LS.set('fechas_bloqueadas', []);
-    renderAll(); toast('✅ Todos los bloqueos eliminados');
+    renderAll(); toast('Todos los bloqueos eliminados');
   });
 }
 function resetearProductos() {
   showConfirm('Resetear productos', 'Se perderán precios, notas y estados configurados. ¿Continuar?', () => {
     LS.set('productos_status', {});
-    renderAll(); toast('🔄 Productos reseteados al estado original');
+    renderAll(); toast('Productos reseteados');
   });
 }
 

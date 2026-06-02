@@ -2,6 +2,52 @@
    DRIDANNA — Landing Page
    =========================================== */
 
+/* ── Mundial Banner ─────────────────────── */
+.mundial-banner {
+  background:linear-gradient(90deg,#003876 0%,#1a5ca8 30%,#74acdf 50%,#1a5ca8 70%,#003876 100%);
+  padding:7px 0;
+  text-align:center;
+  border-bottom:1px solid rgba(116,172,223,0.25);
+  position:fixed;
+  top:0; left:0; right:0;
+  z-index:1001;
+  overflow:hidden;
+}
+.mundial-banner::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.06) 50%,transparent 100%);
+  animation:mundialSheen 4s ease-in-out infinite;
+}
+@keyframes mundialSheen {
+  0%,100%{transform:translateX(-100%);}
+  50%{transform:translateX(100%);}
+}
+.mundial-inner {
+  display:flex; align-items:center; justify-content:center;
+  gap:16px; position:relative; z-index:1;
+}
+.mundial-text {
+  font-family:var(--font-sans);
+  font-size:0.65rem; font-weight:700; letter-spacing:0.28em;
+  text-transform:uppercase; color:#fff;
+  text-shadow:0 1px 4px rgba(0,0,0,0.3);
+}
+.mundial-stars { display:flex; gap:5px; }
+.mstar {
+  color:#f5c842;
+  font-size:0.9rem;
+  text-shadow:0 0 8px rgba(245,200,66,0.6);
+  animation:starPulse 2s ease-in-out infinite;
+}
+.mstar:nth-child(2){animation-delay:0.3s;}
+.mstar:nth-child(3){animation-delay:0.6s;}
+@keyframes starPulse {
+  0%,100%{opacity:1;text-shadow:0 0 8px rgba(245,200,66,0.5);}
+  50%{opacity:0.75;text-shadow:0 0 14px rgba(245,200,66,0.9);}
+}
+
 /* ── Reset ──────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -137,7 +183,7 @@ em {
 
 /* ── Nav ─────────────────────────────────── */
 .nav-header {
-  position:fixed; inset-block-start:0; inset-inline:0; z-index:1000;
+  position:fixed; inset-block-start:32px; inset-inline:0; z-index:1000;
   padding-block:20px;
   transition:padding var(--dur-mid) var(--ease),
              background var(--dur-mid) var(--ease),
@@ -196,7 +242,7 @@ em {
 .hero {
   position:relative; min-height:100svh;
   display:flex; align-items:center;
-  padding-top:100px; padding-inline:var(--container-px);
+  padding-top:132px; padding-inline:var(--container-px);
   overflow:hidden;
 }
 .hero-bg-orbs {
