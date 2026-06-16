@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: dridanna-api
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: META_TOKEN
+        sync: false
+      - key: META_PHONE_ID
+        sync: false
+      - key: META_WABA_ID
+        sync: false
+      - key: ADMIN_PHONE
+        sync: false
+      - key: ADMIN_NAME
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        value: dridanna-e4ee2
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false
