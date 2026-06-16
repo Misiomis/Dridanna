@@ -290,6 +290,12 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;}
 
 /* ── Render summary ────────────────────────────────── */
 const WA = '5493757671088';
+
+/* URL del servidor backend.
+   - Desarrollo local: 'http://localhost:3000'
+   - Producción: reemplazar con la URL del servidor desplegado
+     (ej: https://dridanna-api.onrender.com) */
+const API_BASE = 'http://localhost:3000';
 const CATALOGO_MAP = {
   'castillo-3x3':     { fotos:['castillo inflable 3 por 3/castillo inflable.jpg'] },
   'princesas-3x3':    { fotos:['Inflable Princesas 3 por 3/Inflable Princesas.jpg'] },
@@ -358,26 +364,46 @@ if(!data){
   document.getElementById('btnWa').href = waUrl;
   document.getElementById('waFloat').href = waUrl;
 
-  /* ── Save to localStorage on WA click ── */
-  document.getElementById('btnWa').addEventListener('click', ()=>{
+  /* ── Confirmar: guarda en localStorage + dispara API ── */
+  document.getElementById('btnWa').addEventListener('click', () => {
+    /* 1. Guarda en localStorage para que el admin lo vea */
     try {
       const rv = JSON.parse(localStorage.getItem('dridanna_reservas')||'[]');
       rv.push({
-        id:       Date.now().toString(36),
-        nombre:   data.nombre + ' ' + data.apellido,
-        celular:  data.celular,
-        barrio:   data.barrio,
-        direccion:data.direccion,
-        referencia:data.referencia,
-        fecha:    data.fecha,
-        turno:    data.turno,
-        producto: data.productoNombre,
-        precio:   data.productoPrecio,
-        estado:   'pendiente',
-        creada:   new Date().toISOString(),
+        id:         Date.now().toString(36),
+        nombre:     data.nombre + ' ' + data.apellido,
+        celular:    data.celular,
+        barrio:     data.barrio,
+        direccion:  data.direccion,
+        referencia: data.referencia,
+        fecha:      data.fecha,
+        turno:      data.turno,
+        producto:   data.productoNombre,
+        precio:     data.productoPrecio,
+        estado:     'pendiente',
+        creada:     new Date().toISOString(),
       });
       localStorage.setItem('dridanna_reservas', JSON.stringify(rv));
     } catch(e){}
+
+    /* 2. Notificación automática vía WhatsApp Business API (no bloquea el flujo)
+          El token de Meta está seguro en el servidor; aquí solo van los datos. */
+    fetch(API_BASE + '/api/notify', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        celular:  data.celular,
+        nombre:   data.nombre,
+        apellido: data.apellido,
+        producto: data.productoNombre,
+        fecha:    data.fechaLabel,
+        turno:    data.turnoLabel,
+        precio:   data.productoPrecio,
+      }),
+    })
+    .then(r => r.json())
+    .then(r => { if (r.ok) console.log('[WA API] Notificación enviada:', r.messageId); })
+    .catch(() => { /* Servidor no disponible: continúa con wa.me */ });
   });
 }
 </script>

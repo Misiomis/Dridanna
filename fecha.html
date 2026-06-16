@@ -359,6 +359,22 @@ input,select,textarea{font-family:inherit;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 .hidden{display:none!important;}
 
+/* ── Aviso de espacio ────────────────────────── */
+.form-notice{
+  grid-column:1/-1;
+  padding:12px 16px;
+  background:rgba(245,200,66,0.07);
+  border:1px solid rgba(245,200,66,0.2);
+  border-radius:10px;
+  margin-bottom:4px;
+}
+.form-notice-title{
+  display:block;
+  font-size:0.68rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.1em;color:var(--gold);margin-bottom:4px;
+}
+.form-notice-text{font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.5;}
+
 /* ── Responsive ──────────────────────────────── */
 @media(max-width:600px){
   .turnos-grid{grid-template-columns:1fr;}
@@ -491,6 +507,10 @@ input,select,textarea{font-family:inherit;}
           <label class="form-label" for="fBarrio">Barrio <span class="req">*</span></label>
           <input type="text" class="form-input" id="fBarrio" placeholder="Ej: Centro, San Martín...">
           <span class="form-hint error-msg" id="errBarrio">Campo obligatorio</span>
+        </div>
+        <div class="form-notice">
+          <span class="form-notice-title">Verificación de espacio</span>
+          <span class="form-notice-text">Para garantizar una experiencia segura, confirmá que el espacio disponible en tu domicilio sea suficiente para el inflable seleccionado. Las dimensiones exactas de cada juego están en su ficha de producto.</span>
         </div>
         <div class="form-field full">
           <label class="form-label" for="fDireccion">Dirección <span class="req">*</span></label>

@@ -511,6 +511,48 @@ em {
   html { scroll-behavior:auto; }
 }
 
+/* ── Próximamente ────────────────────────── */
+.prox-tag { color:var(--gold-tower); }
+.prox-card {
+  padding:clamp(28px,4vw,52px);
+  max-width:900px; margin-inline:auto;
+}
+.prox-header { margin-bottom:24px; }
+.prox-eyebrow {
+  font-size:0.68rem; font-weight:700; letter-spacing:0.24em;
+  text-transform:uppercase; color:var(--gold-tower); margin-bottom:10px;
+}
+.prox-titulo {
+  font-size:clamp(1.1rem,2.5vw,1.6rem);
+  margin-bottom:14px;
+}
+.prox-features {
+  display:grid; gap:14px; margin:24px 0 28px;
+}
+@media(min-width:640px) {
+  .prox-features { grid-template-columns:repeat(3,1fr); }
+}
+.prox-feature {
+  display:flex; gap:12px; align-items:flex-start;
+  background:var(--glass-bg); border:1px solid var(--glass-border);
+  border-radius:14px; padding:16px;
+  transition:border-color var(--dur-mid) var(--ease);
+}
+.prox-feature:hover { border-color:rgba(245,200,66,0.3); }
+.prox-icon {
+  flex-shrink:0; width:38px; height:38px; border-radius:9px;
+  background:rgba(245,200,66,0.1); border:1px solid rgba(245,200,66,0.2);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--gold-tower);
+}
+.prox-feature strong { display:block; margin-bottom:5px; color:var(--text-primary); font-size:0.9rem; }
+.prox-feature p { font-size:0.82rem; line-height:1.6; }
+.prox-cta {
+  text-align:center; border-top:1px solid var(--glass-border);
+  padding-top:24px; display:flex; flex-direction:column; align-items:center; gap:16px;
+}
+.prox-cta > p { font-size:0.9rem; max-width:520px; }
+
 /* ── Páginas legales ─────────────────────── */
 .legal-page { padding:160px 0 var(--section-py); }
 .legal-content {
