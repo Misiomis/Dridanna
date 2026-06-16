@@ -786,6 +786,58 @@ const TURNOS = [
   { id:'noche',  label:'Noche',   horas:'19:00–23:00', emoji:'🌙' },
 ];
 
+/* ── WhatsApp Business API (backend proxy) ── */
+const API_BASE = 'http://localhost:3000'; // Cambiar a URL de producción al desplegar
+
+const _MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+function _fechaLabel(iso) {
+  if (!iso) return '—';
+  const [y,m,d] = iso.split('-');
+  return `${+d} de ${_MESES[+m-1]} de ${y}`;
+}
+
+function _turnoLabel(id) {
+  const t = TURNOS.find(x => x.id === id);
+  return t ? `${t.label} (${t.horas})` : id || '—';
+}
+
+async function notificarRecordatorio(rId) {
+  const r = getReservas().find(x => x.id === rId);
+  if (!r) { toast('Reserva no encontrada'); return; }
+  const [nombre, ...rest] = (r.nombre || '').trim().split(' ');
+  const apellido = rest.join(' ');
+  const celular  = r.celular || r.telefono || '';
+  if (!celular) { toast('Sin número de celular'); return; }
+  try {
+    const res  = await fetch(API_BASE + '/api/notify/recordatorio', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        celular, nombre, apellido,
+        producto:   r.producto   || '—',
+        fechaLabel: r.fechaLabel || _fechaLabel(r.fecha),
+        turnoLabel: r.turnoLabel || _turnoLabel(r.turno),
+      }),
+    });
+    const d = await res.json();
+    toast(d.ok ? 'Recordatorio enviado por WhatsApp' : 'Error: ' + (d.error || ''));
+  } catch { toast('No se pudo conectar con el servidor backend'); }
+}
+
+async function notificarAltaCliente(telefono, nombreCompleto) {
+  if (!telefono) { toast('Sin número de teléfono'); return; }
+  const [nombre, ...rest] = (nombreCompleto || '').trim().split(' ');
+  const apellido = rest.join(' ');
+  try {
+    const res  = await fetch(API_BASE + '/api/notify/alta-cliente', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ celular: telefono, nombre, apellido }),
+    });
+    const d = await res.json();
+    toast(d.ok ? 'Bienvenida enviada por WhatsApp' : 'Error: ' + (d.error || ''));
+  } catch { toast('No se pudo conectar con el servidor backend'); }
+}
+
 /* ═══════════════════════════════════════════
    AUTH
 ══════════════════════════════════════════════ */
@@ -1182,7 +1234,8 @@ function renderReservas() {
         ${r.notas ? `<div style="font-size:0.74rem;color:var(--text3);margin-top:3px">${r.notas}</div>` : ''}
       </div>
       <div class="reserva-actions">
-        ${r.telefono ? `<button class="r-btn" title="WhatsApp" onclick="window.open('https://wa.me/${r.telefono.replace(/\D/g,'')}','_blank')">WA</button>` : ''}
+        ${(r.celular||r.telefono) ? `<button class="r-btn" title="WhatsApp" onclick="window.open('https://wa.me/${(r.celular||r.telefono||'').replace(/\D/g,'')}','_blank')">WA</button>` : ''}
+        <button class="r-btn" title="Enviar recordatorio por WhatsApp" onclick="notificarRecordatorio('${r.id}')">Recordatorio</button>
         ${r.estado==='pendiente' ? `<button class="r-btn confirm" title="Confirmar" onclick="cambiarEstadoReserva('${r.id}','confirmada')">Confirmar</button>` : ''}
         ${r.estado!=='cancelada' ? `<button class="r-btn danger" title="Cancelar" onclick="cambiarEstadoReserva('${r.id}','cancelada')">Cancelar</button>` : ''}
         <button class="r-btn danger" title="Borrar" onclick="borrarReserva('${r.id}')">Borrar</button>
@@ -1251,6 +1304,7 @@ function renderClientes() {
       </div>
       <div class="reserva-actions">
         ${c.telefono ? `<button class="r-btn confirm" title="WhatsApp" onclick="window.open('https://wa.me/${c.telefono.replace(/\D/g,'')}','_blank')">WA</button>` : ''}
+        <button class="r-btn" title="Enviar bienvenida por WhatsApp" onclick="notificarAltaCliente('${(c.telefono||'').replace(/'/g,'')}','${c.nombre.replace(/'/g,'')}')">Alta</button>
       </div>
     </div>`;
   }).join('');

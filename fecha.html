@@ -508,6 +508,10 @@ input,select,textarea{font-family:inherit;}
           <input type="text" class="form-input" id="fBarrio" placeholder="Ej: Centro, San Martín...">
           <span class="form-hint error-msg" id="errBarrio">Campo obligatorio</span>
         </div>
+        <div class="form-field">
+          <label class="form-label" for="fDni">DNI <span style="font-weight:400;font-size:0.75em;color:var(--text3)">(opcional)</span></label>
+          <input type="text" class="form-input" id="fDni" placeholder="Ej: 35.123.456" inputmode="numeric">
+        </div>
         <div class="form-notice">
           <span class="form-notice-title">Verificación de espacio</span>
           <span class="form-notice-text">Para garantizar una experiencia segura, confirmá que el espacio disponible en tu domicilio sea suficiente para el inflable seleccionado. Las dimensiones exactas de cada juego están en su ficha de producto.</span>
@@ -801,6 +805,7 @@ function confirmarReserva(){
     apellido:       document.getElementById('fApellido').value.trim(),
     celular:        document.getElementById('fCelular').value.trim(),
     barrio:         document.getElementById('fBarrio').value.trim(),
+    dni:            document.getElementById('fDni').value.trim(),
     direccion:      document.getElementById('fDireccion').value.trim(),
     referencia:     document.getElementById('fReferencia').value.trim(),
   };

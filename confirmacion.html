@@ -376,8 +376,11 @@ if(!data){
         barrio:     data.barrio,
         direccion:  data.direccion,
         referencia: data.referencia,
+        dni:        data.dni        || '',
         fecha:      data.fecha,
+        fechaLabel: data.fechaLabel || '',
         turno:      data.turno,
+        turnoLabel: data.turnoLabel || '',
         producto:   data.productoNombre,
         precio:     data.productoPrecio,
         estado:     'pendiente',
@@ -392,17 +395,21 @@ if(!data){
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        celular:  data.celular,
-        nombre:   data.nombre,
-        apellido: data.apellido,
-        producto: data.productoNombre,
-        fecha:    data.fechaLabel,
-        turno:    data.turnoLabel,
-        precio:   data.productoPrecio,
+        celular:    data.celular,
+        nombre:     data.nombre,
+        apellido:   data.apellido,
+        producto:   data.productoNombre,
+        fechaLabel: data.fechaLabel,
+        turnoLabel: data.turnoLabel,
+        precio:     data.productoPrecio,
+        direccion:  data.direccion,
+        barrio:     data.barrio,
+        referencia: data.referencia,
+        dni:        data.dni || '',
       }),
     })
     .then(r => r.json())
-    .then(r => { if (r.ok) console.log('[WA API] Notificación enviada:', r.messageId); })
+    .then(r => { if (r.ok) console.log('[WA API] Notificaciones enviadas:', r.results); })
     .catch(() => { /* Servidor no disponible: continúa con wa.me */ });
   });
 }
