@@ -8,7 +8,7 @@
   <title>Dridanna — Inflables &amp; Eventos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
@@ -21,7 +21,12 @@
         <span class="mstar">★</span>
         <span class="mstar">★</span>
       </div>
-      <span class="mundial-text">ARGENTINA — CAMPEONES DEL MUNDO</span>
+      <span class="mball">⚽</span>
+      <div class="mundial-center">
+        <span class="mundial-text">Argentina · Campeones del Mundo</span>
+        <span class="mundial-year">Catar 2022 &nbsp;·&nbsp; 3 Estrellas &nbsp;·&nbsp; Orgullo Argentino</span>
+      </div>
+      <span class="mball">⚽</span>
       <div class="mundial-stars">
         <span class="mstar">★</span>
         <span class="mstar">★</span>
@@ -43,7 +48,7 @@
         <li><a href="#historia">Historia</a></li>
         <li><a href="#productos">Inflables</a></li>
         <li>
-          <a href="https://wa.me/5493757671088" class="nav-cta" target="_blank" rel="noopener noreferrer">
+          <a href="#reservar" class="nav-cta">
             Reservar ahora
           </a>
         </li>
@@ -74,7 +79,7 @@
         </p>
         <div class="hero-actions">
           <a href="#productos" class="btn btn--primary">Ver Inflables</a>
-          <a href="https://wa.me/5493757671088?text=%C2%A1Hola%20Driadanna!%20Quiero%20que%20mi%20pr%C3%B3ximo%20evento%20sea%20especial%20con%20sus%20inflables.%20%C2%BFMe%20podr%C3%ADan%20asesorar%20sobre%20sus%20servicios%20disponibles%20para%20una%20fecha%3F" class="btn btn--ghost" target="_blank" rel="noopener noreferrer">
+          <a href="#reservar" class="btn btn--ghost">
             Reservar ahora
           </a>
         </div>
@@ -202,6 +207,41 @@
               Me interesa esta línea
             </a>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK BOOKING FORM -->
+    <section class="section reservar-section" id="reservar">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-tag">Pre-reserva express</span>
+          <h2 class="section-title">Reservá tu lugar ahora</h2>
+          <p class="section-subtitle">Completá tus datos y te contactamos para confirmar fecha y disponibilidad.</p>
+        </div>
+        <div class="glass-card reservar-card reveal">
+          <div class="reservar-grid">
+            <div class="reservar-field">
+              <label for="rqNombre">Nombre y apellido</label>
+              <input type="text" id="rqNombre" placeholder="Ej: María González" autocomplete="name">
+            </div>
+            <div class="reservar-field">
+              <label for="rqCelular">WhatsApp</label>
+              <input type="tel" id="rqCelular" placeholder="3757 xxxxxx" inputmode="numeric">
+            </div>
+            <div class="reservar-field">
+              <label for="rqProducto">¿Qué inflable te interesa?</label>
+              <input type="text" id="rqProducto" placeholder="Ej: Castillo 3x3, Jirafa..." autocomplete="off">
+            </div>
+            <div class="reservar-field">
+              <label for="rqFecha">Fecha del evento</label>
+              <input type="date" id="rqFecha">
+            </div>
+          </div>
+          <button class="btn btn--primary btn-reservar-quick" onclick="enviarPreReserva()">
+            Enviar consulta por WhatsApp →
+          </button>
+          <p class="reservar-note">Sin compromiso. Te respondemos a la brevedad para confirmar tu fecha.</p>
         </div>
       </div>
     </section>
@@ -458,6 +498,30 @@
       navToggle.classList.remove('is-active');
     });
   });
+
+  /* ── Pre-reserva express ─────────────────────── */
+  function enviarPreReserva() {
+    const nombre   = document.getElementById('rqNombre').value.trim();
+    const celular  = document.getElementById('rqCelular').value.trim();
+    const producto = document.getElementById('rqProducto').value.trim();
+    const fechaRaw = document.getElementById('rqFecha').value;
+
+    if (!nombre || !celular) {
+      document.getElementById(nombre ? 'rqCelular' : 'rqNombre').focus();
+      return;
+    }
+
+    let msg = `¡Hola Dridanna! 👋\n\nQuiero hacer una pre-reserva:\n\n📋 *Nombre:* ${nombre}\n📱 *WhatsApp:* ${celular}`;
+    if (producto) msg += `\n🎈 *Inflable de interés:* ${producto}`;
+    if (fechaRaw) {
+      const [y,m,d] = fechaRaw.split('-');
+      const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+      msg += `\n📅 *Fecha del evento:* ${+d} de ${meses[+m-1]} de ${y}`;
+    }
+    msg += `\n\n¿Tienen disponibilidad? ¡Gracias! 🎉`;
+
+    window.open('https://wa.me/5493757671088?text=' + encodeURIComponent(msg), '_blank');
+  }
 
   /* ── Init ────────────────────────────────────── */
   document.getElementById('year').textContent = new Date().getFullYear();
