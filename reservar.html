@@ -433,20 +433,26 @@
           </div>
         </div>
 
-        <div class="form-field">
-          <label for="dCelular">WhatsApp (con código de área)</label>
-          <input class="form-input" type="tel" id="dCelular" placeholder="3757 123456" autocomplete="tel" inputmode="numeric">
-          <span class="hint">Sin el 0 inicial. Por este número te confirmamos la reserva.</span>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="dCelular">WhatsApp</label>
+            <input class="form-input" type="tel" id="dCelular" placeholder="3757 123456" autocomplete="tel" inputmode="numeric">
+            <span class="hint">Sin el 0 inicial</span>
+          </div>
+          <div class="form-field">
+            <label for="dDni">DNI</label>
+            <input class="form-input" type="text" id="dDni" placeholder="12.345.678" inputmode="numeric" autocomplete="off">
+          </div>
         </div>
 
         <div class="form-row">
           <div class="form-field">
-            <label for="dBarrio">Barrio</label>
-            <input class="form-input" type="text" id="dBarrio" placeholder="Centro" autocomplete="address-level2">
-          </div>
-          <div class="form-field">
             <label for="dDir">Dirección</label>
             <input class="form-input" type="text" id="dDir" placeholder="Calle 123" autocomplete="street-address">
+          </div>
+          <div class="form-field">
+            <label for="dBarrio">Barrio</label>
+            <input class="form-input" type="text" id="dBarrio" placeholder="Centro" autocomplete="address-level2">
           </div>
         </div>
 
@@ -610,11 +616,12 @@
       set('dNombre',   perfil.nombre    || '');
       set('dApellido', perfil.apellido  || '');
       set('dCelular',  perfil.celular   || '');
+      set('dDni',      perfil.dni       || '');
       set('dBarrio',   perfil.barrio    || '');
       set('dDir',      perfil.direccion || '');
 
       // Marcar campos como pre-llenados
-      ['dNombre','dApellido','dCelular','dBarrio','dDir'].forEach(id => {
+      ['dNombre','dApellido','dCelular','dDni','dBarrio','dDir'].forEach(id => {
         const el = document.getElementById(id);
         if (el && el.value) el.classList.add('prefilled');
       });
@@ -695,11 +702,11 @@
     }
 
     // Re-calcular resumen cuando cambian los datos personales o la fecha
-    ['fDia','fMes','fAnio','dNombre','dApellido','dCelular','dBarrio','dDir'].forEach(id => {
+    ['fDia','fMes','fAnio','dNombre','dApellido','dCelular','dDni','dBarrio','dDir'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('change', actualizarResumen);
     });
-    ['dNombre','dApellido','dCelular','dBarrio','dDir'].forEach(id => {
+    ['dNombre','dApellido','dCelular','dDni','dBarrio','dDir'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('input', actualizarResumen);
     });
@@ -716,8 +723,9 @@
       const nombre  = document.getElementById('dNombre').value.trim();
       const apellido= document.getElementById('dApellido').value.trim();
       const celular = document.getElementById('dCelular').value.trim();
-      const barrio  = document.getElementById('dBarrio').value.trim();
+      const dni     = document.getElementById('dDni').value.trim().replace(/\./g,'');
       const dir     = document.getElementById('dDir').value.trim();
+      const barrio  = document.getElementById('dBarrio').value.trim();
       const ref     = document.getElementById('dRef').value.trim();
 
       // Validaciones
@@ -726,6 +734,9 @@
       if (!selTurnoId)           { error('Elegí un horario (mañana, tarde o noche).'); return; }
       if (!nombre)   { error('Ingresá tu nombre.'); return; }
       if (!celular || celular.replace(/\D/g,'').length < 7) { error('Ingresá un WhatsApp válido.'); return; }
+      if (!dni || !/^\d{7,8}$/.test(dni)) { error('Ingresá un DNI válido (7 u 8 dígitos).'); return; }
+      if (!dir)     { error('Ingresá la dirección del evento.'); return; }
+      if (!barrio)  { error('Ingresá el barrio.'); return; }
 
       // Validar que la fecha no sea pasada
       const fechaEvento = new Date(parseInt(anio), parseInt(mes)-1, parseInt(dia));
@@ -739,7 +750,7 @@
       // Guardar en localStorage
       const reserva = {
         id:        Date.now(),
-        nombre, apellido, celular, barrio, direccion: dir, referencia: ref,
+        nombre, apellido, celular, dni, barrio, direccion: dir, referencia: ref,
         producto:  productoNombre,
         fecha:     `${anio}-${mes.padStart(2,'0')}-${dia.toString().padStart(2,'0')}`,
         fechaLabel, turno: selTurnoId, turnoLabel,
@@ -752,7 +763,8 @@
 
       // Guardar perfil si checkbox marcado
       if (!perfil && document.getElementById('guardarPerfil').checked) {
-        const p = { nombre, apellido, celular, barrio, direccion: dir, fechaRegistro: new Date().getDate() + ' de ' + MESES_LARGO[new Date().getMonth()] + ' de ' + new Date().getFullYear() };
+        const now = new Date();
+        const p   = { nombre, apellido, celular, dni, barrio, direccion: dir, referencia: ref, fechaRegistro: now.getDate() + ' de ' + MESES_LARGO[now.getMonth()] + ' de ' + now.getFullYear() };
         localStorage.setItem(PERFIL_KEY, JSON.stringify(p));
       }
 
@@ -764,8 +776,9 @@
         `Horario: ${turnoLabel}\n\n` +
         `Mis datos:\n` +
         `Nombre: ${nombre} ${apellido}\n` +
+        `DNI: ${dni}\n` +
         `WhatsApp: ${celular}\n` +
-        (dir ? `Dirección: ${dir}${barrio ? ', B° ' + barrio : ''}\n` : '') +
+        `Dirección: ${dir}${barrio ? ', B° ' + barrio : ''}\n` +
         (ref ? `Referencia: ${ref}\n` : '') +
         `\n¿Tienen disponibilidad?`
       );
@@ -782,8 +795,8 @@
       document.getElementById('viewSuccess').classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      // Disparar API en background (best-effort, no bloqueante)
-      notificarAPI({ celular, nombre, apellido, producto: productoNombre, fechaLabel, turnoLabel, direccion: dir, barrio, referencia: ref });
+      // Disparar API en background (best-effort, no bloqueante) → WA + Firestore
+      notificarAPI({ celular, nombre, apellido, dni, producto: productoNombre, fechaLabel, turnoLabel, direccion: dir, barrio, referencia: ref });
     }
 
     async function notificarAPI(data) {

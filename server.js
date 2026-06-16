@@ -13,6 +13,37 @@ const ADMIN_PHONE   = process.env.ADMIN_PHONE  || process.env.META_PHONE_ID;
 const ADMIN_NAME    = process.env.ADMIN_NAME   || 'Administración Dridanna';
 const META_VER      = 'v21.0';
 
+/* ─── Firestore (REST sin SDK) ─────────────────────── */
+const FIREBASE_API_KEY  = process.env.FIREBASE_API_KEY;
+const FIRESTORE_URL     = 'https://firestore.googleapis.com/v1/projects/dridanna-e4ee2/databases/(default)/documents';
+
+function toFS(obj) {
+  const fields = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (v == null) continue;
+    if (typeof v === 'boolean')  fields[k] = { booleanValue: v };
+    else if (Number.isFinite(v)) fields[k] = { doubleValue:  v };
+    else                         fields[k] = { stringValue:  String(v) };
+  }
+  return fields;
+}
+
+async function fsAdd(col, data) {
+  if (!FIREBASE_API_KEY) return;
+  try {
+    const r = await fetch(`${FIRESTORE_URL}/${col}?key=${FIREBASE_API_KEY}`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ fields: toFS({ ...data, creadoEn: new Date().toISOString() }) }),
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j?.error?.message);
+    console.log(`[Firestore] ${col} ✓ ${j.name?.split('/').pop()}`);
+  } catch (e) {
+    console.error(`[Firestore] ${col}:`, e.message);
+  }
+}
+
 if (!META_TOKEN || !META_PHONE_ID) {
   console.error('\nERROR: Faltan META_TOKEN y META_PHONE_ID en .env\n');
   process.exit(1);
@@ -167,6 +198,13 @@ app.post('/api/notify', async (req, res) => {
     console.error('[nueva_reserva]', e.message);
   }
 
+  // Guardar reserva en Firestore (no bloqueante)
+  fsAdd('reservas', {
+    nombre, apellido, celular, dni: dni || '—',
+    producto, fechaLabel, turnoLabel, direccion, barrio, referencia,
+    estado: 'pendiente',
+  });
+
   return res.json({ ok: true, results });
 });
 
@@ -202,7 +240,7 @@ app.post('/api/notify/recordatorio', async (req, res) => {
    Admin da la bienvenida a un nuevo cliente.
    ───────────────────────────────────────────── */
 app.post('/api/notify/alta-cliente', async (req, res) => {
-  const { celular, nombre, apellido } = req.body || {};
+  const { celular, nombre, apellido, dni, barrio, direccion } = req.body || {};
   if (!celular || !nombre) {
     return res.status(400).json({ ok: false, error: 'celular y nombre son obligatorios.' });
   }
@@ -217,11 +255,27 @@ app.post('/api/notify/alta-cliente', async (req, res) => {
       components: bodyComp(txt(fullName)),
     });
     console.log(`[alta_cliente] → ${phone} ✓ ${id}`);
+    // Guardar cliente en Firestore
+    fsAdd('clientes', { nombre, apellido, celular, dni: dni||'—', barrio, direccion });
     return res.json({ ok: true, messageId: id });
   } catch (e) {
     console.error('[alta_cliente]', e.message);
     return res.status(502).json({ ok: false, error: e.message, code: e.metaCode });
   }
+});
+
+/* ─────────────────────────────────────────────
+   POST /api/clientes
+   Guarda un cliente en Firestore sin enviar WA.
+   Útil cuando el cliente se registra desde web.
+   ───────────────────────────────────────────── */
+app.post('/api/clientes', async (req, res) => {
+  const { nombre, apellido, celular, dni, barrio, direccion } = req.body || {};
+  if (!nombre || !celular) {
+    return res.status(400).json({ ok: false, error: 'nombre y celular son obligatorios.' });
+  }
+  await fsAdd('clientes', { nombre, apellido, celular, dni: dni||'—', barrio, direccion });
+  return res.json({ ok: true });
 });
 
 /* ─────────────────────────────────────────────
