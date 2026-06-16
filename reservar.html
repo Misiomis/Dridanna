@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
+  <script src="./js/config.js"></script>
   <style>
     :root {
       --blue-sky:   #5eb8f5;
@@ -309,7 +310,7 @@
         <img src="./img/logo.png" alt="Dridanna" loading="eager">
       </a>
       <div style="display:flex; align-items:center; gap:12px;">
-        <a href="./altacliente.html" class="nav-register-link" id="navRegLink">Hacete cliente</a>
+        <a href="./login.html" class="nav-register-link" id="navRegLink">Ingresar</a>
         <span class="nav-cliente-badge hidden" id="navBadge" onclick="window.location='./altacliente.html'"></span>
         <a href="./index.html" class="nav-back">
           <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd"/></svg>
@@ -528,7 +529,7 @@
     /* ─── Constantes ─── */
     const PERFIL_KEY   = 'dridanna_mi_perfil';
     const RESERVAS_KEY = 'dridanna_reservas';
-    const API_BASE     = 'http://localhost:3000';
+    // API_BASE viene de js/config.js
     const ADMIN_WA     = '5493757671088';
 
     const MESES_CORTO  = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];

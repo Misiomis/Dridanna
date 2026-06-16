@@ -256,7 +256,8 @@ app.post('/api/notify/alta-cliente', async (req, res) => {
     });
     console.log(`[alta_cliente] → ${phone} ✓ ${id}`);
     // Guardar cliente en Firestore
-    fsAdd('clientes', { nombre, apellido, celular, dni: dni||'—', barrio, direccion });
+    const celularNorm = String(celular).replace(/\D/g,'').slice(-10);
+    fsAdd('clientes', { nombre, apellido, celular, celularNorm, dni: dni||'—', barrio, direccion });
     return res.json({ ok: true, messageId: id });
   } catch (e) {
     console.error('[alta_cliente]', e.message);
@@ -270,12 +271,45 @@ app.post('/api/notify/alta-cliente', async (req, res) => {
    Útil cuando el cliente se registra desde web.
    ───────────────────────────────────────────── */
 app.post('/api/clientes', async (req, res) => {
-  const { nombre, apellido, celular, dni, barrio, direccion } = req.body || {};
+  const { nombre, apellido, celular, dni, barrio, direccion, referencia } = req.body || {};
   if (!nombre || !celular) {
     return res.status(400).json({ ok: false, error: 'nombre y celular son obligatorios.' });
   }
-  await fsAdd('clientes', { nombre, apellido, celular, dni: dni||'—', barrio, direccion });
+  const celularNorm = String(celular).replace(/\D/g,'').slice(-10);
+  await fsAdd('clientes', { nombre, apellido, celular, celularNorm, dni: dni||'—', barrio, direccion, referencia: referencia||'' });
   return res.json({ ok: true });
+});
+
+/* ─────────────────────────────────────────────
+   GET /api/clientes/buscar?telefono=3757671088
+   Busca un cliente por número de WhatsApp.
+   ───────────────────────────────────────────── */
+app.get('/api/clientes/buscar', async (req, res) => {
+  if (!db) return res.status(503).json({ ok: false, error: 'Base de datos no disponible.' });
+
+  const celularNorm = String(req.query.telefono || '').replace(/\D/g,'').slice(-10);
+  if (celularNorm.length < 7) {
+    return res.status(400).json({ ok: false, error: 'Número de teléfono inválido.' });
+  }
+
+  try {
+    const snap = await db.collection('clientes')
+      .where('celularNorm', '==', celularNorm)
+      .limit(1)
+      .get();
+
+    if (snap.empty) {
+      return res.json({ ok: false, error: 'No encontramos una cuenta con ese WhatsApp.' });
+    }
+
+    const data = snap.docs[0].data();
+    // No exponer celularNorm ni campos internos
+    const { celularNorm: _, creadoEn, ...cliente } = data;
+    return res.json({ ok: true, cliente });
+  } catch (e) {
+    console.error('[buscar-cliente]', e.message);
+    return res.status(500).json({ ok: false, error: 'Error al buscar cliente.' });
+  }
 });
 
 /* ─────────────────────────────────────────────

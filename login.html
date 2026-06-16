@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingresar — Dridanna</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/styles.css">
+  <script src="./js/config.js"></script>
+  <style>
+    :root {
+      --blue-sky:   #5eb8f5;
+      --gold-tower: #f5c842;
+      --coral-roof: #e8614e;
+      --pink-brand: #dda0b8;
+      --bg:         #080c18;
+      --glass-bg:   rgba(255,255,255,0.04);
+      --glass-b:    rgba(255,255,255,0.08);
+      --glass-r:    20px;
+      --font:       'Nunito','Segoe UI',system-ui,sans-serif;
+      --serif:      'Playfair Display',Georgia,serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:#e8eaf2;font-family:var(--font);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px}
+    a{color:var(--blue-sky);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* Logo */
+    .auth-logo{display:block;margin:0 auto 32px;height:52px}
+
+    /* Card */
+    .auth-card{width:100%;max-width:460px;background:var(--glass-bg);border:1px solid var(--glass-b);border-radius:24px;backdrop-filter:blur(20px);overflow:hidden}
+
+    /* Tabs */
+    .auth-tabs{display:grid;grid-template-columns:1fr 1fr}
+    .auth-tab{padding:16px;font-family:var(--font);font-size:0.92rem;font-weight:700;background:transparent;border:none;border-bottom:2px solid rgba(255,255,255,0.07);color:rgba(255,255,255,0.4);cursor:pointer;transition:color .2s,border-color .2s}
+    .auth-tab.active{color:#fff;border-bottom-color:var(--pink-brand)}
+    .auth-tab:first-child{border-right:1px solid rgba(255,255,255,0.07)}
+
+    /* Panels */
+    .auth-panel{display:none;padding:28px}
+    .auth-panel.active{display:block}
+    .panel-title{font-family:var(--serif);font-size:1.5rem;font-weight:600;margin-bottom:6px}
+    .panel-sub{font-size:0.85rem;color:rgba(255,255,255,0.45);line-height:1.55;margin-bottom:24px}
+
+    /* Form */
+    .form-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+    .form-field label{font-size:0.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,0.4)}
+    .form-field label .req{color:var(--coral-roof);margin-left:2px}
+    .fi{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 14px;font-family:var(--font);font-size:0.95rem;color:#e8eaf2;outline:none;transition:border-color .2s;width:100%}
+    .fi:focus{border-color:var(--pink-brand);background:rgba(221,160,184,0.07)}
+    .fi::placeholder{color:rgba(255,255,255,0.22)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .hint{font-size:0.73rem;color:rgba(255,255,255,0.28)}
+
+    /* Buttons */
+    .btn-main{width:100%;padding:14px;background:linear-gradient(135deg,var(--pink-brand) 0%,#c078a0 100%);border:none;border-radius:12px;color:#fff;font-family:var(--font);font-size:1rem;font-weight:700;cursor:pointer;transition:opacity .2s,transform .1s;margin-top:4px}
+    .btn-main:hover{opacity:.9}
+    .btn-main:active{transform:scale(.99)}
+    .btn-main:disabled{opacity:.45;cursor:not-allowed}
+
+    /* Status */
+    .status{padding:12px 14px;border-radius:10px;font-size:0.85rem;margin-top:14px;display:none;line-height:1.45}
+    .status.error{background:rgba(232,97,78,0.12);border:1px solid rgba(232,97,78,0.25);color:#f7a090}
+    .status.ok{background:rgba(94,184,245,0.1);border:1px solid rgba(94,184,245,0.25);color:var(--blue-sky)}
+    .status.warn{background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.25);color:var(--gold-tower)}
+
+    /* Divider */
+    .or-line{display:flex;align-items:center;gap:10px;margin:18px 0;color:rgba(255,255,255,0.25);font-size:0.78rem}
+    .or-line::before,.or-line::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.08)}
+
+    /* Back */
+    .back-link{margin-top:24px;font-size:0.82rem;color:rgba(255,255,255,0.4);text-align:center;display:block}
+    .back-link a{color:rgba(255,255,255,0.55)}
+    .back-link a:hover{color:var(--pink-brand)}
+
+    /* WA float */
+    .wa-float{position:fixed;bottom:22px;right:22px;z-index:200;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;background-color:#18a84a;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 30' width='26' height='30'%3E%3Cpolygon points='13,1 25,7 25,21 13,27 1,21 1,7' fill='none' stroke='rgba(0%2C0%2C0%2C0.22)' stroke-width='1.2'/%3E%3C/svg%3E"),linear-gradient(145deg,#25d366 0%,#128c52 100%);background-size:18px 21px,100%;box-shadow:0 4px 18px rgba(0,0,0,0.35);transition:transform .2s}
+    .wa-float:hover{transform:scale(1.07)}
+    .wa-float svg{width:26px;height:26px;fill:#fff}
+
+    @media(max-width:480px){.form-row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+  <a href="./index.html">
+    <img src="./img/logo.png" alt="Dridanna" class="auth-logo">
+  </a>
+
+  <div class="auth-card">
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login', this)">Iniciar sesión</button>
+      <button class="auth-tab"        onclick="switchTab('reg',   this)">Registrarme</button>
+    </div>
+
+    <!-- ══ PANEL: Iniciar sesión ══ -->
+    <div class="auth-panel active" id="panelLogin">
+      <p class="panel-title">Bienvenido de nuevo</p>
+      <p class="panel-sub">Ingresá tu número de WhatsApp y buscamos tu cuenta.</p>
+
+      <div class="form-field">
+        <label for="lCelular">WhatsApp <span class="req">*</span></label>
+        <input class="fi" type="tel" id="lCelular" placeholder="3757 671088" inputmode="numeric" autocomplete="tel">
+        <span class="hint">Sin el 0 inicial ni el +54</span>
+      </div>
+
+      <button class="btn-main" id="btnLogin" onclick="iniciarSesion()">Ingresar →</button>
+
+      <div class="status" id="loginStatus"></div>
+
+      <div class="or-line">o</div>
+      <p style="font-size:0.83rem;color:rgba(255,255,255,0.4);text-align:center">
+        ¿No tenés cuenta? <a href="#" onclick="switchTabByName('reg')">Registrate gratis</a>
+      </p>
+    </div>
+
+    <!-- ══ PANEL: Registrarme ══ -->
+    <div class="auth-panel" id="panelReg">
+      <p class="panel-title">Crear cuenta</p>
+      <p class="panel-sub">Guardamos tus datos para que la próxima reserva sea en segundos. Te damos la bienvenida por WhatsApp.</p>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label for="rNombre">Nombre <span class="req">*</span></label>
+          <input class="fi" type="text" id="rNombre" placeholder="María" autocomplete="given-name">
+        </div>
+        <div class="form-field">
+          <label for="rApellido">Apellido <span class="req">*</span></label>
+          <input class="fi" type="text" id="rApellido" placeholder="González" autocomplete="family-name">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="rDni">DNI <span class="req">*</span></label>
+        <input class="fi" type="text" id="rDni" placeholder="12345678" inputmode="numeric" autocomplete="off">
+      </div>
+
+      <div class="form-field">
+        <label for="rCelular">WhatsApp <span class="req">*</span></label>
+        <input class="fi" type="tel" id="rCelular" placeholder="3757 671088" inputmode="numeric" autocomplete="tel">
+        <span class="hint">Sin el 0 inicial. Por aquí te enviamos la confirmación.</span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label for="rDir">Dirección <span class="req">*</span></label>
+          <input class="fi" type="text" id="rDir" placeholder="Calle 123" autocomplete="street-address">
+        </div>
+        <div class="form-field">
+          <label for="rBarrio">Barrio <span class="req">*</span></label>
+          <input class="fi" type="text" id="rBarrio" placeholder="Centro" autocomplete="address-level2">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="rRef">Referencia (opcional)</label>
+        <input class="fi" type="text" id="rRef" placeholder="Esquina, portón azul...">
+      </div>
+
+      <button class="btn-main" id="btnReg" onclick="registrarme()">Crear mi cuenta →</button>
+
+      <div class="status" id="regStatus"></div>
+
+      <div class="or-line">o</div>
+      <p style="font-size:0.83rem;color:rgba(255,255,255,0.4);text-align:center">
+        ¿Ya tenés cuenta? <a href="#" onclick="switchTabByName('login')">Iniciá sesión</a>
+      </p>
+    </div>
+
+  </div>
+
+  <span class="back-link"><a href="./index.html">← Volver al inicio</a></span>
+
+  <a href="https://wa.me/5493757671088" target="_blank" rel="noopener" class="wa-float" aria-label="WhatsApp">
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.116 1.524 5.844L0 24l6.338-1.497A11.93 11.93 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.797 9.797 0 01-5.015-1.378l-.36-.213-3.734.882.932-3.625-.235-.371A9.795 9.795 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+  </a>
+
+  <script>
+    const PERFIL_KEY = 'dridanna_mi_perfil';
+    const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+    // Si ya hay sesión, redirigir
+    const destino = new URLSearchParams(location.search).get('next') || './reservar.html';
+    if (localStorage.getItem(PERFIL_KEY)) {
+      location.replace(destino);
+    }
+
+    /* ─── Tabs ─── */
+    function switchTab(id, btn) {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('active');
+    }
+    function switchTabByName(id) {
+      const tabs = document.querySelectorAll('.auth-tab');
+      switchTab(id, id === 'login' ? tabs[0] : tabs[1]);
+    }
+
+    /* ─── Iniciar sesión ─── */
+    async function iniciarSesion() {
+      const cel    = document.getElementById('lCelular').value.trim();
+      const status = document.getElementById('loginStatus');
+      const btn    = document.getElementById('btnLogin');
+
+      status.className = 'status'; status.style.display = 'none';
+
+      if (!cel || cel.replace(/\D/g,'').length < 7) {
+        showStatus(status, 'error', 'Ingresá tu número de WhatsApp.');
+        return;
+      }
+
+      btn.disabled = true; btn.textContent = 'Buscando...';
+
+      try {
+        const r = await fetch(`${API_BASE}/api/clientes/buscar?telefono=${encodeURIComponent(cel)}`, {
+          signal: AbortSignal.timeout(8000),
+        });
+        const d = await r.json();
+
+        if (d.ok && d.cliente) {
+          const p = { ...d.cliente, fechaRegistro: d.cliente.fechaRegistro || 'Cliente Dridanna' };
+          localStorage.setItem(PERFIL_KEY, JSON.stringify(p));
+          showStatus(status, 'ok', `¡Hola, ${p.nombre}! Redirigiendo...`);
+          setTimeout(() => location.replace(destino), 900);
+        } else {
+          showStatus(status, 'error', d.error || 'No encontramos una cuenta con ese WhatsApp. ¿Querés registrarte?');
+        }
+      } catch (e) {
+        // Backend no disponible
+        showStatus(status, 'warn',
+          'No pudimos conectarnos al servidor. Verificá si tu número ya está registrado más tarde, o escribinos por WhatsApp.');
+      }
+
+      btn.disabled = false; btn.textContent = 'Ingresar →';
+    }
+
+    /* ─── Registrarme ─── */
+    async function registrarme() {
+      const nombre    = document.getElementById('rNombre').value.trim();
+      const apellido  = document.getElementById('rApellido').value.trim();
+      const dni       = document.getElementById('rDni').value.trim().replace(/\./g,'');
+      const celular   = document.getElementById('rCelular').value.trim();
+      const direccion = document.getElementById('rDir').value.trim();
+      const barrio    = document.getElementById('rBarrio').value.trim();
+      const referencia= document.getElementById('rRef').value.trim();
+      const status    = document.getElementById('regStatus');
+      const btn       = document.getElementById('btnReg');
+
+      status.className = 'status'; status.style.display = 'none';
+
+      if (!nombre)   { showStatus(status,'error','Ingresá tu nombre.'); return; }
+      if (!apellido) { showStatus(status,'error','Ingresá tu apellido.'); return; }
+      if (!dni || !/^\d{7,8}$/.test(dni)) { showStatus(status,'error','DNI inválido (7 u 8 dígitos).'); return; }
+      if (!celular || celular.replace(/\D/g,'').length < 7) { showStatus(status,'error','WhatsApp inválido.'); return; }
+      if (!direccion) { showStatus(status,'error','Ingresá tu dirección.'); return; }
+      if (!barrio)    { showStatus(status,'error','Ingresá tu barrio.'); return; }
+
+      btn.disabled = true; btn.textContent = 'Creando cuenta...';
+
+      const ahora = new Date();
+      const fechaRegistro = `${ahora.getDate()} de ${MESES[ahora.getMonth()]} de ${ahora.getFullYear()}`;
+      const perfil = { nombre, apellido, dni, celular, direccion, barrio, referencia, fechaRegistro };
+
+      // Guardar en localStorage primero (funciona offline)
+      localStorage.setItem(PERFIL_KEY, JSON.stringify(perfil));
+
+      // Notificar backend (WA bienvenida + Firestore) — best-effort
+      try {
+        await Promise.allSettled([
+          fetch(`${API_BASE}/api/notify/alta-cliente`, {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ nombre, apellido, dni, celular, barrio, direccion }),
+            signal: AbortSignal.timeout(8000),
+          }),
+          fetch(`${API_BASE}/api/clientes`, {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ nombre, apellido, dni, celular, barrio, direccion }),
+            signal: AbortSignal.timeout(8000),
+          }),
+        ]);
+      } catch { /* silencioso — perfil ya guardado en localStorage */ }
+
+      showStatus(status, 'ok', `¡Bienvenida, ${nombre}! Redirigiendo...`);
+      setTimeout(() => location.replace(destino), 900);
+
+      btn.disabled = false; btn.textContent = 'Crear mi cuenta →';
+    }
+
+    function showStatus(el, type, msg) {
+      el.className = 'status ' + type;
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    // Enter key en login
+    document.getElementById('lCelular').addEventListener('keydown', e => {
+      if (e.key === 'Enter') iniciarSesion();
+    });
+  </script>
+</body>
+</html>

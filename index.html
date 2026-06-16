@@ -47,6 +47,7 @@
       <ul class="nav-links" id="navLinks">
         <li><a href="#historia">Historia</a></li>
         <li><a href="#productos">Inflables</a></li>
+        <li><a href="./login.html" id="navLoginLink">Ingresar</a></li>
         <li>
           <a href="#reservar" class="nav-cta">
             Reservar ahora
@@ -513,6 +514,18 @@
   document.getElementById('year').textContent = new Date().getFullYear();
   renderProductos();
   initReveal();
+
+  // Mostrar nombre en nav si hay sesión activa
+  try {
+    const p = JSON.parse(localStorage.getItem('dridanna_mi_perfil') || 'null');
+    const link = document.getElementById('navLoginLink');
+    if (p && p.nombre && link) {
+      link.textContent = p.nombre;
+      link.href = './altacliente.html';
+      link.style.fontWeight = '700';
+      link.style.color = 'var(--pink-brand, #dda0b8)';
+    }
+  } catch {}
   </script>
 
 </body>
