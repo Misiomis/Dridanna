@@ -13,32 +13,32 @@ const ADMIN_PHONE   = process.env.ADMIN_PHONE  || process.env.META_PHONE_ID;
 const ADMIN_NAME    = process.env.ADMIN_NAME   || 'Administración Dridanna';
 const META_VER      = 'v21.0';
 
-/* ─── Firestore (REST sin SDK) ─────────────────────── */
-const FIREBASE_API_KEY  = process.env.FIREBASE_API_KEY;
-const FIRESTORE_URL     = 'https://firestore.googleapis.com/v1/projects/dridanna-e4ee2/databases/(default)/documents';
+/* ─── Firestore (Admin SDK) ────────────────────────── */
+const admin = require('firebase-admin');
 
-function toFS(obj) {
-  const fields = {};
-  for (const [k, v] of Object.entries(obj)) {
-    if (v == null) continue;
-    if (typeof v === 'boolean')  fields[k] = { booleanValue: v };
-    else if (Number.isFinite(v)) fields[k] = { doubleValue:  v };
-    else                         fields[k] = { stringValue:  String(v) };
-  }
-  return fields;
+if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId:   process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey:  process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    }),
+  });
+  console.log('[Firestore] Admin SDK inicializado ✓');
+} else {
+  console.warn('[Firestore] Credenciales no configuradas — se omite Firestore.');
 }
 
+const db = admin.apps.length ? admin.firestore() : null;
+
 async function fsAdd(col, data) {
-  if (!FIREBASE_API_KEY) return;
+  if (!db) return;
   try {
-    const r = await fetch(`${FIRESTORE_URL}/${col}?key=${FIREBASE_API_KEY}`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ fields: toFS({ ...data, creadoEn: new Date().toISOString() }) }),
+    const ref = await db.collection(col).add({
+      ...data,
+      creadoEn: admin.firestore.FieldValue.serverTimestamp(),
     });
-    const j = await r.json();
-    if (!r.ok) throw new Error(j?.error?.message);
-    console.log(`[Firestore] ${col} ✓ ${j.name?.split('/').pop()}`);
+    console.log(`[Firestore] ${col}/${ref.id} ✓`);
   } catch (e) {
     console.error(`[Firestore] ${col}:`, e.message);
   }
