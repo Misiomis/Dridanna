@@ -360,16 +360,20 @@ input,select,textarea { font-family:inherit; }
 .reserva-info { min-width:0; }
 .reserva-nombre { font-size:0.95rem; font-weight:600; color:var(--text); margin-bottom:3px; }
 .reserva-detail { font-size:0.78rem; color:var(--text3); }
-.reserva-actions { display:flex; gap:6px; flex-shrink:0; }
+.reserva-actions { display:flex; gap:5px; flex-shrink:0; flex-wrap:wrap; align-items:center; justify-content:flex-end; }
 .r-btn {
-  width:32px; height:32px; border-radius:8px;
+  height:28px; min-width:28px; width:auto;
+  padding:0 9px; border-radius:6px;
   border:1px solid var(--gborder); background:var(--glass);
   color:var(--text2); display:flex; align-items:center; justify-content:center;
-  font-size:0.85rem; transition:all 0.18s var(--ease);
+  font-size:0.73rem; font-weight:600; letter-spacing:0.02em;
+  transition:all 0.18s var(--ease); white-space:nowrap;
 }
 .r-btn:hover { background:var(--glass2); border-color:var(--gborder2); color:var(--text); }
-.r-btn.danger:hover { background:rgba(232,97,78,0.15); border-color:rgba(232,97,78,0.4); color:var(--coral); }
-.r-btn.confirm:hover { background:rgba(94,184,245,0.15); border-color:rgba(94,184,245,0.4); color:var(--blue); }
+.r-btn.danger { border-color:rgba(232,97,78,0.25); color:rgba(232,97,78,0.7); }
+.r-btn.danger:hover { background:rgba(232,97,78,0.15); border-color:rgba(232,97,78,0.5); color:var(--coral); }
+.r-btn.confirm { border-color:rgba(94,184,245,0.25); color:rgba(94,184,245,0.7); }
+.r-btn.confirm:hover { background:rgba(94,184,245,0.15); border-color:rgba(94,184,245,0.5); color:var(--blue); }
 .r-estado {
   display:inline-block; font-size:0.65rem; font-weight:700; letter-spacing:0.08em;
   padding:2px 8px; border-radius:100px; margin-top:4px;
@@ -1267,7 +1271,7 @@ function renderReservas() {
       </div>
       <div class="reserva-actions">
         ${(r.celular||r.telefono) ? `<button class="r-btn" title="WhatsApp" onclick="window.open('https://wa.me/${(r.celular||r.telefono||'').replace(/\D/g,'')}','_blank')">WA</button>` : ''}
-        <button class="r-btn" title="Enviar recordatorio por WhatsApp" onclick="notificarRecordatorio('${r.id}')">Recordatorio</button>
+        <button class="r-btn" title="Enviar recordatorio por WhatsApp" onclick="notificarRecordatorio('${r.id}')">Recordar</button>
         ${r.estado==='pendiente' ? `<button class="r-btn confirm" title="Confirmar" onclick="cambiarEstadoReserva('${r.id}','confirmada')">Confirmar</button>` : ''}
         ${r.estado!=='cancelada' ? `<button class="r-btn danger" title="Cancelar" onclick="cambiarEstadoReserva('${r.id}','cancelada')">Cancelar</button>` : ''}
         <button class="r-btn danger" title="Borrar" onclick="borrarReserva('${r.id}')">Borrar</button>
@@ -1408,12 +1412,63 @@ function guardarReserva() {
   renderDashboard();
   renderCalendar();
   toast('Reserva guardada: ' + nombre);
+
+  const telCliente = document.getElementById('rTelefono').value.trim();
+  if (telCliente) {
+    const saved = rv[rv.length - 1];
+    fetch(API_BASE + '/api/notify', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        celular:    telCliente,
+        nombre,
+        apellido:   apellido || '',
+        producto:   saved.producto   || '—',
+        fechaLabel: _fechaLabel(saved.fecha),
+        turnoLabel: _turnoLabel(saved.turno),
+        precio:     saved.precio     || '—',
+        direccion:  saved.direccion  || '—',
+        barrio:     saved.barrio     || '—',
+        referencia: saved.referencia || '—',
+        dni:        saved.dni        || '—',
+      }),
+    }).catch(() => {});
+  }
 }
 
-function cambiarEstadoReserva(id, estado) {
-  const rv = getReservas();
+async function cambiarEstadoReserva(id, estado) {
+  const rv   = getReservas();
   const item = rv.find(r => r.id === id);
-  if (item) { item.estado = estado; LS.set('reservas', rv); renderReservas(); renderDashboard(); renderCalendar(); toast('Estado actualizado: ' + estado); }
+  if (!item) return;
+
+  item.estado = estado;
+  LS.set('reservas', rv);
+  renderReservas(); renderDashboard(); renderCalendar();
+  toast('Estado: ' + estado);
+
+  if (estado === 'confirmada') {
+    const [nombre, ...rest] = (item.nombre || '').trim().split(' ');
+    const apellido = rest.join(' ');
+    fetch(API_BASE + '/api/notify/confirmar', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        celular:    item.celular    || item.telefono || '',
+        nombre, apellido,
+        producto:   item.producto   || '—',
+        fechaLabel: item.fechaLabel || _fechaLabel(item.fecha),
+        turnoLabel: item.turnoLabel || _turnoLabel(item.turno),
+        precio:     item.precio     || '—',
+        direccion:  item.direccion  || '—',
+        barrio:     item.barrio     || '—',
+        referencia: item.referencia || '—',
+        dni:        item.dni        || '—',
+      }),
+    })
+    .then(r => r.json())
+    .then(d => { if (d.ok) toast('Notificación enviada a Estela'); })
+    .catch(() => {});
+  }
 }
 
 function borrarReserva(id) {

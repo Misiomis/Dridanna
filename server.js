@@ -224,4 +224,45 @@ app.post('/api/notify/alta-cliente', async (req, res) => {
   }
 });
 
+/* ─────────────────────────────────────────────
+   POST /api/notify/confirmar
+   Admin confirma una reserva existente.
+   Envía nueva_reserva al admin (Estela) como
+   notificación de que la reserva fue confirmada.
+   ───────────────────────────────────────────── */
+app.post('/api/notify/confirmar', async (req, res) => {
+  const {
+    celular, nombre, apellido, producto,
+    fechaLabel, turnoLabel,
+    direccion, barrio, referencia, dni,
+  } = req.body || {};
+  if (!nombre) return res.status(400).json({ ok: false, error: 'nombre es obligatorio.' });
+
+  const adminPhone = normalizePhone(ADMIN_PHONE);
+  const dir        = buildDireccion(direccion, barrio);
+
+  try {
+    const id = await sendTemplate({
+      to:         adminPhone,
+      template:   'nueva_reserva',
+      components: bodyComp(
+        txt(ADMIN_NAME),
+        txt(shortName(nombre, apellido)),
+        txt(celular),
+        txt(dni),
+        txt(producto),
+        txt(fechaLabel),
+        txt(turnoLabel),
+        txt(dir),
+        txt(referencia),
+      ),
+    });
+    console.log(`[confirmar→nueva_reserva] → ${adminPhone} ✓ ${id}`);
+    return res.json({ ok: true, messageId: id });
+  } catch (e) {
+    console.error('[confirmar→nueva_reserva]', e.message);
+    return res.status(502).json({ ok: false, error: e.message });
+  }
+});
+
 app.listen(PORT, () => console.log(`Dridanna API → http://localhost:${PORT}`));
