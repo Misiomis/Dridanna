@@ -481,6 +481,7 @@ input,select,textarea { font-family:inherit; }
   .prod-admin-grid { grid-template-columns:1fr; }
 }
 </style>
+<script src="./js/config.js"></script>
 </head>
 <body>
 
@@ -823,7 +824,7 @@ const TURNOS = [
 ];
 
 /* ── WhatsApp Business API (backend proxy) ── */
-const API_BASE = 'http://localhost:3000'; // Cambiar a URL de producción al desplegar
+// API_BASE viene de js/config.js
 
 const _MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 
