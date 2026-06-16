@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hacete cliente — Dridanna</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/styles.css">
+  <style>
+    :root {
+      --blue-sky:   #5eb8f5;
+      --gold-tower: #f5c842;
+      --coral-roof: #e8614e;
+      --pink-brand: #dda0b8;
+      --bg:         #080c18;
+      --glass-bg:   rgba(255,255,255,0.04);
+      --glass-b:    rgba(255,255,255,0.08);
+      --glass-r:    20px;
+      --font:       'Nunito', 'Segoe UI', system-ui, sans-serif;
+      --serif:      'Playfair Display', Georgia, serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: #e8eaf2; font-family: var(--font); min-height: 100vh; }
+    a    { color: var(--blue-sky); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ─── NAV ─── */
+    .nav-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 24px; height: 64px; display: flex; align-items: center; background: rgba(8,12,24,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .nav-inner  { width: 100%; max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo   { display: flex; align-items: center; }
+    .nav-logo img { height: 38px; }
+    .nav-back   { font-size: 0.85rem; color: rgba(255,255,255,0.55); display: flex; align-items: center; gap: 6px; transition: color .2s; }
+    .nav-back:hover { color: var(--pink-brand); text-decoration: none; }
+    .nav-back svg { width: 14px; height: 14px; }
+
+    /* ─── MAIN ─── */
+    main { min-height: 100vh; padding: 96px 16px 60px; }
+    .page-wrap { max-width: 540px; margin: 0 auto; }
+
+    /* ─── SECTION: BENEFITS ─── */
+    .page-eyebrow { font-family: var(--serif); font-style: italic; font-size: 0.95rem; color: var(--pink-brand); letter-spacing: 0.04em; margin-bottom: 8px; }
+    .page-title   { font-family: var(--serif); font-size: 2rem; font-weight: 600; line-height: 1.2; margin-bottom: 12px; }
+    .page-sub     { font-size: 0.95rem; color: rgba(255,255,255,0.6); line-height: 1.6; margin-bottom: 32px; }
+
+    .benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 36px; }
+    .benefit-card  {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-b);
+      border-radius: var(--glass-r);
+      padding: 18px 16px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .benefit-icon { font-size: 1.5rem; line-height: 1; }
+    .benefit-title { font-weight: 700; font-size: 0.88rem; color: var(--pink-brand); }
+    .benefit-desc  { font-size: 0.82rem; color: rgba(255,255,255,0.5); line-height: 1.45; }
+
+    /* ─── GLASS CARD ─── */
+    .glass-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-b);
+      border-radius: var(--glass-r);
+      backdrop-filter: blur(18px);
+      padding: 28px;
+    }
+    .card-title { font-family: var(--serif); font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; color: #fff; }
+
+    /* ─── FORM ─── */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .form-field label { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+    .form-field input, .form-field select {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-family: var(--font);
+      font-size: 0.95rem;
+      color: #e8eaf2;
+      outline: none;
+      transition: border-color .2s;
+      width: 100%;
+    }
+    .form-field input:focus, .form-field select:focus {
+      border-color: var(--pink-brand);
+      background: rgba(221,160,184,0.07);
+    }
+    .form-field input::placeholder { color: rgba(255,255,255,0.25); }
+    .form-field .hint { font-size: 0.78rem; color: rgba(255,255,255,0.35); }
+
+    /* ─── BUTTONS ─── */
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--pink-brand) 0%, #c078a0 100%);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-family: var(--font);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: opacity .2s, transform .1s;
+      margin-top: 6px;
+    }
+    .btn-primary:hover   { opacity: .9; }
+    .btn-primary:active  { transform: scale(.99); }
+    .btn-secondary {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      color: rgba(255,255,255,0.6);
+      font-family: var(--font);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+      margin-top: 8px;
+    }
+    .btn-secondary:hover { border-color: var(--pink-brand); color: var(--pink-brand); }
+    .btn-blue {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--blue-sky) 0%, #3a8ec9 100%);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-family: var(--font);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .2s;
+      margin-top: 6px;
+    }
+    .btn-blue:hover { opacity: .9; }
+
+    /* ─── PROFILE VIEW ─── */
+    .profile-avatar {
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, var(--pink-brand), var(--blue-sky));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif); font-size: 1.6rem; font-weight: 700;
+      color: #fff; margin-bottom: 16px;
+    }
+    .profile-name  { font-family: var(--serif); font-size: 1.6rem; font-weight: 600; margin-bottom: 4px; }
+    .profile-since { font-size: 0.82rem; color: rgba(255,255,255,0.4); margin-bottom: 20px; }
+    .profile-row   { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.9rem; }
+    .profile-row:last-of-type { border-bottom: none; }
+    .profile-key   { color: rgba(255,255,255,0.45); font-size: 0.8rem; }
+    .profile-val   { color: #e8eaf2; font-weight: 600; }
+    .divider       { height: 1px; background: rgba(255,255,255,0.07); margin: 24px 0; }
+    .edit-link     { font-size: 0.83rem; color: rgba(255,255,255,0.4); cursor: pointer; transition: color .2s; }
+    .edit-link:hover { color: var(--pink-brand); }
+
+    /* ─── SUCCESS VIEW ─── */
+    .success-icon { font-size: 3rem; margin-bottom: 16px; }
+    .success-title { font-family: var(--serif); font-size: 1.8rem; font-weight: 600; margin-bottom: 12px; }
+    .success-msg   { font-size: 0.95rem; color: rgba(255,255,255,0.6); line-height: 1.6; margin-bottom: 28px; }
+
+    /* ─── HISTORY ─── */
+    .hist-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .hist-prod { font-weight: 700; font-size: 0.9rem; }
+    .hist-date { font-size: 0.8rem; color: rgba(255,255,255,0.45); margin-top: 3px; }
+    .hist-estado { font-size: 0.75rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
+    .estado-confirmada { background: rgba(94,184,245,0.15); color: var(--blue-sky); }
+    .estado-pendiente  { background: rgba(245,200,66,0.15); color: var(--gold-tower); }
+    .estado-cancelada  { background: rgba(232,97,78,0.15); color: var(--coral-roof); }
+
+    .empty-hist { text-align: center; padding: 24px; color: rgba(255,255,255,0.3); font-size: 0.9rem; }
+
+    /* ─── HIDDEN ─── */
+    .hidden { display: none !important; }
+
+    @media (max-width: 500px) {
+      .page-title { font-size: 1.65rem; }
+      .benefits-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .glass-card { padding: 20px; }
+    }
+
+    /* ─── WA FLOAT ─── */
+    .wa-float {
+      position: fixed; bottom: 22px; right: 22px; z-index: 200;
+      width: 56px; height: 56px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background-color: #18a84a;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 30' width='26' height='30'%3E%3Cpolygon points='13,1 25,7 25,21 13,27 1,21 1,7' fill='none' stroke='rgba(0%2C0%2C0%2C0.22)' stroke-width='1.2'/%3E%3C/svg%3E"),
+        linear-gradient(145deg,#25d366 0%,#128c52 100%);
+      background-size: 18px 21px, 100%;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+      transition: transform .2s;
+    }
+    .wa-float:hover { transform: scale(1.07); }
+    .wa-float svg { width: 28px; height: 28px; fill: #fff; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="nav-header">
+    <div class="nav-inner">
+      <a href="./index.html" class="nav-logo">
+        <img src="./img/logo.png" alt="Dridanna" loading="eager">
+      </a>
+      <a href="./index.html" class="nav-back">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd"/></svg>
+        Volver al inicio
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-wrap">
+
+      <!-- ═══════ VISTA PERFIL (si ya está registrado) ═══════ -->
+      <div id="viewPerfil" class="hidden">
+        <p class="page-eyebrow">Tu cuenta</p>
+        <h1 class="page-title" id="perfilGreeting">Hola de nuevo</h1>
+        <p class="page-sub">Tus datos están guardados. Podés editarlos o hacer una nueva reserva directamente.</p>
+
+        <div class="glass-card" style="margin-bottom:16px;">
+          <div class="profile-avatar" id="perfilInitial">A</div>
+          <p class="profile-name" id="perfilName">—</p>
+          <p class="profile-since" id="perfilSince">—</p>
+
+          <div class="profile-row">
+            <span class="profile-key">WhatsApp</span>
+            <span class="profile-val" id="perfilCelular">—</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-key">Barrio</span>
+            <span class="profile-val" id="perfilBarrio">—</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-key">Dirección</span>
+            <span class="profile-val" id="perfilDir">—</span>
+          </div>
+
+          <div class="divider"></div>
+          <span class="edit-link" onclick="mostrarEdicion()">Editar mis datos</span>
+        </div>
+
+        <a href="./reservar.html" class="btn-primary" style="display:block; text-align:center; text-decoration:none; line-height:1.5; padding:14px;">
+          Hacer una reserva ahora →
+        </a>
+
+        <div style="margin-top: 28px;">
+          <p class="card-title" style="font-size:1rem; margin-bottom:14px; color:rgba(255,255,255,0.6);">Tus reservas</p>
+          <div id="historial">
+            <p class="empty-hist">Aún no tenés reservas registradas.</p>
+          </div>
+        </div>
+
+        <button class="btn-secondary" onclick="cerrarSesion()" style="margin-top:24px;">
+          Borrar mi perfil de este dispositivo
+        </button>
+      </div>
+
+      <!-- ═══════ VISTA FORMULARIO (nuevo cliente) ═══════ -->
+      <div id="viewForm">
+        <p class="page-eyebrow">Registro de cliente</p>
+        <h1 class="page-title">Hacete cliente<br>de Dridanna</h1>
+        <p class="page-sub">Guardamos tus datos en tu dispositivo para que la próxima reserva sea mucho más rápida. También te enviamos una bienvenida por WhatsApp.</p>
+
+        <div class="benefits-grid">
+          <div class="benefit-card">
+            <span class="benefit-icon">⚡</span>
+            <p class="benefit-title">Reservas en segundos</p>
+            <p class="benefit-desc">No volvés a escribir tus datos. Se llenan solos.</p>
+          </div>
+          <div class="benefit-card">
+            <span class="benefit-icon">📱</span>
+            <p class="benefit-title">Aviso por WhatsApp</p>
+            <p class="benefit-desc">Confirmación y recordatorio automáticos.</p>
+          </div>
+          <div class="benefit-card">
+            <span class="benefit-icon">📋</span>
+            <p class="benefit-title">Historial de reservas</p>
+            <p class="benefit-desc">Tus pedidos anteriores siempre a mano.</p>
+          </div>
+          <div class="benefit-card">
+            <span class="benefit-icon">🎉</span>
+            <p class="benefit-title">Atención prioritaria</p>
+            <p class="benefit-desc">Te conocemos y te respondemos más rápido.</p>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <p class="card-title">Tus datos</p>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="fNombre">Nombre</label>
+              <input type="text" id="fNombre" placeholder="María" autocomplete="given-name">
+            </div>
+            <div class="form-field">
+              <label for="fApellido">Apellido</label>
+              <input type="text" id="fApellido" placeholder="González" autocomplete="family-name">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="fCelular">WhatsApp (con código de área)</label>
+            <input type="tel" id="fCelular" placeholder="3757 123456" autocomplete="tel" inputmode="numeric">
+            <span class="hint">Sin el 0 inicial. Ej: 3757 671088</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="fBarrio">Barrio</label>
+              <input type="text" id="fBarrio" placeholder="Centro" autocomplete="address-level2">
+            </div>
+            <div class="form-field">
+              <label for="fDir">Dirección (opcional)</label>
+              <input type="text" id="fDir" placeholder="Calle 123" autocomplete="street-address">
+            </div>
+          </div>
+
+          <button class="btn-primary" onclick="guardarPerfil()">
+            Guardarme como cliente →
+          </button>
+        </div>
+
+        <p id="formError" style="color:#e8614e; font-size:0.85rem; margin-top:12px; text-align:center; display:none;"></p>
+      </div>
+
+      <!-- ═══════ VISTA EDICIÓN ═══════ -->
+      <div id="viewEdicion" class="hidden">
+        <p class="page-eyebrow">Editar perfil</p>
+        <h1 class="page-title" style="font-size:1.8rem;">Actualizá tus datos</h1>
+        <div class="glass-card" style="margin-top:20px; margin-bottom:16px;">
+          <div class="form-row">
+            <div class="form-field">
+              <label for="eNombre">Nombre</label>
+              <input type="text" id="eNombre" autocomplete="given-name">
+            </div>
+            <div class="form-field">
+              <label for="eApellido">Apellido</label>
+              <input type="text" id="eApellido" autocomplete="family-name">
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="eCelular">WhatsApp</label>
+            <input type="tel" id="eCelular" autocomplete="tel" inputmode="numeric">
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="eBarrio">Barrio</label>
+              <input type="text" id="eBarrio">
+            </div>
+            <div class="form-field">
+              <label for="eDir">Dirección</label>
+              <input type="text" id="eDir">
+            </div>
+          </div>
+          <button class="btn-primary" onclick="guardarEdicion()">Guardar cambios</button>
+          <button class="btn-secondary" onclick="cancelarEdicion()">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- ═══════ VISTA ÉXITO ═══════ -->
+      <div id="viewSuccess" class="hidden" style="text-align:center; padding-top:20px;">
+        <div class="success-icon">🎉</div>
+        <h2 class="success-title" id="successGreet">Bienvenida, María</h2>
+        <p class="success-msg">Ya sos parte de Dridanna. Te enviamos un saludo por WhatsApp. Ahora podés hacer tu primera reserva en segundos.</p>
+
+        <a href="./reservar.html" class="btn-primary" style="display:block; text-align:center; text-decoration:none; line-height:1.5; padding:14px; max-width:340px; margin:0 auto 14px;">
+          Reservar un inflable ahora →
+        </a>
+        <a href="./index.html" class="btn-secondary" style="display:block; text-align:center; text-decoration:none; padding:12px; max-width:340px; margin:0 auto;">
+          Volver al inicio
+        </a>
+      </div>
+
+    </div><!-- /.page-wrap -->
+  </main>
+
+  <!-- WA FLOAT -->
+  <a href="https://wa.me/5493757671088" target="_blank" rel="noopener" class="wa-float" aria-label="WhatsApp Dridanna">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.116 1.524 5.844L0 24l6.338-1.497A11.93 11.93 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.797 9.797 0 01-5.015-1.378l-.36-.213-3.734.882.932-3.625-.235-.371A9.795 9.795 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
+    </svg>
+  </a>
+
+  <script>
+    const PERFIL_KEY = 'dridanna_mi_perfil';
+    const RESERVAS_KEY = 'dridanna_reservas';
+    const API_BASE = 'http://localhost:3000';
+    const ADMIN_WA = '5493757671088';
+
+    const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+    let perfilActual = null;
+
+    /* ─── Init ─── */
+    function init() {
+      const raw = localStorage.getItem(PERFIL_KEY);
+      if (raw) {
+        try {
+          perfilActual = JSON.parse(raw);
+          mostrarPerfil(perfilActual);
+        } catch { localStorage.removeItem(PERFIL_KEY); }
+      }
+    }
+
+    /* ─── Mostrar perfil existente ─── */
+    function mostrarPerfil(p) {
+      document.getElementById('viewForm').classList.add('hidden');
+      document.getElementById('viewPerfil').classList.remove('hidden');
+
+      const nombre = p.nombre || '';
+      const apellido = p.apellido || '';
+      const fullName = [nombre, apellido].filter(Boolean).join(' ');
+      const inicial = nombre.charAt(0).toUpperCase() || '?';
+
+      document.getElementById('perfilInitial').textContent = inicial;
+      document.getElementById('perfilName').textContent    = fullName;
+      document.getElementById('perfilGreeting').textContent = 'Hola, ' + nombre;
+      document.getElementById('perfilSince').textContent   = p.fechaRegistro ? 'Cliente desde ' + p.fechaRegistro : 'Cliente Dridanna';
+      document.getElementById('perfilCelular').textContent = p.celular || '—';
+      document.getElementById('perfilBarrio').textContent  = p.barrio  || '—';
+      document.getElementById('perfilDir').textContent     = p.direccion || '—';
+
+      renderHistorial(p.celular);
+    }
+
+    function renderHistorial(celular) {
+      const wrap = document.getElementById('historial');
+      const all  = JSON.parse(localStorage.getItem(RESERVAS_KEY) || '[]');
+      const cel  = String(celular || '').replace(/\D/g,'');
+      const mias = all.filter(r => String(r.celular || r.telefono || '').replace(/\D/g,'').endsWith(cel.slice(-8)));
+
+      if (!mias.length) {
+        wrap.innerHTML = '<p class="empty-hist">Aún no tenés reservas registradas en este dispositivo.</p>';
+        return;
+      }
+
+      wrap.innerHTML = mias.map(r => {
+        const estado = r.estado || 'pendiente';
+        const cls    = 'estado-' + estado;
+        const label  = estado.charAt(0).toUpperCase() + estado.slice(1);
+        return `
+          <div class="hist-item">
+            <div>
+              <p class="hist-prod">${r.producto || '—'}</p>
+              <p class="hist-date">${r.fechaLabel || r.fecha || '—'} &middot; ${r.turnoLabel || r.turno || '—'}</p>
+            </div>
+            <span class="hist-estado ${cls}">${label}</span>
+          </div>`;
+      }).join('');
+    }
+
+    /* ─── Guardar nuevo perfil ─── */
+    async function guardarPerfil() {
+      const nombre   = document.getElementById('fNombre').value.trim();
+      const apellido = document.getElementById('fApellido').value.trim();
+      const celular  = document.getElementById('fCelular').value.trim();
+      const barrio   = document.getElementById('fBarrio').value.trim();
+      const direccion= document.getElementById('fDir').value.trim();
+      const errEl    = document.getElementById('formError');
+
+      errEl.style.display = 'none';
+
+      if (!nombre) { mostrarError('Ingresá tu nombre.'); return; }
+      if (!celular || celular.replace(/\D/g,'').length < 7) { mostrarError('Ingresá un WhatsApp válido.'); return; }
+
+      const ahora = new Date();
+      const fechaRegistro = ahora.getDate() + ' de ' + MESES[ahora.getMonth()] + ' de ' + ahora.getFullYear();
+
+      const perfil = { nombre, apellido, celular, barrio, direccion, fechaRegistro };
+      localStorage.setItem(PERFIL_KEY, JSON.stringify(perfil));
+      perfilActual = perfil;
+
+      // Disparar alta_cliente (best-effort, no bloqueante)
+      altaClienteAPI(nombre, apellido, celular);
+
+      // Mostrar éxito
+      document.getElementById('viewForm').classList.add('hidden');
+      document.getElementById('successGreet').textContent = 'Bienvenida, ' + nombre;
+      document.getElementById('viewSuccess').classList.remove('hidden');
+    }
+
+    function mostrarError(msg) {
+      const el = document.getElementById('formError');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    /* ─── API alta_cliente ─── */
+    async function altaClienteAPI(nombre, apellido, celular) {
+      try {
+        const r = await fetch(API_BASE + '/api/notify/alta-cliente', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre, apellido, celular }),
+        });
+        const d = await r.json();
+        if (!d.ok) throw new Error(d.error);
+      } catch {
+        // Silencioso — el registro ya quedó guardado
+      }
+    }
+
+    /* ─── Editar perfil ─── */
+    function mostrarEdicion() {
+      if (!perfilActual) return;
+      document.getElementById('eNombre').value   = perfilActual.nombre   || '';
+      document.getElementById('eApellido').value = perfilActual.apellido || '';
+      document.getElementById('eCelular').value  = perfilActual.celular  || '';
+      document.getElementById('eBarrio').value   = perfilActual.barrio   || '';
+      document.getElementById('eDir').value      = perfilActual.direccion|| '';
+      document.getElementById('viewPerfil').classList.add('hidden');
+      document.getElementById('viewEdicion').classList.remove('hidden');
+    }
+
+    function cancelarEdicion() {
+      document.getElementById('viewEdicion').classList.add('hidden');
+      document.getElementById('viewPerfil').classList.remove('hidden');
+    }
+
+    function guardarEdicion() {
+      const p = {
+        ...perfilActual,
+        nombre:    document.getElementById('eNombre').value.trim(),
+        apellido:  document.getElementById('eApellido').value.trim(),
+        celular:   document.getElementById('eCelular').value.trim(),
+        barrio:    document.getElementById('eBarrio').value.trim(),
+        direccion: document.getElementById('eDir').value.trim(),
+      };
+      localStorage.setItem(PERFIL_KEY, JSON.stringify(p));
+      perfilActual = p;
+      cancelarEdicion();
+      mostrarPerfil(p);
+    }
+
+    /* ─── Cerrar sesión ─── */
+    function cerrarSesion() {
+      if (!confirm('¿Seguro que querés borrar tu perfil de este dispositivo?')) return;
+      localStorage.removeItem(PERFIL_KEY);
+      location.reload();
+    }
+
+    init();
+  </script>
+</body>
+</html>

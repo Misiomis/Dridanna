@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservar inflable — Dridanna</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/styles.css">
+  <style>
+    :root {
+      --blue-sky:   #5eb8f5;
+      --gold-tower: #f5c842;
+      --coral-roof: #e8614e;
+      --pink-brand: #dda0b8;
+      --bg:         #080c18;
+      --glass-bg:   rgba(255,255,255,0.04);
+      --glass-b:    rgba(255,255,255,0.08);
+      --glass-r:    20px;
+      --font:       'Nunito', 'Segoe UI', system-ui, sans-serif;
+      --serif:      'Playfair Display', Georgia, serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: #e8eaf2; font-family: var(--font); min-height: 100vh; }
+    a    { color: var(--blue-sky); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ─── NAV ─── */
+    .nav-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 24px; height: 64px; display: flex; align-items: center; background: rgba(8,12,24,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .nav-inner  { width: 100%; max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo   { display: flex; align-items: center; }
+    .nav-logo img { height: 38px; }
+    .nav-back   { font-size: 0.85rem; color: rgba(255,255,255,0.55); display: flex; align-items: center; gap: 6px; transition: color .2s; }
+    .nav-back:hover { color: var(--pink-brand); text-decoration: none; }
+    .nav-back svg { width: 14px; height: 14px; }
+    .nav-cliente-badge {
+      font-size: 0.8rem; font-weight: 700;
+      background: rgba(221,160,184,0.15);
+      border: 1px solid rgba(221,160,184,0.25);
+      border-radius: 20px;
+      padding: 4px 12px; color: var(--pink-brand);
+      cursor: pointer; transition: background .2s;
+    }
+    .nav-cliente-badge:hover { background: rgba(221,160,184,0.25); }
+    .nav-cliente-badge.hidden { display: none; }
+    .nav-register-link { font-size: 0.82rem; color: rgba(255,255,255,0.45); transition: color .2s; }
+    .nav-register-link:hover { color: var(--pink-brand); text-decoration: none; }
+    .nav-register-link.hidden { display: none; }
+
+    /* ─── LAYOUT ─── */
+    main { padding: 82px 16px 80px; max-width: 1100px; margin: 0 auto; }
+
+    /* ─── SECTION HEADER ─── */
+    .s-eyebrow { font-family: var(--serif); font-style: italic; font-size: 0.9rem; color: var(--pink-brand); letter-spacing: 0.04em; margin-bottom: 6px; }
+    .s-title   { font-family: var(--serif); font-size: 1.65rem; font-weight: 600; margin-bottom: 4px; }
+    .s-sub     { font-size: 0.88rem; color: rgba(255,255,255,0.45); margin-bottom: 22px; }
+    .section-block { margin-bottom: 36px; }
+
+    /* ─── PROFILE BANNER ─── */
+    .profile-banner {
+      display: flex; align-items: center; gap: 14px;
+      background: rgba(221,160,184,0.07);
+      border: 1px solid rgba(221,160,184,0.18);
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 30px;
+    }
+    .pb-avatar {
+      width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--pink-brand), var(--blue-sky));
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif); font-size: 1.1rem; font-weight: 700; color: #fff;
+    }
+    .pb-text { flex: 1; }
+    .pb-name  { font-weight: 700; font-size: 0.95rem; }
+    .pb-hint  { font-size: 0.78rem; color: rgba(255,255,255,0.45); margin-top: 2px; }
+    .pb-edit  { font-size: 0.78rem; color: rgba(255,255,255,0.35); cursor: pointer; white-space: nowrap; transition: color .2s; }
+    .pb-edit:hover { color: var(--pink-brand); }
+
+    /* ─── REGISTRO BANNER ─── */
+    .register-banner {
+      display: flex; align-items: center; gap: 14px;
+      background: rgba(94,184,245,0.07);
+      border: 1px solid rgba(94,184,245,0.18);
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 30px;
+    }
+    .rb-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .rb-text  { flex: 1; }
+    .rb-title { font-weight: 700; font-size: 0.92rem; color: var(--blue-sky); margin-bottom: 2px; }
+    .rb-sub   { font-size: 0.78rem; color: rgba(255,255,255,0.45); }
+    .rb-link  { flex-shrink: 0; font-size: 0.82rem; font-weight: 700; color: var(--blue-sky); white-space: nowrap; transition: opacity .2s; }
+    .rb-link:hover { opacity: .75; text-decoration: none; }
+
+    /* ─── PRODUCTOS GRID ─── */
+    .productos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .prod-card {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color .2s, transform .15s, box-shadow .2s;
+      background: var(--glass-bg);
+      aspect-ratio: 4/3;
+    }
+    .prod-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.18); }
+    .prod-card.selected {
+      border-color: var(--pink-brand);
+      box-shadow: 0 0 0 3px rgba(221,160,184,0.22), 0 6px 24px rgba(0,0,0,0.4);
+    }
+    .prod-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .prod-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(8,12,24,0.88) 0%, rgba(8,12,24,0.2) 55%, transparent 100%);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 10px 11px;
+    }
+    .prod-tipo  { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--gold-tower); margin-bottom: 3px; }
+    .prod-name  { font-size: 0.85rem; font-weight: 700; line-height: 1.25; color: #fff; }
+    .prod-dims  { font-size: 0.72rem; color: rgba(255,255,255,0.55); margin-top: 2px; }
+    .prod-check {
+      position: absolute; top: 8px; right: 8px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--pink-brand);
+      display: none; align-items: center; justify-content: center;
+    }
+    .prod-check svg { width: 12px; height: 12px; fill: #fff; }
+    .prod-card.selected .prod-check { display: flex; }
+
+    /* Fallback fondo cuando no carga la imagen */
+    .prod-fallback {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(94,184,245,0.2), rgba(221,160,184,0.2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem;
+    }
+
+    /* ─── FECHA PICKER ─── */
+    .fecha-row { display: grid; grid-template-columns: 1fr 1.6fr 1fr; gap: 10px; }
+    .fecha-sel {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-family: var(--font);
+      font-size: 0.95rem;
+      color: #e8eaf2;
+      outline: none;
+      transition: border-color .2s;
+      cursor: pointer;
+      width: 100%;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23888'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 18px;
+      padding-right: 34px;
+    }
+    .fecha-sel:focus { border-color: var(--pink-brand); background-color: rgba(221,160,184,0.07); }
+    .fecha-sel option { background: #111827; color: #e8eaf2; }
+    .f-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+
+    /* ─── TURNO ─── */
+    .turnos-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 18px; }
+    .turno-btn  {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 14px 8px;
+      background: var(--glass-bg);
+      border: 2px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      color: #e8eaf2;
+      font-family: var(--font);
+    }
+    .turno-btn:hover  { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.07); }
+    .turno-btn.active { border-color: var(--blue-sky); background: rgba(94,184,245,0.1); }
+    .t-emoji { font-size: 1.4rem; line-height: 1; }
+    .t-label { font-size: 0.88rem; font-weight: 700; margin-top: 2px; }
+    .t-horas  { font-size: 0.72rem; color: rgba(255,255,255,0.45); }
+    .turno-btn.active .t-label { color: var(--blue-sky); }
+    .turno-btn.active .t-horas { color: rgba(94,184,245,0.7); }
+
+    /* ─── DATOS ─── */
+    .form-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .form-field label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+    .form-input {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-family: var(--font);
+      font-size: 0.95rem;
+      color: #e8eaf2;
+      outline: none;
+      transition: border-color .2s;
+      width: 100%;
+    }
+    .form-input:focus { border-color: var(--pink-brand); background: rgba(221,160,184,0.07); }
+    .form-input::placeholder { color: rgba(255,255,255,0.22); }
+    .form-input.prefilled { border-color: rgba(221,160,184,0.35); background: rgba(221,160,184,0.05); color: rgba(255,255,255,0.7); }
+    .hint { font-size: 0.75rem; color: rgba(255,255,255,0.3); }
+
+    /* ─── RESUMEN ─── */
+    .resumen-card {
+      background: rgba(221,160,184,0.06);
+      border: 1px solid rgba(221,160,184,0.18);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+    .resumen-title { font-family: var(--serif); font-size: 1.1rem; font-weight: 600; margin-bottom: 14px; }
+    .resumen-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.88rem; gap: 12px; }
+    .resumen-row:last-child { border-bottom: none; }
+    .resumen-key { color: rgba(255,255,255,0.45); flex-shrink: 0; }
+    .resumen-val { font-weight: 700; text-align: right; }
+
+    /* ─── BOTONES ─── */
+    .btn-reservar {
+      width: 100%; padding: 16px;
+      background: linear-gradient(135deg, var(--pink-brand) 0%, #c078a0 100%);
+      border: none; border-radius: 14px;
+      color: #fff; font-family: var(--font); font-size: 1.05rem; font-weight: 700;
+      cursor: pointer; transition: opacity .2s, transform .1s;
+      letter-spacing: 0.02em;
+    }
+    .btn-reservar:hover  { opacity: .9; }
+    .btn-reservar:active { transform: scale(.99); }
+    .btn-reservar:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-wa {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #25d366 0%, #128c52 100%);
+      border: none; border-radius: 14px;
+      color: #fff; font-family: var(--font); font-size: 0.97rem; font-weight: 700;
+      cursor: pointer; transition: opacity .2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-wa:hover { opacity: .9; }
+    .btn-wa svg { width: 20px; height: 20px; fill: #fff; flex-shrink: 0; }
+
+    /* ─── NOTICE ─── */
+    .notice { font-size: 0.8rem; color: rgba(255,255,255,0.35); text-align: center; margin-top: 10px; line-height: 1.5; }
+    .notice a { color: rgba(255,255,255,0.45); }
+
+    /* ─── ERROR ─── */
+    #formError { color: var(--coral-roof); font-size: 0.85rem; text-align: center; margin: 8px 0; display: none; }
+
+    /* ─── HIDDEN / SUCCESS ─── */
+    .hidden { display: none !important; }
+    #viewSuccess { text-align: center; padding: 40px 20px; }
+    .suc-icon  { font-size: 3.5rem; margin-bottom: 20px; }
+    .suc-title { font-family: var(--serif); font-size: 2rem; font-weight: 600; margin-bottom: 12px; }
+    .suc-msg   { font-size: 0.95rem; color: rgba(255,255,255,0.6); line-height: 1.65; margin-bottom: 28px; max-width: 420px; margin-left: auto; margin-right: auto; }
+    .suc-detail { background: var(--glass-bg); border: 1px solid var(--glass-b); border-radius: 14px; padding: 18px; text-align: left; margin-bottom: 20px; max-width: 420px; margin-left: auto; margin-right: auto; }
+    .suc-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.88rem; }
+    .suc-row:last-child { border-bottom: none; }
+    .suc-key { color: rgba(255,255,255,0.45); }
+    .suc-val { font-weight: 700; }
+    .btn-nuevo { padding: 12px 28px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; color: rgba(255,255,255,0.6); font-family: var(--font); font-size: 0.9rem; cursor: pointer; transition: all .2s; margin-top: 8px; }
+    .btn-nuevo:hover { border-color: var(--pink-brand); color: var(--pink-brand); }
+
+    /* ─── WA FLOAT ─── */
+    .wa-float {
+      position: fixed; bottom: 22px; right: 22px; z-index: 200;
+      width: 56px; height: 56px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background-color: #18a84a;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 30' width='26' height='30'%3E%3Cpolygon points='13,1 25,7 25,21 13,27 1,21 1,7' fill='none' stroke='rgba(0%2C0%2C0%2C0.22)' stroke-width='1.2'/%3E%3C/svg%3E"),
+        linear-gradient(145deg,#25d366 0%,#128c52 100%);
+      background-size: 18px 21px, 100%;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+      transition: transform .2s;
+    }
+    .wa-float:hover { transform: scale(1.07); }
+    .wa-float svg { width: 28px; height: 28px; fill: #fff; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 700px) {
+      .productos-grid { grid-template-columns: repeat(2, 1fr); }
+      .form-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .fecha-row { grid-template-columns: 1fr 1fr; }
+      .fecha-row .f-anio { grid-column: 1 / -1; }
+      .s-title  { font-size: 1.35rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="nav-header">
+    <div class="nav-inner">
+      <a href="./index.html" class="nav-logo">
+        <img src="./img/logo.png" alt="Dridanna" loading="eager">
+      </a>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="./altacliente.html" class="nav-register-link" id="navRegLink">Hacete cliente</a>
+        <span class="nav-cliente-badge hidden" id="navBadge" onclick="window.location='./altacliente.html'"></span>
+        <a href="./index.html" class="nav-back">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd"/></svg>
+          Inicio
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ═══════ VISTA FORMULARIO ═══════ -->
+    <div id="viewForm">
+
+      <!-- Título -->
+      <div style="margin-bottom:28px;">
+        <p class="s-eyebrow">Reservá tu evento</p>
+        <h1 style="font-family:var(--serif); font-size:2rem; font-weight:600; line-height:1.2; margin-bottom:8px;">Elegí tu inflable y<br>reservá en minutos</h1>
+        <p style="font-size:0.9rem; color:rgba(255,255,255,0.45);">Tres turnos por día · Mañana, tarde y noche</p>
+      </div>
+
+      <!-- Banner perfil (se muestra si hay perfil) -->
+      <div class="profile-banner hidden" id="profileBanner">
+        <div class="pb-avatar" id="pbInitial">A</div>
+        <div class="pb-text">
+          <p class="pb-name" id="pbName">—</p>
+          <p class="pb-hint">Tus datos están listos. Solo elegí el inflable, fecha y turno.</p>
+        </div>
+        <span class="pb-edit" onclick="window.location='./altacliente.html'">Editar</span>
+      </div>
+
+      <!-- Banner registro (se muestra si NO hay perfil) -->
+      <div class="register-banner" id="registerBanner">
+        <span class="rb-icon">✨</span>
+        <div class="rb-text">
+          <p class="rb-title">Hacete cliente y reservá más rápido</p>
+          <p class="rb-sub">Guardamos tus datos. La próxima reserva se llena sola.</p>
+        </div>
+        <a href="./altacliente.html" class="rb-link">Registrarme →</a>
+      </div>
+
+      <!-- ─── PASO 1: Elegí el inflable ─── -->
+      <div class="section-block">
+        <p class="s-eyebrow">Paso 1</p>
+        <h2 class="s-title">Elegí tu inflable</h2>
+        <p class="s-sub">Tocá el que querés para tu fiesta</p>
+
+        <div class="productos-grid" id="productosGrid">
+          <!-- JS renderiza las cards -->
+        </div>
+      </div>
+
+      <!-- ─── PASO 2: Fecha y turno ─── -->
+      <div class="section-block">
+        <p class="s-eyebrow">Paso 2</p>
+        <h2 class="s-title">Elegí la fecha y el horario</h2>
+
+        <p class="f-label">Fecha del evento</p>
+        <div class="fecha-row">
+          <div>
+            <select class="fecha-sel" id="fDia" aria-label="Día">
+              <option value="">Día</option>
+            </select>
+          </div>
+          <div>
+            <select class="fecha-sel" id="fMes" aria-label="Mes">
+              <option value="">Mes</option>
+              <option value="1">Enero</option>
+              <option value="2">Febrero</option>
+              <option value="3">Marzo</option>
+              <option value="4">Abril</option>
+              <option value="5">Mayo</option>
+              <option value="6">Junio</option>
+              <option value="7">Julio</option>
+              <option value="8">Agosto</option>
+              <option value="9">Septiembre</option>
+              <option value="10">Octubre</option>
+              <option value="11">Noviembre</option>
+              <option value="12">Diciembre</option>
+            </select>
+          </div>
+          <div class="f-anio">
+            <select class="fecha-sel" id="fAnio" aria-label="Año">
+              <option value="">Año</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="turnos-row">
+          <button class="turno-btn" data-id="manana" onclick="selTurno('manana',this)">
+            <span class="t-emoji">🌅</span>
+            <span class="t-label">Mañana</span>
+            <span class="t-horas">9:00 – 13:00</span>
+          </button>
+          <button class="turno-btn" data-id="tarde" onclick="selTurno('tarde',this)">
+            <span class="t-emoji">☀️</span>
+            <span class="t-label">Tarde</span>
+            <span class="t-horas">14:00 – 18:00</span>
+          </button>
+          <button class="turno-btn" data-id="noche" onclick="selTurno('noche',this)">
+            <span class="t-emoji">🌙</span>
+            <span class="t-label">Noche</span>
+            <span class="t-horas">19:00 – 23:00</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ─── PASO 3: Tus datos ─── -->
+      <div class="section-block">
+        <p class="s-eyebrow">Paso 3</p>
+        <h2 class="s-title">Tus datos</h2>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="dNombre">Nombre</label>
+            <input class="form-input" type="text" id="dNombre" placeholder="María" autocomplete="given-name">
+          </div>
+          <div class="form-field">
+            <label for="dApellido">Apellido</label>
+            <input class="form-input" type="text" id="dApellido" placeholder="González" autocomplete="family-name">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="dCelular">WhatsApp (con código de área)</label>
+          <input class="form-input" type="tel" id="dCelular" placeholder="3757 123456" autocomplete="tel" inputmode="numeric">
+          <span class="hint">Sin el 0 inicial. Por este número te confirmamos la reserva.</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="dBarrio">Barrio</label>
+            <input class="form-input" type="text" id="dBarrio" placeholder="Centro" autocomplete="address-level2">
+          </div>
+          <div class="form-field">
+            <label for="dDir">Dirección</label>
+            <input class="form-input" type="text" id="dDir" placeholder="Calle 123" autocomplete="street-address">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="dRef">Referencia u observaciones (opcional)</label>
+          <input class="form-input" type="text" id="dRef" placeholder="Casa esquina, portón azul...">
+        </div>
+
+        <div id="saveProfileWrap" style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+          <input type="checkbox" id="guardarPerfil" style="accent-color:var(--pink-brand); width:16px; height:16px; cursor:pointer;">
+          <label for="guardarPerfil" style="font-size:0.83rem; color:rgba(255,255,255,0.5); cursor:pointer;">Guardar mis datos para la próxima reserva</label>
+        </div>
+      </div>
+
+      <!-- ─── RESUMEN ─── -->
+      <div class="resumen-card hidden" id="resumenCard">
+        <p class="resumen-title">Tu reserva</p>
+        <div class="resumen-row"><span class="resumen-key">Inflable</span><span class="resumen-val" id="rProducto">—</span></div>
+        <div class="resumen-row"><span class="resumen-key">Fecha</span><span class="resumen-val" id="rFecha">—</span></div>
+        <div class="resumen-row"><span class="resumen-key">Turno</span><span class="resumen-val" id="rTurno">—</span></div>
+        <div class="resumen-row"><span class="resumen-key">Nombre</span><span class="resumen-val" id="rNombre">—</span></div>
+        <div class="resumen-row"><span class="resumen-key">WhatsApp</span><span class="resumen-val" id="rCelular">—</span></div>
+        <div class="resumen-row"><span class="resumen-key">Dirección</span><span class="resumen-val" id="rDir">—</span></div>
+      </div>
+
+      <!-- Error -->
+      <p id="formError"></p>
+
+      <!-- Botón principal -->
+      <button class="btn-reservar" onclick="confirmarReserva()" id="btnConfirmar">
+        Confirmar reserva →
+      </button>
+
+      <p class="notice">
+        Al confirmar enviamos tu solicitud a Dridanna y te avisamos por WhatsApp.<br>
+        <a href="./privacidad.html">Política de privacidad</a> · <a href="./terminos.html">Términos</a>
+      </p>
+
+    </div><!-- /#viewForm -->
+
+    <!-- ═══════ VISTA ÉXITO ═══════ -->
+    <div id="viewSuccess" class="hidden">
+      <div class="suc-icon">🎉</div>
+      <h2 class="suc-title">¡Reserva enviada!</h2>
+      <p class="suc-msg">En breve vas a recibir un WhatsApp de confirmación de parte de Dridanna. Si no llega en unos minutos, podés escribirnos directamente.</p>
+
+      <div class="suc-detail" id="sucDetalle">
+        <div class="suc-row"><span class="suc-key">Inflable</span><span class="suc-val" id="sucProducto">—</span></div>
+        <div class="suc-row"><span class="suc-key">Fecha</span><span class="suc-val" id="sucFecha">—</span></div>
+        <div class="suc-row"><span class="suc-key">Turno</span><span class="suc-val" id="sucTurno">—</span></div>
+        <div class="suc-row"><span class="suc-key">WhatsApp</span><span class="suc-val" id="sucCelular">—</span></div>
+      </div>
+
+      <a id="btnWaFallback" href="#" target="_blank" rel="noopener" class="btn-wa" style="max-width:380px; margin:0 auto 12px; display:flex; text-decoration:none;">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.116 1.524 5.844L0 24l6.338-1.497A11.93 11.93 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.797 9.797 0 01-5.015-1.378l-.36-.213-3.734.882.932-3.625-.235-.371A9.795 9.795 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+        Confirmar por WhatsApp también
+      </a>
+
+      <button class="btn-nuevo" onclick="nuevaReserva()">Hacer otra reserva</button>
+    </div>
+
+  </main>
+
+  <!-- WA FLOAT -->
+  <a href="https://wa.me/5493757671088" target="_blank" rel="noopener" class="wa-float" aria-label="WhatsApp Dridanna">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.116 1.524 5.844L0 24l6.338-1.497A11.93 11.93 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.797 9.797 0 01-5.015-1.378l-.36-.213-3.734.882.932-3.625-.235-.371A9.795 9.795 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
+    </svg>
+  </a>
+
+  <script>
+    /* ─── Constantes ─── */
+    const PERFIL_KEY   = 'dridanna_mi_perfil';
+    const RESERVAS_KEY = 'dridanna_reservas';
+    const API_BASE     = 'http://localhost:3000';
+    const ADMIN_WA     = '5493757671088';
+
+    const MESES_CORTO  = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const MESES_LARGO  = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const TURNOS_LABEL = { manana:'Mañana (9:00 – 13:00)', tarde:'Tarde (14:00 – 18:00)', noche:'Noche (19:00 – 23:00)' };
+
+    /* ─── Catálogo de productos ─── */
+    const CATALOGO = [
+      { id:'castillo-3x3',        nombre:'Castillo Inflable',          dims:'3×3 m',     tipo:'Castillo', img:'castillo inflable 3 por 3/castillo inflable.jpg' },
+      { id:'princesas-3x3',       nombre:'Inflable Princesas',         dims:'3×3 m',     tipo:'Castillo', img:'Inflable Princesas 3 por 3/Inflable Princesas.jpg' },
+      { id:'jirafa-tobogan',      nombre:'Jirafa con Tobogán',         dims:'3.5×6.5 m', tipo:'Tobogán',  img:'Inflable Jirafa con tobogan 3 coma 5 por 6 coma 5/Inflable Jirafa con tobogan.jpg' },
+      { id:'gato-tobogan-4x7',    nombre:'Gato Silvestre c/ Tobogán',  dims:'4×7 m',     tipo:'Tobogán',  img:'Inflable Gato Silvestre con Tobogán 4x7/gatosilvestre.jpg' },
+      { id:'gato-pio-3x5',        nombre:'Gato Silvestre y Pío Pío',   dims:'3×5 m',     tipo:'Castillo', img:'Gato Silvestre y Pio Pio  3 por 5/inflable pio y silvestre.jpg' },
+      { id:'rana-4x3',            nombre:'Inflable Rana',              dims:'4×3 m',     tipo:'Castillo', img:'inflable rana 4 por 3/inflable rana.jpg' },
+      { id:'tigre',               nombre:'Inflable Tigre',             dims:'',          tipo:'Castillo', img:'inflable tigre/inflable tigre.jpg' },
+      { id:'mickey-minnie',       nombre:'Mickey & Minnie',            dims:'',          tipo:'Castillo', img:'mickey and minii/mickey and minie.jpg' },
+      { id:'toy-story',           nombre:'Toy Story',                  dims:'',          tipo:'Castillo', img:'toy story/Toy  Story.jpg' },
+      { id:'super-rampa',         nombre:'Super Rampa',                dims:'',          tipo:'Tobogán',  img:'Super Rampa Brasile/super rampa.jpg' },
+      { id:'rampa-lila',          nombre:'Rampa Lila',                 dims:'',          tipo:'Tobogán',  img:'Rampa Lila/rampainflable.jpg' },
+      { id:'rampa-azul',          nombre:'Rampa Inflable Azul',        dims:'',          tipo:'Tobogán',  img:'rampa inflable azul/rampa inflable azul.jpg' },
+      { id:'inflable-azul-rampa', nombre:'Inflable Azul con Rampa',    dims:'3×3 m',     tipo:'Tobogán',  img:'inflable azul con rampa 3 po 3/inflable azul.jpg' },
+      { id:'inflable-naranja',    nombre:'Inflable Naranja',           dims:'3×3 m',     tipo:'Castillo', img:'inflable naranja 3 po 3/inflable naranja.jpg' },
+      { id:'metegol',             nombre:'Metegol',                    dims:'',          tipo:'Metegol',  img:'metegol/metegol.png' },
+    ];
+
+    /* ─── Estado ─── */
+    let selProductoId  = null;
+    let selTurnoId     = null;
+    let perfil         = null;
+
+    /* ─── Init ─── */
+    function init() {
+      buildDias();
+      buildAnios();
+      renderProductos();
+      cargarPerfil();
+
+      // Si llega desde index.html con ?producto=id
+      const params = new URLSearchParams(location.search);
+      const pId    = params.get('producto');
+      if (pId) {
+        const found = CATALOGO.find(p => p.id === pId);
+        if (found) selProducto(pId);
+      }
+    }
+
+    function buildDias() {
+      const sel = document.getElementById('fDia');
+      for (let d = 1; d <= 31; d++) {
+        const o = document.createElement('option');
+        o.value = d; o.textContent = d;
+        sel.appendChild(o);
+      }
+    }
+
+    function buildAnios() {
+      const sel = document.getElementById('fAnio');
+      const now = new Date().getFullYear();
+      for (let y = now; y <= now + 2; y++) {
+        const o = document.createElement('option');
+        o.value = y; o.textContent = y;
+        sel.appendChild(o);
+      }
+    }
+
+    function cargarPerfil() {
+      const raw = localStorage.getItem(PERFIL_KEY);
+      if (!raw) { return; }
+      try { perfil = JSON.parse(raw); } catch { return; }
+
+      // Mostrar badge en nav
+      const badge   = document.getElementById('navBadge');
+      const regLink = document.getElementById('navRegLink');
+      badge.textContent = perfil.nombre;
+      badge.classList.remove('hidden');
+      regLink.classList.add('hidden');
+
+      // Mostrar banner perfil, ocultar banner registro
+      document.getElementById('profileBanner').classList.remove('hidden');
+      document.getElementById('registerBanner').classList.add('hidden');
+      document.getElementById('pbName').textContent    = [perfil.nombre, perfil.apellido].filter(Boolean).join(' ');
+      document.getElementById('pbInitial').textContent = (perfil.nombre || '?').charAt(0).toUpperCase();
+
+      // Pre-rellenar campos
+      set('dNombre',   perfil.nombre    || '');
+      set('dApellido', perfil.apellido  || '');
+      set('dCelular',  perfil.celular   || '');
+      set('dBarrio',   perfil.barrio    || '');
+      set('dDir',      perfil.direccion || '');
+
+      // Marcar campos como pre-llenados
+      ['dNombre','dApellido','dCelular','dBarrio','dDir'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.value) el.classList.add('prefilled');
+      });
+
+      // Ocultar checkbox de guardar (ya está guardado)
+      document.getElementById('saveProfileWrap').style.display = 'none';
+    }
+
+    function set(id, val) {
+      const el = document.getElementById(id);
+      if (el) el.value = val;
+    }
+
+    /* ─── Render productos ─── */
+    function renderProductos() {
+      const grid = document.getElementById('productosGrid');
+      grid.innerHTML = CATALOGO.map(p => {
+        const imgPath = `./img/${p.img}`;
+        return `
+          <div class="prod-card" id="card-${p.id}" onclick="selProducto('${p.id}')">
+            <div class="prod-fallback" id="fall-${p.id}">🎈</div>
+            <img class="prod-img" src="${imgPath}" alt="${p.nombre}" loading="lazy"
+              onload="document.getElementById('fall-${p.id}').style.display='none'"
+              onerror="this.style.display='none'">
+            <div class="prod-overlay">
+              <span class="prod-tipo">${p.tipo}</span>
+              <span class="prod-name">${p.nombre}</span>
+              ${p.dims ? `<span class="prod-dims">${p.dims}</span>` : ''}
+            </div>
+            <div class="prod-check">
+              <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    /* ─── Selección producto ─── */
+    function selProducto(id) {
+      selProductoId = id;
+      document.querySelectorAll('.prod-card').forEach(c => c.classList.remove('selected'));
+      const card = document.getElementById('card-' + id);
+      if (card) {
+        card.classList.add('selected');
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      actualizarResumen();
+    }
+
+    /* ─── Selección turno ─── */
+    function selTurno(id, el) {
+      selTurnoId = id;
+      document.querySelectorAll('.turno-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      actualizarResumen();
+    }
+
+    /* ─── Actualizar resumen ─── */
+    function actualizarResumen() {
+      const prod  = CATALOGO.find(p => p.id === selProductoId);
+      const dia   = document.getElementById('fDia').value;
+      const mes   = document.getElementById('fMes').value;
+      const anio  = document.getElementById('fAnio').value;
+
+      const listo = prod && dia && mes && anio && selTurnoId;
+      const card  = document.getElementById('resumenCard');
+      if (!listo) { card.classList.add('hidden'); return; }
+      card.classList.remove('hidden');
+
+      const fechaLabel = `${dia} de ${MESES_LARGO[parseInt(mes)-1]} de ${anio}`;
+      document.getElementById('rProducto').textContent = prod.nombre + (prod.dims ? ` (${prod.dims})` : '');
+      document.getElementById('rFecha').textContent    = fechaLabel;
+      document.getElementById('rTurno').textContent    = TURNOS_LABEL[selTurnoId];
+      document.getElementById('rNombre').textContent   = (document.getElementById('dNombre').value + ' ' + document.getElementById('dApellido').value).trim() || '—';
+      document.getElementById('rCelular').textContent  = document.getElementById('dCelular').value || '—';
+      const barrio = document.getElementById('dBarrio').value;
+      const dir    = document.getElementById('dDir').value;
+      document.getElementById('rDir').textContent = [dir, barrio ? 'B° ' + barrio : ''].filter(Boolean).join(', ') || '—';
+    }
+
+    // Re-calcular resumen cuando cambian los datos personales o la fecha
+    ['fDia','fMes','fAnio','dNombre','dApellido','dCelular','dBarrio','dDir'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('change', actualizarResumen);
+    });
+    ['dNombre','dApellido','dCelular','dBarrio','dDir'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', actualizarResumen);
+    });
+
+    /* ─── Confirmar reserva ─── */
+    async function confirmarReserva() {
+      const errEl = document.getElementById('formError');
+      errEl.style.display = 'none';
+
+      const prod    = CATALOGO.find(p => p.id === selProductoId);
+      const dia     = document.getElementById('fDia').value;
+      const mes     = document.getElementById('fMes').value;
+      const anio    = document.getElementById('fAnio').value;
+      const nombre  = document.getElementById('dNombre').value.trim();
+      const apellido= document.getElementById('dApellido').value.trim();
+      const celular = document.getElementById('dCelular').value.trim();
+      const barrio  = document.getElementById('dBarrio').value.trim();
+      const dir     = document.getElementById('dDir').value.trim();
+      const ref     = document.getElementById('dRef').value.trim();
+
+      // Validaciones
+      if (!prod)    { error('Elegí un inflable.'); return; }
+      if (!dia || !mes || !anio) { error('Completá la fecha del evento.'); return; }
+      if (!selTurnoId)           { error('Elegí un horario (mañana, tarde o noche).'); return; }
+      if (!nombre)   { error('Ingresá tu nombre.'); return; }
+      if (!celular || celular.replace(/\D/g,'').length < 7) { error('Ingresá un WhatsApp válido.'); return; }
+
+      // Validar que la fecha no sea pasada
+      const fechaEvento = new Date(parseInt(anio), parseInt(mes)-1, parseInt(dia));
+      const hoy         = new Date(); hoy.setHours(0,0,0,0);
+      if (fechaEvento < hoy) { error('La fecha elegida ya pasó. Elegí una fecha futura.'); return; }
+
+      const fechaLabel = `${dia} de ${MESES_LARGO[parseInt(mes)-1]} de ${anio}`;
+      const turnoLabel = TURNOS_LABEL[selTurnoId];
+      const productoNombre = prod.nombre + (prod.dims ? ` (${prod.dims})` : '');
+
+      // Guardar en localStorage
+      const reserva = {
+        id:        Date.now(),
+        nombre, apellido, celular, barrio, direccion: dir, referencia: ref,
+        producto:  productoNombre,
+        fecha:     `${anio}-${mes.padStart(2,'0')}-${dia.toString().padStart(2,'0')}`,
+        fechaLabel, turno: selTurnoId, turnoLabel,
+        estado:    'pendiente',
+        ts:        new Date().toISOString(),
+      };
+      const reservas = JSON.parse(localStorage.getItem(RESERVAS_KEY) || '[]');
+      reservas.push(reserva);
+      localStorage.setItem(RESERVAS_KEY, JSON.stringify(reservas));
+
+      // Guardar perfil si checkbox marcado
+      if (!perfil && document.getElementById('guardarPerfil').checked) {
+        const p = { nombre, apellido, celular, barrio, direccion: dir, fechaRegistro: new Date().getDate() + ' de ' + MESES_LARGO[new Date().getMonth()] + ' de ' + new Date().getFullYear() };
+        localStorage.setItem(PERFIL_KEY, JSON.stringify(p));
+      }
+
+      // Preparar link WA de respaldo
+      const waMsg = encodeURIComponent(
+        `Hola Dridanna! Quiero reservar:\n\n` +
+        `Inflable: ${productoNombre}\n` +
+        `Fecha: ${fechaLabel}\n` +
+        `Horario: ${turnoLabel}\n\n` +
+        `Mis datos:\n` +
+        `Nombre: ${nombre} ${apellido}\n` +
+        `WhatsApp: ${celular}\n` +
+        (dir ? `Dirección: ${dir}${barrio ? ', B° ' + barrio : ''}\n` : '') +
+        (ref ? `Referencia: ${ref}\n` : '') +
+        `\n¿Tienen disponibilidad?`
+      );
+      const waUrl = `https://wa.me/${ADMIN_WA}?text=${waMsg}`;
+      document.getElementById('btnWaFallback').href = waUrl;
+
+      // Mostrar vista éxito
+      document.getElementById('sucProducto').textContent = productoNombre;
+      document.getElementById('sucFecha').textContent    = fechaLabel;
+      document.getElementById('sucTurno').textContent    = turnoLabel;
+      document.getElementById('sucCelular').textContent  = celular;
+
+      document.getElementById('viewForm').classList.add('hidden');
+      document.getElementById('viewSuccess').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Disparar API en background (best-effort, no bloqueante)
+      notificarAPI({ celular, nombre, apellido, producto: productoNombre, fechaLabel, turnoLabel, direccion: dir, barrio, referencia: ref });
+    }
+
+    async function notificarAPI(data) {
+      try {
+        const r = await fetch(API_BASE + '/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        await r.json();
+      } catch {
+        // Silencioso — la reserva ya quedó guardada y el link WA está disponible
+      }
+    }
+
+    function error(msg) {
+      const el = document.getElementById('formError');
+      el.textContent = msg;
+      el.style.display = 'block';
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function nuevaReserva() {
+      document.getElementById('viewSuccess').classList.add('hidden');
+      document.getElementById('viewForm').classList.remove('hidden');
+      selProductoId = null; selTurnoId = null;
+      document.querySelectorAll('.prod-card').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.turno-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('fDia').value = '';
+      document.getElementById('fMes').value = '';
+      document.getElementById('fAnio').value = '';
+      document.getElementById('resumenCard').classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    init();
+  </script>
+</body>
+</html>
