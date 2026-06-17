@@ -359,4 +359,62 @@ app.post('/api/notify/confirmar', async (req, res) => {
   }
 });
 
+/* ═══════════════════════════════════════════════════════
+   WEBHOOK DE WHATSAPP (Meta → Render → n8n)
+   Meta manda aquí los mensajes entrantes.
+   Render verifica y reenvía a n8n para procesarlos.
+   ═══════════════════════════════════════════════════════ */
+const VERIFY_TOKEN   = process.env.WA_VERIFY_TOKEN || 'dridanna';
+const N8N_WEBHOOK    = process.env.N8N_WEBHOOK_URL;
+
+// GET /webhook — Verificación de Meta (solo se usa una vez al suscribirse)
+app.get('/webhook', (req, res) => {
+  const mode      = req.query['hub.mode'];
+  const token     = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+
+  if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+    console.log('[Webhook] Verificación de Meta ✓');
+    return res.status(200).send(challenge);
+  }
+  console.warn('[Webhook] Verificación rechazada — token no coincide');
+  return res.sendStatus(403);
+});
+
+// POST /webhook — Mensajes entrantes de WhatsApp
+app.post('/webhook', async (req, res) => {
+  // Meta exige 200 rápido, si no reintenta
+  res.sendStatus(200);
+
+  const entry = req.body?.entry?.[0];
+  const change = entry?.changes?.[0]?.value;
+  if (!change?.messages?.length) return; // no es un mensaje, es status update
+
+  const msg     = change.messages[0];
+  const from    = msg.from;                    // 5493757671088
+  const text    = msg.text?.body || '';
+  const nombre  = change.contacts?.[0]?.profile?.name || '';
+  const msgId   = msg.id;
+  const ts      = msg.timestamp;
+
+  console.log(`[WA entrante] ${from} (${nombre}): ${text}`);
+
+  // Guardar mensaje en Firestore
+  fsAdd('mensajes', { from, nombre, text, msgId, ts, procesado: false });
+
+  // Reenviar a n8n para que Claude responda
+  if (N8N_WEBHOOK) {
+    try {
+      await fetch(N8N_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from, nombre, text, msgId, ts }),
+      });
+      console.log(`[Webhook→n8n] reenviado ✓`);
+    } catch (e) {
+      console.error('[Webhook→n8n]', e.message);
+    }
+  }
+});
+
 app.listen(PORT, () => console.log(`Dridanna API → http://localhost:${PORT}`));
