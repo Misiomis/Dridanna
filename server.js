@@ -62,7 +62,11 @@ app.use(express.static(path.join(__dirname)));
 /* ─── Helpers ──────────────────────────────────── */
 
 function normalizePhone(raw) {
-  return String(raw).replace(/\D/g, '').replace(/^0/, '').replace(/^(?!54)/, '54');
+  let n = String(raw).replace(/\D/g, '').replace(/^0+/, '');
+  if (n.startsWith('549'))  return n;           // ya tiene 549
+  if (n.startsWith('54'))   return '549' + n.slice(2); // tiene 54 pero falta el 9
+  if (n.startsWith('9'))    return '54' + n;    // tiene 9 pero falta el 54
+  return '549' + n;                              // solo número local
 }
 
 const txt = (v) => ({ type: 'text', text: String(v || '—') });
