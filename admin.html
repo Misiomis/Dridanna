@@ -1383,7 +1383,7 @@ function renderClientes() {
 }
 document.getElementById('clientesBusq')?.addEventListener('input', renderClientes);
 
-function guardarReserva() {
+async function guardarReserva() {
   const nombre   = document.getElementById('rNombre').value.trim();
   const apellido = document.getElementById('rApellido').value.trim();
   const fecha    = document.getElementById('rFecha').value;
