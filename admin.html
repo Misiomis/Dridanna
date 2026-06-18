@@ -1417,23 +1417,28 @@ function guardarReserva() {
   const telCliente = document.getElementById('rTelefono').value.trim();
   if (telCliente) {
     const saved = rv[rv.length - 1];
-    fetch(API_BASE + '/api/notify', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        celular:    telCliente,
-        nombre,
-        apellido:   apellido || '',
-        producto:   saved.producto   || '—',
-        fechaLabel: _fechaLabel(saved.fecha),
-        turnoLabel: _turnoLabel(saved.turno),
-        precio:     saved.precio     || '—',
-        direccion:  saved.direccion  || '—',
-        barrio:     saved.barrio     || '—',
-        referencia: saved.referencia || '—',
-        dni:        saved.dni        || '—',
-      }),
-    }).catch(() => {});
+    try {
+      const nr = await fetch(API_BASE + '/api/notify', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          celular:    telCliente,
+          nombre,
+          apellido:   apellido || '',
+          producto:   saved.producto   || '—',
+          fechaLabel: _fechaLabel(saved.fecha),
+          turnoLabel: _turnoLabel(saved.turno),
+          precio:     saved.precio     || '—',
+          direccion:  saved.direccion  || '—',
+          barrio:     saved.barrio     || '—',
+          referencia: saved.referencia || '—',
+          dni:        saved.dni        || '—',
+        }),
+      });
+      const nd = await nr.json();
+      if (nd.ok) toast('WA enviado al cliente y a Estela');
+      else toast('Error WA: ' + (nd.results?.confirmacion_error || nd.results?.nueva_reserva_error || JSON.stringify(nd)));
+    } catch (e) { toast('Sin conexión al servidor: ' + e.message); }
   }
 }
 
@@ -1450,25 +1455,27 @@ async function cambiarEstadoReserva(id, estado) {
   if (estado === 'confirmada') {
     const [nombre, ...rest] = (item.nombre || '').trim().split(' ');
     const apellido = rest.join(' ');
-    fetch(API_BASE + '/api/notify/confirmar', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        celular:    item.celular    || item.telefono || '',
-        nombre, apellido,
-        producto:   item.producto   || '—',
-        fechaLabel: item.fechaLabel || _fechaLabel(item.fecha),
-        turnoLabel: item.turnoLabel || _turnoLabel(item.turno),
-        precio:     item.precio     || '—',
-        direccion:  item.direccion  || '—',
-        barrio:     item.barrio     || '—',
-        referencia: item.referencia || '—',
-        dni:        item.dni        || '—',
-      }),
-    })
-    .then(r => r.json())
-    .then(d => { if (d.ok) toast('Notificación enviada a Estela'); })
-    .catch(() => {});
+    const cel = item.celular || item.telefono || '';
+    if (!cel) { toast('Sin celular — no se pudo notificar'); return; }
+    try {
+      const cr = await fetch(API_BASE + '/api/notify/confirmar', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          celular: cel, nombre, apellido,
+          producto:   item.producto   || '—',
+          fechaLabel: item.fechaLabel || _fechaLabel(item.fecha),
+          turnoLabel: item.turnoLabel || _turnoLabel(item.turno),
+          precio:     item.precio     || '—',
+          direccion:  item.direccion  || '—',
+          barrio:     item.barrio     || '—',
+          referencia: item.referencia || '—',
+          dni:        item.dni        || '—',
+        }),
+      });
+      const cd = await cr.json();
+      toast(cd.ok ? 'Notificación enviada a Estela' : 'Error: ' + (cd.error || JSON.stringify(cd)));
+    } catch (e) { toast('Sin conexión: ' + e.message); }
   }
 }
 
