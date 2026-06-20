@@ -14,7 +14,7 @@
       --blue-sky:   #5eb8f5;
       --gold-tower: #f5c842;
       --coral-roof: #e8614e;
-      --pink-brand: #dda0b8;
+      --accent: #c9779a;
       --bg:         #080c18;
       --glass-bg:   rgba(255,255,255,0.04);
       --glass-b:    rgba(255,255,255,0.08);
@@ -34,27 +34,27 @@
     .nav-logo   { display: flex; align-items: center; }
     .nav-logo img { height: 38px; }
     .nav-back   { font-size: 0.85rem; color: rgba(255,255,255,0.55); display: flex; align-items: center; gap: 6px; transition: color .2s; }
-    .nav-back:hover { color: var(--pink-brand); text-decoration: none; }
+    .nav-back:hover { color: var(--accent); text-decoration: none; }
     .nav-back svg { width: 14px; height: 14px; }
     .nav-cliente-badge {
       font-size: 0.8rem; font-weight: 700;
-      background: rgba(221,160,184,0.15);
-      border: 1px solid rgba(221,160,184,0.25);
+      background: rgba(201,119,154,0.15);
+      border: 1px solid rgba(201,119,154,0.25);
       border-radius: 20px;
-      padding: 4px 12px; color: var(--pink-brand);
+      padding: 4px 12px; color: var(--accent);
       cursor: pointer; transition: background .2s;
     }
-    .nav-cliente-badge:hover { background: rgba(221,160,184,0.25); }
+    .nav-cliente-badge:hover { background: rgba(201,119,154,0.25); }
     .nav-cliente-badge.hidden { display: none; }
     .nav-register-link { font-size: 0.82rem; color: rgba(255,255,255,0.45); transition: color .2s; }
-    .nav-register-link:hover { color: var(--pink-brand); text-decoration: none; }
+    .nav-register-link:hover { color: var(--accent); text-decoration: none; }
     .nav-register-link.hidden { display: none; }
 
     /* ─── LAYOUT ─── */
     main { padding: 82px 16px 80px; max-width: 1100px; margin: 0 auto; }
 
     /* ─── SECTION HEADER ─── */
-    .s-eyebrow { font-family: var(--serif); font-style: italic; font-size: 0.9rem; color: var(--pink-brand); letter-spacing: 0.04em; margin-bottom: 6px; }
+    .s-eyebrow { font-family: var(--serif); font-style: italic; font-size: 0.9rem; color: var(--accent); letter-spacing: 0.04em; margin-bottom: 6px; }
     .s-title   { font-family: var(--serif); font-size: 1.65rem; font-weight: 600; margin-bottom: 4px; }
     .s-sub     { font-size: 0.88rem; color: rgba(255,255,255,0.45); margin-bottom: 22px; }
     .section-block { margin-bottom: 36px; }
@@ -62,15 +62,15 @@
     /* ─── PROFILE BANNER ─── */
     .profile-banner {
       display: flex; align-items: center; gap: 14px;
-      background: rgba(221,160,184,0.07);
-      border: 1px solid rgba(221,160,184,0.18);
+      background: rgba(201,119,154,0.07);
+      border: 1px solid rgba(201,119,154,0.18);
       border-radius: 14px;
       padding: 14px 18px;
       margin-bottom: 30px;
     }
     .pb-avatar {
       width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
-      background: linear-gradient(135deg, var(--pink-brand), var(--blue-sky));
+      background: linear-gradient(135deg, var(--accent), var(--blue-sky));
       display: flex; align-items: center; justify-content: center;
       font-family: var(--serif); font-size: 1.1rem; font-weight: 700; color: #fff;
     }
@@ -78,7 +78,7 @@
     .pb-name  { font-weight: 700; font-size: 0.95rem; }
     .pb-hint  { font-size: 0.78rem; color: rgba(255,255,255,0.45); margin-top: 2px; }
     .pb-edit  { font-size: 0.78rem; color: rgba(255,255,255,0.35); cursor: pointer; white-space: nowrap; transition: color .2s; }
-    .pb-edit:hover { color: var(--pink-brand); }
+    .pb-edit:hover { color: var(--accent); }
 
     /* ─── REGISTRO BANNER ─── */
     .register-banner {
@@ -114,8 +114,8 @@
     }
     .prod-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.18); }
     .prod-card.selected {
-      border-color: var(--pink-brand);
-      box-shadow: 0 0 0 3px rgba(221,160,184,0.22), 0 6px 24px rgba(0,0,0,0.4);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(201,119,154,0.22), 0 6px 24px rgba(0,0,0,0.4);
     }
     .prod-img {
       width: 100%; height: 100%;
@@ -134,7 +134,7 @@
     .prod-check {
       position: absolute; top: 8px; right: 8px;
       width: 22px; height: 22px; border-radius: 50%;
-      background: var(--pink-brand);
+      background: var(--accent);
       display: none; align-items: center; justify-content: center;
     }
     .prod-check svg { width: 12px; height: 12px; fill: #fff; }
@@ -143,7 +143,7 @@
     /* Fallback fondo cuando no carga la imagen */
     .prod-fallback {
       position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(94,184,245,0.2), rgba(221,160,184,0.2));
+      background: linear-gradient(135deg, rgba(94,184,245,0.2), rgba(201,119,154,0.2));
       display: flex; align-items: center; justify-content: center;
       font-size: 2.5rem;
     }
@@ -169,7 +169,7 @@
       background-size: 18px;
       padding-right: 34px;
     }
-    .fecha-sel:focus { border-color: var(--pink-brand); background-color: rgba(221,160,184,0.07); }
+    .fecha-sel:focus { border-color: var(--accent); background-color: rgba(201,119,154,0.07); }
     .fecha-sel option { background: #111827; color: #e8eaf2; }
     .f-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
 
@@ -210,15 +210,15 @@
       transition: border-color .2s;
       width: 100%;
     }
-    .form-input:focus { border-color: var(--pink-brand); background: rgba(221,160,184,0.07); }
+    .form-input:focus { border-color: var(--accent); background: rgba(201,119,154,0.07); }
     .form-input::placeholder { color: rgba(255,255,255,0.22); }
-    .form-input.prefilled { border-color: rgba(221,160,184,0.35); background: rgba(221,160,184,0.05); color: rgba(255,255,255,0.7); }
+    .form-input.prefilled { border-color: rgba(201,119,154,0.35); background: rgba(201,119,154,0.05); color: rgba(255,255,255,0.7); }
     .hint { font-size: 0.75rem; color: rgba(255,255,255,0.3); }
 
     /* ─── RESUMEN ─── */
     .resumen-card {
-      background: rgba(221,160,184,0.06);
-      border: 1px solid rgba(221,160,184,0.18);
+      background: rgba(201,119,154,0.06);
+      border: 1px solid rgba(201,119,154,0.18);
       border-radius: 16px;
       padding: 20px;
       margin-bottom: 18px;
@@ -232,7 +232,7 @@
     /* ─── BOTONES ─── */
     .btn-reservar {
       width: 100%; padding: 16px;
-      background: linear-gradient(135deg, var(--pink-brand) 0%, #c078a0 100%);
+      background: linear-gradient(135deg, var(--accent) 0%, #a85878 100%);
       border: none; border-radius: 14px;
       color: #fff; font-family: var(--font); font-size: 1.05rem; font-weight: 700;
       cursor: pointer; transition: opacity .2s, transform .1s;
@@ -271,7 +271,7 @@
     .suc-key { color: rgba(255,255,255,0.45); }
     .suc-val { font-weight: 700; }
     .btn-nuevo { padding: 12px 28px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; color: rgba(255,255,255,0.6); font-family: var(--font); font-size: 0.9rem; cursor: pointer; transition: all .2s; margin-top: 8px; }
-    .btn-nuevo:hover { border-color: var(--pink-brand); color: var(--pink-brand); }
+    .btn-nuevo:hover { border-color: var(--accent); color: var(--accent); }
 
     /* ─── WA FLOAT ─── */
     .wa-float {
@@ -463,7 +463,7 @@
         </div>
 
         <div id="saveProfileWrap" style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
-          <input type="checkbox" id="guardarPerfil" style="accent-color:var(--pink-brand); width:16px; height:16px; cursor:pointer;">
+          <input type="checkbox" id="guardarPerfil" style="accent-color:var(--accent); width:16px; height:16px; cursor:pointer;">
           <label for="guardarPerfil" style="font-size:0.83rem; color:rgba(255,255,255,0.5); cursor:pointer;">Guardar mis datos para la próxima reserva</label>
         </div>
       </div>
