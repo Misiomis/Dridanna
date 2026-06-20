@@ -806,10 +806,14 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
+          signal: AbortSignal.timeout(12000),
         });
-        await r.json();
+        const d = await r.json();
+        if (d.ok) {
+          document.querySelector('.suc-msg').textContent = '¡Listo! Te enviamos la confirmación por WhatsApp. También le avisamos a Dridanna.';
+        }
       } catch {
-        // Silencioso — la reserva ya quedó guardada y el link WA está disponible
+        // Backend no disponible — WA fallback sigue visible
       }
     }
 

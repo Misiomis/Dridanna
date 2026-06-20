@@ -363,6 +363,39 @@ app.post('/api/notify/confirmar', async (req, res) => {
   }
 });
 
+/* ─────────────────────────────────────────────
+   GET /api/clientes/todos
+   Lista todos los clientes de Firestore.
+   ───────────────────────────────────────────── */
+app.get('/api/clientes/todos', async (req, res) => {
+  if (!db) return res.status(503).json({ ok: false, error: 'Base de datos no disponible.' });
+  try {
+    const snap = await db.collection('clientes').orderBy('creadoEn', 'desc').get();
+    const clientes = snap.docs.map(d => {
+      const { celularNorm, ...data } = d.data();
+      return { id: d.id, ...data };
+    });
+    return res.json({ ok: true, clientes });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+/* ─────────────────────────────────────────────
+   GET /api/reservas/todas
+   Lista todas las reservas de Firestore.
+   ───────────────────────────────────────────── */
+app.get('/api/reservas/todas', async (req, res) => {
+  if (!db) return res.status(503).json({ ok: false, error: 'Base de datos no disponible.' });
+  try {
+    const snap = await db.collection('reservas').orderBy('creadoEn', 'desc').get();
+    const reservas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    return res.json({ ok: true, reservas });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
 /* ═══════════════════════════════════════════════════════
    WEBHOOK DE WHATSAPP (Meta → Render → n8n)
    Meta manda aquí los mensajes entrantes.

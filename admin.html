@@ -1330,7 +1330,7 @@ function guardarNuevoCliente() {
   if (enviar && telefono) notificarAltaCliente(telefono, nombre);
 }
 
-function renderClientes() {
+async function renderClientes() {
   const busq = (document.getElementById('clientesBusq')?.value||'').toLowerCase();
   const rv   = getReservas();
   const map  = {};
@@ -1347,6 +1347,26 @@ function renderClientes() {
     if (!key || map[key]) return;
     map[key] = { nombre:e.nombre, telefono:e.telefono||'', reservas:[], nota:e.nota, extra:true };
   });
+
+  // Cargar clientes desde Firestore (backend)
+  try {
+    const fr = await fetch(API_BASE + '/api/clientes/todos', { signal: AbortSignal.timeout(8000) });
+    const fd = await fr.json();
+    if (fd.ok && fd.clientes) {
+      fd.clientes.forEach(c => {
+        const cel = c.celular || '';
+        const key = cel.replace(/\D/g,'').slice(-10) || (c.nombre||'').replace(/\s/g,'');
+        if (!key || map[key]) return;
+        map[key] = {
+          nombre: [c.nombre, c.apellido].filter(Boolean).join(' '),
+          telefono: cel,
+          reservas: [],
+          nota: c.barrio ? ('B° ' + c.barrio) : 'Desde web',
+          extra: true, firestore: true,
+        };
+      });
+    }
+  } catch { /* sin conexión — se muestra lo local */ }
 
   let clientes = Object.values(map);
   if (busq) clientes = clientes.filter(c =>
