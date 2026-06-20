@@ -646,6 +646,25 @@ input,select,textarea { font-family:inherit; }
         </div>
         <button class="config-save-btn" onclick="changePassword()">Cambiar contraseña</button>
       </div>
+      <!-- ── ZONAS / TRASLADO ── -->
+      <div class="a-card" style="margin-top:16px">
+        <p class="a-card-title">Zonas y costo de traslado</p>
+        <div id="zonasListAdmin"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-top:12px;align-items:end">
+          <div class="config-field"><label class="config-label">ID (sin espacios)</label><input class="config-input" id="nzId" placeholder="zona-nueva"></div>
+          <div class="config-field"><label class="config-label">Nombre</label><input class="config-input" id="nzNombre" placeholder="Barrio Nuevo"></div>
+          <div class="config-field"><label class="config-label">Costo traslado ($)</label><input class="config-input" id="nzCosto" type="number" placeholder="10000"></div>
+        </div>
+        <button class="config-save-btn" style="margin-top:10px" onclick="agregarZona()">Agregar zona</button>
+      </div>
+
+      <!-- ── EDITAR PRODUCTOS ── -->
+      <div class="a-card" style="margin-top:16px">
+        <p class="a-card-title">Editar productos (descripción, tamaño, imagen)</p>
+        <div id="productosEditList"></div>
+        <button class="config-save-btn" style="margin-top:10px" onclick="cargarProductosEdit()">Recargar desde servidor</button>
+      </div>
+
       <div class="config-danger-zone a-card" style="margin-top:16px">
         <p class="config-danger-title">Zona de peligro</p>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -1516,6 +1535,8 @@ function loadConfig() {
   document.getElementById('cfgWhatsapp').value  = c.whatsapp  || '';
   document.getElementById('cfgInstagram').value = c.instagram || '';
   document.getElementById('cfgZona').value      = c.zona      || '';
+  cargarZonas();
+  cargarProductosEdit();
 }
 
 function saveConfig() {
@@ -1538,6 +1559,87 @@ function changePassword() {
   document.getElementById('cfgPassNueva').value = '';
   document.getElementById('cfgPassConfirm').value = '';
   toast('Contraseña actualizada');
+}
+
+/* ═══════════════════════════════════════════
+   ZONAS / TRASLADO (admin)
+══════════════════════════════════════════════ */
+async function cargarZonas() {
+  const el = document.getElementById('zonasListAdmin');
+  try {
+    const r = await fetch(API_BASE + '/api/zonas', { signal: AbortSignal.timeout(8000) });
+    const d = await r.json();
+    if (!d.ok || !d.zonas?.length) { el.innerHTML = '<p style="color:var(--text3);font-size:0.85rem">Sin zonas configuradas</p>'; return; }
+    el.innerHTML = d.zonas.map(z => `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+        <span style="flex:1;font-weight:600;font-size:0.9rem">${z.nombre}</span>
+        <span style="font-size:0.82rem;color:var(--text2)">${z.costoTraslado > 0 ? '$' + Number(z.costoTraslado).toLocaleString('es-AR') : 'Gratis'}</span>
+        <button class="r-btn danger" style="font-size:0.7rem" onclick="borrarZona('${z.id}')">✕</button>
+      </div>`).join('');
+  } catch { el.innerHTML = '<p style="color:var(--text3);font-size:0.85rem">Sin conexión al servidor</p>'; }
+}
+
+async function agregarZona() {
+  const id     = document.getElementById('nzId').value.trim().toLowerCase().replace(/\s+/g,'-');
+  const nombre = document.getElementById('nzNombre').value.trim();
+  const costo  = Number(document.getElementById('nzCosto').value) || 0;
+  if (!id || !nombre) { toast('Completá ID y nombre de la zona'); return; }
+  try {
+    await fetch(API_BASE + '/api/zonas', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, nombre, costoTraslado: costo }),
+    });
+    document.getElementById('nzId').value = '';
+    document.getElementById('nzNombre').value = '';
+    document.getElementById('nzCosto').value = '';
+    toast('Zona agregada'); cargarZonas();
+  } catch { toast('Error al agregar zona'); }
+}
+
+async function borrarZona(id) {
+  if (!confirm('¿Eliminar esta zona?')) return;
+  try {
+    await fetch(API_BASE + '/api/zonas/' + id, { method: 'DELETE' });
+    toast('Zona eliminada'); cargarZonas();
+  } catch { toast('Error al eliminar'); }
+}
+
+/* ═══════════════════════════════════════════
+   PRODUCTOS (edición admin)
+══════════════════════════════════════════════ */
+async function cargarProductosEdit() {
+  const el = document.getElementById('productosEditList');
+  el.innerHTML = CATALOGO.map(p => `
+    <div style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <img src="./img/${p.fotos?.[0] || ''}" style="width:48px;height:48px;border-radius:8px;object-fit:cover;background:rgba(255,255,255,0.05)" onerror="this.style.display='none'">
+        <div style="flex:1">
+          <span style="font-weight:700;font-size:0.9rem">${p.nombre}</span>
+          <span style="font-size:0.75rem;color:var(--text3);margin-left:8px">${p.dims || ''}</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <input class="config-input" id="pe-desc-${p.id}" placeholder="Descripción" value="${p.descripcion || ''}">
+        <input class="config-input" id="pe-dims-${p.id}" placeholder="Medidas (ej: 3×3 m)" value="${p.dims || ''}">
+        <input class="config-input" id="pe-precio-${p.id}" placeholder="Precio (ej: $35.000)" value="${p.precio || ''}">
+        <input class="config-input" id="pe-img-${p.id}" placeholder="Ruta imagen (img/...)" value="${p.fotos?.[0] || ''}">
+      </div>
+      <button class="r-btn confirm" style="margin-top:6px;font-size:0.75rem;padding:4px 12px" onclick="guardarProductoEdit('${p.id}')">Guardar</button>
+    </div>`).join('');
+}
+
+async function guardarProductoEdit(id) {
+  const desc   = document.getElementById('pe-desc-' + id)?.value || '';
+  const dims   = document.getElementById('pe-dims-' + id)?.value || '';
+  const precio = document.getElementById('pe-precio-' + id)?.value || '';
+  const img    = document.getElementById('pe-img-' + id)?.value || '';
+  try {
+    await fetch(API_BASE + '/api/productos', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, descripcion: desc, dims, precio, imagen: img }),
+    });
+    toast('Producto actualizado');
+  } catch { toast('Error al guardar'); }
 }
 
 /* ═══════════════════════════════════════════
