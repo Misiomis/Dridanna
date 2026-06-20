@@ -352,9 +352,71 @@
         <a href="./altacliente.html" class="rb-link">Registrarme →</a>
       </div>
 
-      <!-- ─── PASO 1: Elegí el pelotero ─── -->
+      <!-- ─── PASO 1: Cuestionario previo ─── -->
       <div class="section-block">
         <p class="s-eyebrow">Paso 1</p>
+        <h2 class="s-title">Contanos sobre tu evento</h2>
+        <p class="s-sub">Así podemos recomendarte el mejor pelotero</p>
+
+        <div class="form-field">
+          <label for="qZona">Zona de entrega</label>
+          <select class="form-input" id="qZona" onchange="actualizarCostoZona()">
+            <option value="">Seleccioná la zona</option>
+            <option value="urbana">Casco Urbano (envío gratis)</option>
+            <option value="rural">Zona Rural (+$10.000 traslado)</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="qEdad">Rango de edad de los niños</label>
+          <select class="form-input" id="qEdad">
+            <option value="">Seleccioná el rango</option>
+            <option value="1-3">1 a 3 años</option>
+            <option value="4-6">4 a 6 años</option>
+            <option value="7-10">7 a 10 años</option>
+            <option value="11+">11 años o más</option>
+            <option value="mixto">Edades mixtas</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="qMetros">Metros aprox. del lugar</label>
+            <input class="form-input" type="number" id="qMetros" placeholder="Ej: 25" min="1" inputmode="numeric">
+            <span class="hint">Largo × ancho estimado</span>
+          </div>
+          <div class="form-field">
+            <label for="qSuperficie">Superficie del suelo</label>
+            <select class="form-input" id="qSuperficie">
+              <option value="">Tipo de piso</option>
+              <option value="pasto">Pasto</option>
+              <option value="tierra">Tierra</option>
+              <option value="cemento">Cemento / Baldosa</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="qLluvia">En caso de lluvia, ¿tenés un lugar techado alternativo?</label>
+          <select class="form-input" id="qLluvia">
+            <option value="">Seleccioná</option>
+            <option value="si">Sí, puedo moverlo bajo techo</option>
+            <option value="no">No, no tengo techo disponible</option>
+          </select>
+        </div>
+
+        <div id="lluviaAviso" style="display:none; padding:12px 14px; border-radius:10px; background:rgba(232,97,78,0.1); border:1px solid rgba(232,97,78,0.25); color:#f7a090; font-size:0.83rem; line-height:1.5; margin-top:-6px; margin-bottom:8px;">
+          ⚠️ Sin techo alternativo, en caso de lluvia nos vemos obligados a cancelar la reserva. Te avisamos con anticipación si hay pronóstico desfavorable.
+        </div>
+
+        <div id="costoZonaInfo" style="display:none; padding:12px 14px; border-radius:10px; background:rgba(201,119,154,0.08); border:1px solid rgba(201,119,154,0.2); color:var(--accent); font-size:0.85rem; margin-bottom:8px;">
+        </div>
+      </div>
+
+      <!-- ─── PASO 2: Elegí el pelotero ─── -->
+      <div class="section-block">
+        <p class="s-eyebrow">Paso 2</p>
         <h2 class="s-title">Elegí tu pelotero</h2>
         <p class="s-sub">Tocá el que querés para tu fiesta</p>
 
@@ -363,9 +425,9 @@
         </div>
       </div>
 
-      <!-- ─── PASO 2: Fecha y turno ─── -->
+      <!-- ─── PASO 3: Fecha y turno ─── -->
       <div class="section-block">
-        <p class="s-eyebrow">Paso 2</p>
+        <p class="s-eyebrow">Paso 3</p>
         <h2 class="s-title">Elegí la fecha y el horario</h2>
 
         <p class="f-label">Fecha del evento</p>
@@ -418,9 +480,9 @@
         </div>
       </div>
 
-      <!-- ─── PASO 3: Tus datos ─── -->
+      <!-- ─── PASO 4: Tus datos ─── -->
       <div class="section-block">
-        <p class="s-eyebrow">Paso 3</p>
+        <p class="s-eyebrow">Paso 4</p>
         <h2 class="s-title">Tus datos</h2>
 
         <div class="form-row">
@@ -474,6 +536,8 @@
         <div class="resumen-row"><span class="resumen-key">Pelotero</span><span class="resumen-val" id="rProducto">—</span></div>
         <div class="resumen-row"><span class="resumen-key">Fecha</span><span class="resumen-val" id="rFecha">—</span></div>
         <div class="resumen-row"><span class="resumen-key">Turno</span><span class="resumen-val" id="rTurno">—</span></div>
+        <div class="resumen-row"><span class="resumen-key">Zona</span><span class="resumen-val" id="rZona">—</span></div>
+        <div class="resumen-row"><span class="resumen-key">Traslado</span><span class="resumen-val" id="rTraslado">—</span></div>
         <div class="resumen-row"><span class="resumen-key">Nombre</span><span class="resumen-val" id="rNombre">—</span></div>
         <div class="resumen-row"><span class="resumen-key">WhatsApp</span><span class="resumen-val" id="rCelular">—</span></div>
         <div class="resumen-row"><span class="resumen-key">Dirección</span><span class="resumen-val" id="rDir">—</span></div>
@@ -554,6 +618,25 @@
       { id:'inflable-naranja',    nombre:'Pelotero Naranja',           dims:'3×3 m',     tipo:'Castillo', img:'inflable naranja 3 po 3/inflable naranja.jpg' },
       { id:'metegol',             nombre:'Metegol',                    dims:'',          tipo:'Metegol',  img:'metegol/metegol.png' },
     ];
+
+    /* ─── Zonas ─── */
+    const ZONAS = { urbana: { nombre: 'Casco Urbano', costo: 0 }, rural: { nombre: 'Zona Rural', costo: 10000 } };
+
+    function actualizarCostoZona() {
+      const z = document.getElementById('qZona').value;
+      const info = document.getElementById('costoZonaInfo');
+      if (!z) { info.style.display = 'none'; return; }
+      const zona = ZONAS[z];
+      info.style.display = 'block';
+      info.textContent = zona.costo > 0
+        ? `Traslado ${zona.nombre}: +$${zona.costo.toLocaleString('es-AR')}`
+        : `${zona.nombre}: envío sin cargo`;
+    }
+
+    // Aviso lluvia
+    document.getElementById('qLluvia')?.addEventListener('change', function() {
+      document.getElementById('lluviaAviso').style.display = this.value === 'no' ? 'block' : 'none';
+    });
 
     /* ─── Estado ─── */
     let selProductoId  = null;
@@ -695,6 +778,10 @@
       document.getElementById('rProducto').textContent = prod.nombre + (prod.dims ? ` (${prod.dims})` : '');
       document.getElementById('rFecha').textContent    = fechaLabel;
       document.getElementById('rTurno').textContent    = TURNOS_LABEL[selTurnoId];
+      const zVal = document.getElementById('qZona').value;
+      const zData = ZONAS[zVal];
+      document.getElementById('rZona').textContent     = zData?.nombre || '—';
+      document.getElementById('rTraslado').textContent  = zData ? (zData.costo > 0 ? '+$' + zData.costo.toLocaleString('es-AR') : 'Gratis') : '—';
       document.getElementById('rNombre').textContent   = (document.getElementById('dNombre').value + ' ' + document.getElementById('dApellido').value).trim() || '—';
       document.getElementById('rCelular').textContent  = document.getElementById('dCelular').value || '—';
       const barrio = document.getElementById('dBarrio').value;
@@ -716,6 +803,21 @@
     async function confirmarReserva() {
       const errEl = document.getElementById('formError');
       errEl.style.display = 'none';
+
+      // Cuestionario
+      const zona       = document.getElementById('qZona').value;
+      const edadRango  = document.getElementById('qEdad').value;
+      const metros     = document.getElementById('qMetros').value;
+      const superficie = document.getElementById('qSuperficie').value;
+      const lluvia     = document.getElementById('qLluvia').value;
+
+      if (!zona)       { error('Seleccioná la zona de entrega (Paso 1).'); return; }
+      if (!edadRango)  { error('Seleccioná el rango de edad de los niños.'); return; }
+      if (!superficie) { error('Indicá el tipo de superficie.'); return; }
+      if (!lluvia)     { error('Indicá si tenés techo alternativo en caso de lluvia.'); return; }
+
+      const costoTraslado = ZONAS[zona]?.costo || 0;
+      const zonaNombre    = ZONAS[zona]?.nombre || zona;
 
       const prod    = CATALOGO.find(p => p.id === selProductoId);
       const dia     = document.getElementById('fDia').value;
@@ -752,6 +854,7 @@
       const reserva = {
         id:        Date.now(),
         nombre, apellido, celular, dni, barrio, direccion: dir, referencia: ref,
+        zona: zonaNombre, costoTraslado, edadRango, metros, superficie, lluvia,
         producto:  productoNombre,
         fecha:     `${anio}-${mes.padStart(2,'0')}-${dia.toString().padStart(2,'0')}`,
         fechaLabel, turno: selTurnoId, turnoLabel,
@@ -774,7 +877,13 @@
         `Hola Dridanna! Quiero reservar:\n\n` +
         `Pelotero: ${productoNombre}\n` +
         `Fecha: ${fechaLabel}\n` +
-        `Horario: ${turnoLabel}\n\n` +
+        `Horario: ${turnoLabel}\n` +
+        `Zona: ${zonaNombre}${costoTraslado > 0 ? ' (+$' + costoTraslado.toLocaleString('es-AR') + ' traslado)' : ' (envío gratis)'}\n\n` +
+        `Datos del lugar:\n` +
+        `Edad niños: ${edadRango} años\n` +
+        `Metros: ${metros || '—'} m²\n` +
+        `Superficie: ${superficie}\n` +
+        `Techo alternativo: ${lluvia === 'si' ? 'Sí' : 'No'}\n\n` +
         `Mis datos:\n` +
         `Nombre: ${nombre} ${apellido}\n` +
         `DNI: ${dni}\n` +
