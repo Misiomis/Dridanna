@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="./js/config.js"></script>
   <style>
     :root {
@@ -412,6 +414,9 @@
 
         <div id="costoZonaInfo" style="display:none; padding:12px 14px; border-radius:10px; background:rgba(201,119,154,0.08); border:1px solid rgba(201,119,154,0.2); color:var(--accent); font-size:0.85rem; margin-bottom:8px;">
         </div>
+
+        <p style="font-size:0.78rem; color:rgba(255,255,255,0.4); margin-bottom:8px;">La zona verde es el casco urbano (envío gratis). Fuera de ella se aplica costo de traslado.</p>
+        <div id="mapaZona" style="height:260px; border-radius:14px; border:1px solid rgba(255,255,255,0.1); overflow:hidden; margin-bottom:8px;"></div>
       </div>
 
       <!-- ─── PASO 2: Elegí el pelotero ─── -->
@@ -643,12 +648,35 @@
     let selTurnoId     = null;
     let perfil         = null;
 
+    /* ─── Mapa ─── */
+    function initMapa() {
+      const map = L.map('mapaZona', { scrollWheelZoom: false, dragging: true, zoomControl: true })
+        .setView([-25.6710, -54.0578], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap', maxZoom: 18,
+      }).addTo(map);
+
+      const cascoUrbano = [
+        [-25.6520, -54.0720], [-25.6520, -54.0430],
+        [-25.6780, -54.0430], [-25.6780, -54.0720],
+      ];
+      L.polygon(cascoUrbano, {
+        color: '#25d366', fillColor: '#25d366', fillOpacity: 0.12, weight: 2,
+      }).addTo(map).bindPopup('Casco Urbano — Envío gratis');
+
+      L.marker([-25.6650, -54.0575]).addTo(map)
+        .bindPopup('<b>Dridanna</b><br>Comandante Andresito').openPopup();
+
+      setTimeout(() => map.invalidateSize(), 300);
+    }
+
     /* ─── Init ─── */
     function init() {
       buildDias();
       buildAnios();
       renderProductos();
       cargarPerfil();
+      try { initMapa(); } catch {}
 
       // Si llega desde index.html con ?producto=id
       const params = new URLSearchParams(location.search);
