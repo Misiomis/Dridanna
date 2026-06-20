@@ -14,7 +14,7 @@
       --blue-sky:   #5eb8f5;
       --gold-tower: #f5c842;
       --coral-roof: #e8614e;
-      --pink-brand: #dda0b8;
+      --accent: #3b82f6;
       --bg:         #080c18;
       --glass-bg:   rgba(255,255,255,0.04);
       --glass-b:    rgba(255,255,255,0.08);
@@ -32,7 +32,7 @@
     .nav-inner  { width: 100%; max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
     .nav-logo img { height: 38px; }
     .nav-back { font-size: 0.85rem; color: rgba(255,255,255,0.55); display: flex; align-items: center; gap: 6px; transition: color .2s; }
-    .nav-back:hover { color: var(--pink-brand); text-decoration: none; }
+    .nav-back:hover { color: var(--accent); text-decoration: none; }
     .nav-back svg { width: 14px; height: 14px; }
 
     /* ─── MAIN ─── */
@@ -40,7 +40,7 @@
     .page-wrap { max-width: 540px; margin: 0 auto; }
 
     /* ─── HEADERS ─── */
-    .page-eyebrow { font-family: var(--serif); font-style: italic; font-size: 0.95rem; color: var(--pink-brand); letter-spacing: 0.04em; margin-bottom: 8px; }
+    .page-eyebrow { font-family: var(--serif); font-style: italic; font-size: 0.95rem; color: var(--accent); letter-spacing: 0.04em; margin-bottom: 8px; }
     .page-title   { font-family: var(--serif); font-size: 2rem; font-weight: 600; line-height: 1.2; margin-bottom: 12px; }
     .page-sub     { font-size: 0.95rem; color: rgba(255,255,255,0.6); line-height: 1.6; margin-bottom: 32px; }
 
@@ -48,7 +48,7 @@
     .benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 36px; }
     .benefit-card  { background: var(--glass-bg); border: 1px solid var(--glass-b); border-radius: var(--glass-r); padding: 18px 16px; display: flex; flex-direction: column; gap: 8px; }
     .benefit-icon  { font-size: 1.5rem; line-height: 1; }
-    .benefit-title { font-weight: 700; font-size: 0.88rem; color: var(--pink-brand); }
+    .benefit-title { font-weight: 700; font-size: 0.88rem; color: var(--accent); }
     .benefit-desc  { font-size: 0.82rem; color: rgba(255,255,255,0.5); line-height: 1.45; }
 
     /* ─── GLASS CARD ─── */
@@ -65,13 +65,13 @@
       padding: 11px 14px; font-family: var(--font); font-size: 0.95rem; color: #e8eaf2;
       outline: none; transition: border-color .2s; width: 100%;
     }
-    .form-field input:focus { border-color: var(--pink-brand); background: rgba(221,160,184,0.07); }
+    .form-field input:focus { border-color: var(--accent); background: rgba(59,130,246,0.07); }
     .form-field input::placeholder { color: rgba(255,255,255,0.22); }
     .hint { font-size: 0.75rem; color: rgba(255,255,255,0.3); }
 
     /* ─── BUTTONS ─── */
     .btn-primary {
-      width: 100%; padding: 14px; background: linear-gradient(135deg, var(--pink-brand) 0%, #c078a0 100%);
+      width: 100%; padding: 14px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
       border: none; border-radius: 12px; color: #fff; font-family: var(--font); font-size: 1rem;
       font-weight: 700; letter-spacing: 0.02em; cursor: pointer; transition: opacity .2s, transform .1s; margin-top: 6px;
     }
@@ -83,10 +83,10 @@
       border-radius: 12px; color: rgba(255,255,255,0.6); font-family: var(--font); font-size: 0.9rem;
       cursor: pointer; transition: border-color .2s, color .2s; margin-top: 8px;
     }
-    .btn-secondary:hover { border-color: var(--pink-brand); color: var(--pink-brand); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
     /* ─── PROFILE VIEW ─── */
-    .profile-avatar { width: 60px; height: 60px; background: linear-gradient(135deg, var(--pink-brand), var(--blue-sky)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 14px; }
+    .profile-avatar { width: 60px; height: 60px; background: linear-gradient(135deg, #3b82f6, #60a5fa); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 14px; }
     .profile-name  { font-family: var(--serif); font-size: 1.5rem; font-weight: 600; margin-bottom: 4px; }
     .profile-since { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 20px; }
     .profile-row   { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.88rem; gap: 12px; }
@@ -95,7 +95,7 @@
     .profile-val   { color: #e8eaf2; font-weight: 600; text-align: right; }
     .divider       { height: 1px; background: rgba(255,255,255,0.07); margin: 22px 0; }
     .edit-link     { font-size: 0.82rem; color: rgba(255,255,255,0.4); cursor: pointer; transition: color .2s; }
-    .edit-link:hover { color: var(--pink-brand); }
+    .edit-link:hover { color: var(--accent); }
 
     /* ─── SUCCESS ─── */
     .success-icon  { font-size: 3rem; margin-bottom: 16px; }
@@ -264,7 +264,7 @@
         <div class="success-icon">🎉</div>
         <h2 class="success-title" id="successGreet">Bienvenida</h2>
         <p class="success-msg">Ya sos parte de Dridanna. Tus datos quedaron guardados y vas a recibir un saludo por WhatsApp. Ahora podés reservar en segundos.</p>
-        <a href="./reservar.html" class="btn-primary" style="display:block;text-align:center;text-decoration:none;line-height:1.5;padding:14px;max-width:340px;margin:0 auto 14px;">Reservar un inflable ahora →</a>
+        <a href="./reservar.html" class="btn-primary" style="display:block;text-align:center;text-decoration:none;line-height:1.5;padding:14px;max-width:340px;margin:0 auto 14px;">Reservar un pelotero ahora →</a>
         <a href="./index.html" class="btn-secondary" style="display:block;text-align:center;text-decoration:none;padding:12px;max-width:340px;margin:0 auto;">Volver al inicio</a>
       </div>
 

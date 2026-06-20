@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reservar inflable — Dridanna</title>
+  <title>Reservar pelotero — Dridanna</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -328,7 +328,7 @@
       <!-- Título -->
       <div style="margin-bottom:28px;">
         <p class="s-eyebrow">Reservá tu evento</p>
-        <h1 style="font-family:var(--serif); font-size:2rem; font-weight:600; line-height:1.2; margin-bottom:8px;">Elegí tu inflable y<br>reservá en minutos</h1>
+        <h1 style="font-family:var(--serif); font-size:2rem; font-weight:600; line-height:1.2; margin-bottom:8px;">Elegí tu pelotero y<br>reservá en minutos</h1>
         <p style="font-size:0.9rem; color:rgba(255,255,255,0.45);">Tres turnos por día · Mañana, tarde y noche</p>
       </div>
 
@@ -337,7 +337,7 @@
         <div class="pb-avatar" id="pbInitial">A</div>
         <div class="pb-text">
           <p class="pb-name" id="pbName">—</p>
-          <p class="pb-hint">Tus datos están listos. Solo elegí el inflable, fecha y turno.</p>
+          <p class="pb-hint">Tus datos están listos. Solo elegí el pelotero, fecha y turno.</p>
         </div>
         <span class="pb-edit" onclick="window.location='./altacliente.html'">Editar</span>
       </div>
@@ -352,10 +352,10 @@
         <a href="./altacliente.html" class="rb-link">Registrarme →</a>
       </div>
 
-      <!-- ─── PASO 1: Elegí el inflable ─── -->
+      <!-- ─── PASO 1: Elegí el pelotero ─── -->
       <div class="section-block">
         <p class="s-eyebrow">Paso 1</p>
-        <h2 class="s-title">Elegí tu inflable</h2>
+        <h2 class="s-title">Elegí tu pelotero</h2>
         <p class="s-sub">Tocá el que querés para tu fiesta</p>
 
         <div class="productos-grid" id="productosGrid">
@@ -471,7 +471,7 @@
       <!-- ─── RESUMEN ─── -->
       <div class="resumen-card hidden" id="resumenCard">
         <p class="resumen-title">Tu reserva</p>
-        <div class="resumen-row"><span class="resumen-key">Inflable</span><span class="resumen-val" id="rProducto">—</span></div>
+        <div class="resumen-row"><span class="resumen-key">Pelotero</span><span class="resumen-val" id="rProducto">—</span></div>
         <div class="resumen-row"><span class="resumen-key">Fecha</span><span class="resumen-val" id="rFecha">—</span></div>
         <div class="resumen-row"><span class="resumen-key">Turno</span><span class="resumen-val" id="rTurno">—</span></div>
         <div class="resumen-row"><span class="resumen-key">Nombre</span><span class="resumen-val" id="rNombre">—</span></div>
@@ -501,7 +501,7 @@
       <p class="suc-msg">En breve vas a recibir un WhatsApp de confirmación de parte de Dridanna. Si no llega en unos minutos, podés escribirnos directamente.</p>
 
       <div class="suc-detail" id="sucDetalle">
-        <div class="suc-row"><span class="suc-key">Inflable</span><span class="suc-val" id="sucProducto">—</span></div>
+        <div class="suc-row"><span class="suc-key">Pelotero</span><span class="suc-val" id="sucProducto">—</span></div>
         <div class="suc-row"><span class="suc-key">Fecha</span><span class="suc-val" id="sucFecha">—</span></div>
         <div class="suc-row"><span class="suc-key">Turno</span><span class="suc-val" id="sucTurno">—</span></div>
         <div class="suc-row"><span class="suc-key">WhatsApp</span><span class="suc-val" id="sucCelular">—</span></div>
@@ -538,20 +538,20 @@
 
     /* ─── Catálogo de productos ─── */
     const CATALOGO = [
-      { id:'castillo-3x3',        nombre:'Castillo Inflable',          dims:'3×3 m',     tipo:'Castillo', img:'castillo inflable 3 por 3/castillo inflable.jpg' },
-      { id:'princesas-3x3',       nombre:'Inflable Princesas',         dims:'3×3 m',     tipo:'Castillo', img:'Inflable Princesas 3 por 3/Inflable Princesas.jpg' },
+      { id:'castillo-3x3',        nombre:'Castillo Pelotero',          dims:'3×3 m',     tipo:'Castillo', img:'castillo inflable 3 por 3/castillo inflable.jpg' },
+      { id:'princesas-3x3',       nombre:'Pelotero Princesas',         dims:'3×3 m',     tipo:'Castillo', img:'Inflable Princesas 3 por 3/Inflable Princesas.jpg' },
       { id:'jirafa-tobogan',      nombre:'Jirafa con Tobogán',         dims:'3.5×6.5 m', tipo:'Tobogán',  img:'Inflable Jirafa con tobogan 3 coma 5 por 6 coma 5/Inflable Jirafa con tobogan.jpg' },
       { id:'gato-tobogan-4x7',    nombre:'Gato Silvestre c/ Tobogán',  dims:'4×7 m',     tipo:'Tobogán',  img:'Inflable Gato Silvestre con Tobogán 4x7/gatosilvestre.jpg' },
       { id:'gato-pio-3x5',        nombre:'Gato Silvestre y Pío Pío',   dims:'3×5 m',     tipo:'Castillo', img:'Gato Silvestre y Pio Pio  3 por 5/inflable pio y silvestre.jpg' },
-      { id:'rana-4x3',            nombre:'Inflable Rana',              dims:'4×3 m',     tipo:'Castillo', img:'inflable rana 4 por 3/inflable rana.jpg' },
-      { id:'tigre',               nombre:'Inflable Tigre',             dims:'',          tipo:'Castillo', img:'inflable tigre/inflable tigre.jpg' },
+      { id:'rana-4x3',            nombre:'Pelotero Rana',              dims:'4×3 m',     tipo:'Castillo', img:'inflable rana 4 por 3/inflable rana.jpg' },
+      { id:'tigre',               nombre:'Pelotero Tigre',             dims:'',          tipo:'Castillo', img:'inflable tigre/inflable tigre.jpg' },
       { id:'mickey-minnie',       nombre:'Mickey & Minnie',            dims:'',          tipo:'Castillo', img:'mickey and minii/mickey and minie.jpg' },
       { id:'toy-story',           nombre:'Toy Story',                  dims:'',          tipo:'Castillo', img:'toy story/Toy  Story.jpg' },
       { id:'super-rampa',         nombre:'Super Rampa',                dims:'',          tipo:'Tobogán',  img:'Super Rampa Brasile/super rampa.jpg' },
       { id:'rampa-lila',          nombre:'Rampa Lila',                 dims:'',          tipo:'Tobogán',  img:'Rampa Lila/rampainflable.jpg' },
-      { id:'rampa-azul',          nombre:'Rampa Inflable Azul',        dims:'',          tipo:'Tobogán',  img:'rampa inflable azul/rampa inflable azul.jpg' },
-      { id:'inflable-azul-rampa', nombre:'Inflable Azul con Rampa',    dims:'3×3 m',     tipo:'Tobogán',  img:'inflable azul con rampa 3 po 3/inflable azul.jpg' },
-      { id:'inflable-naranja',    nombre:'Inflable Naranja',           dims:'3×3 m',     tipo:'Castillo', img:'inflable naranja 3 po 3/inflable naranja.jpg' },
+      { id:'rampa-azul',          nombre:'Rampa Pelotero Azul',        dims:'',          tipo:'Tobogán',  img:'rampa inflable azul/rampa inflable azul.jpg' },
+      { id:'inflable-azul-rampa', nombre:'Pelotero Azul con Rampa',    dims:'3×3 m',     tipo:'Tobogán',  img:'inflable azul con rampa 3 po 3/inflable azul.jpg' },
+      { id:'inflable-naranja',    nombre:'Pelotero Naranja',           dims:'3×3 m',     tipo:'Castillo', img:'inflable naranja 3 po 3/inflable naranja.jpg' },
       { id:'metegol',             nombre:'Metegol',                    dims:'',          tipo:'Metegol',  img:'metegol/metegol.png' },
     ];
 
@@ -730,7 +730,7 @@
       const ref     = document.getElementById('dRef').value.trim();
 
       // Validaciones
-      if (!prod)    { error('Elegí un inflable.'); return; }
+      if (!prod)    { error('Elegí un pelotero.'); return; }
       if (!dia || !mes || !anio) { error('Completá la fecha del evento.'); return; }
       if (!selTurnoId)           { error('Elegí un horario (mañana, tarde o noche).'); return; }
       if (!nombre)   { error('Ingresá tu nombre.'); return; }
@@ -772,7 +772,7 @@
       // Preparar link WA de respaldo
       const waMsg = encodeURIComponent(
         `Hola Dridanna! Quiero reservar:\n\n` +
-        `Inflable: ${productoNombre}\n` +
+        `Pelotero: ${productoNombre}\n` +
         `Fecha: ${fechaLabel}\n` +
         `Horario: ${turnoLabel}\n\n` +
         `Mis datos:\n` +

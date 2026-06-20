@@ -363,6 +363,80 @@ app.post('/api/notify/confirmar', async (req, res) => {
   }
 });
 
+/* ═══════════════════════════════════════════════════════
+   ZONAS / BARRIOS (para costo de traslado)
+   ═══════════════════════════════════════════════════════ */
+const ZONAS_DEFAULT = [
+  { id: 'urbana', nombre: 'Casco Urbano', costoTraslado: 0,     descripcion: 'Zona urbana de Comandante Andresito' },
+  { id: 'rural',  nombre: 'Zona Rural',   costoTraslado: 10000, descripcion: 'Fuera del casco urbano' },
+];
+
+app.get('/api/zonas', async (req, res) => {
+  if (!db) return res.json({ ok: true, zonas: ZONAS_DEFAULT });
+  try {
+    const snap = await db.collection('zonas').get();
+    if (snap.empty) {
+      for (const z of ZONAS_DEFAULT) await db.collection('zonas').doc(z.id).set(z);
+      return res.json({ ok: true, zonas: ZONAS_DEFAULT });
+    }
+    return res.json({ ok: true, zonas: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
+  } catch (e) {
+    return res.json({ ok: true, zonas: ZONAS_DEFAULT });
+  }
+});
+
+app.post('/api/zonas', async (req, res) => {
+  const { id, nombre, costoTraslado, descripcion } = req.body || {};
+  if (!id || !nombre) return res.status(400).json({ ok: false, error: 'id y nombre son obligatorios' });
+  if (!db) return res.status(503).json({ ok: false, error: 'Base de datos no disponible.' });
+  try {
+    await db.collection('zonas').doc(id).set({
+      id, nombre, costoTraslado: Number(costoTraslado) || 0, descripcion: descripcion || '',
+    }, { merge: true });
+    return res.json({ ok: true });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+app.delete('/api/zonas/:id', async (req, res) => {
+  if (!db) return res.status(503).json({ ok: false, error: 'Base de datos no disponible.' });
+  try {
+    await db.collection('zonas').doc(req.params.id).delete();
+    return res.json({ ok: true });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+/* ═══════════════════════════════════════════════════════
+   PRODUCTOS (gestión desde admin)
+   ═══════════════════════════════════════════════════════ */
+app.get('/api/productos', async (req, res) => {
+  if (!db) return res.json({ ok: true, productos: [] });
+  try {
+    const snap = await db.collection('productos').get();
+    return res.json({ ok: true, productos: snap.docs.map(d => ({ id: d.id, ...d.data() })) });
+  } catch (e) {
+    return res.json({ ok: true, productos: [] });
+  }
+});
+
+app.post('/api/productos', async (req, res) => {
+  const { id, nombre, descripcion, dims, tipo, precio, imagen } = req.body || {};
+  if (!id) return res.status(400).json({ ok: false, error: 'id obligatorio' });
+  if (!db) return res.status(503).json({ ok: false, error: 'Base de datos no disponible.' });
+  try {
+    await db.collection('productos').doc(id).set({
+      nombre, descripcion: descripcion || '', dims: dims || '',
+      tipo: tipo || 'Castillo', precio: precio || '', imagen: imagen || '',
+    }, { merge: true });
+    return res.json({ ok: true });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
 /* ─────────────────────────────────────────────
    GET /api/clientes/todos
    Lista todos los clientes de Firestore.
@@ -393,6 +467,37 @@ app.get('/api/reservas/todas', async (req, res) => {
     return res.json({ ok: true, reservas });
   } catch (e) {
     return res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+/* ─────────────────────────────────────────────
+   POST /api/auth/login
+   Login por nombre+apellido y DNI.
+   ───────────────────────────────────────────── */
+app.post('/api/auth/login', async (req, res) => {
+  const { usuario, dni } = req.body || {};
+  if (!usuario || !dni) return res.status(400).json({ ok: false, error: 'Usuario y DNI son obligatorios.' });
+  if (!db) return res.status(503).json({ ok: false, error: 'Base de datos no disponible.' });
+
+  const dniNorm = String(dni).replace(/\D/g, '');
+  const userNorm = String(usuario).trim().toLowerCase();
+
+  try {
+    const snap = await db.collection('clientes').where('dni', '==', dniNorm).limit(5).get();
+    if (snap.empty) return res.json({ ok: false, error: 'No encontramos una cuenta con ese DNI.' });
+
+    const match = snap.docs.find(d => {
+      const c = d.data();
+      const fullName = [c.nombre, c.apellido].filter(Boolean).join(' ').toLowerCase();
+      return fullName === userNorm || c.nombre?.toLowerCase() === userNorm;
+    });
+
+    if (!match) return res.json({ ok: false, error: 'El nombre no coincide con el DNI ingresado.' });
+
+    const { celularNorm, creadoEn, ...cliente } = match.data();
+    return res.json({ ok: true, cliente });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: 'Error al buscar cliente.' });
   }
 });
 

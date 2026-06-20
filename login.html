@@ -14,7 +14,7 @@
       --blue-sky:   #5eb8f5;
       --gold-tower: #f5c842;
       --coral-roof: #e8614e;
-      --pink-brand: #dda0b8;
+      --accent: #3b82f6;
       --bg:         #080c18;
       --glass-bg:   rgba(255,255,255,0.04);
       --glass-b:    rgba(255,255,255,0.08);
@@ -36,7 +36,7 @@
     /* Tabs */
     .auth-tabs{display:grid;grid-template-columns:1fr 1fr}
     .auth-tab{padding:16px;font-family:var(--font);font-size:0.92rem;font-weight:700;background:transparent;border:none;border-bottom:2px solid rgba(255,255,255,0.07);color:rgba(255,255,255,0.4);cursor:pointer;transition:color .2s,border-color .2s}
-    .auth-tab.active{color:#fff;border-bottom-color:var(--pink-brand)}
+    .auth-tab.active{color:#fff;border-bottom-color:var(--accent)}
     .auth-tab:first-child{border-right:1px solid rgba(255,255,255,0.07)}
 
     /* Panels */
@@ -50,13 +50,13 @@
     .form-field label{font-size:0.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,0.4)}
     .form-field label .req{color:var(--coral-roof);margin-left:2px}
     .fi{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 14px;font-family:var(--font);font-size:0.95rem;color:#e8eaf2;outline:none;transition:border-color .2s;width:100%}
-    .fi:focus{border-color:var(--pink-brand);background:rgba(221,160,184,0.07)}
+    .fi:focus{border-color:var(--accent);background:rgba(59,130,246,0.07)}
     .fi::placeholder{color:rgba(255,255,255,0.22)}
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .hint{font-size:0.73rem;color:rgba(255,255,255,0.28)}
 
     /* Buttons */
-    .btn-main{width:100%;padding:14px;background:linear-gradient(135deg,var(--pink-brand) 0%,#c078a0 100%);border:none;border-radius:12px;color:#fff;font-family:var(--font);font-size:1rem;font-weight:700;cursor:pointer;transition:opacity .2s,transform .1s;margin-top:4px}
+    .btn-main{width:100%;padding:14px;background:linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);border:none;border-radius:12px;color:#fff;font-family:var(--font);font-size:1rem;font-weight:700;cursor:pointer;transition:opacity .2s,transform .1s;margin-top:4px}
     .btn-main:hover{opacity:.9}
     .btn-main:active{transform:scale(.99)}
     .btn-main:disabled{opacity:.45;cursor:not-allowed}
@@ -74,7 +74,7 @@
     /* Back */
     .back-link{margin-top:24px;font-size:0.82rem;color:rgba(255,255,255,0.4);text-align:center;display:block}
     .back-link a{color:rgba(255,255,255,0.55)}
-    .back-link a:hover{color:var(--pink-brand)}
+    .back-link a:hover{color:var(--accent)}
 
     /* WA float */
     .wa-float{position:fixed;bottom:22px;right:22px;z-index:200;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;background-color:#18a84a;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 30' width='26' height='30'%3E%3Cpolygon points='13,1 25,7 25,21 13,27 1,21 1,7' fill='none' stroke='rgba(0%2C0%2C0%2C0.22)' stroke-width='1.2'/%3E%3C/svg%3E"),linear-gradient(145deg,#25d366 0%,#128c52 100%);background-size:18px 21px,100%;box-shadow:0 4px 18px rgba(0,0,0,0.35);transition:transform .2s}
@@ -101,12 +101,16 @@
     <!-- ══ PANEL: Iniciar sesión ══ -->
     <div class="auth-panel active" id="panelLogin">
       <p class="panel-title">Bienvenido de nuevo</p>
-      <p class="panel-sub">Ingresá tu número de WhatsApp y buscamos tu cuenta.</p>
+      <p class="panel-sub">Ingresá tu nombre completo y tu DNI para acceder.</p>
 
       <div class="form-field">
-        <label for="lCelular">WhatsApp <span class="req">*</span></label>
-        <input class="fi" type="tel" id="lCelular" placeholder="3757 671088" inputmode="numeric" autocomplete="tel">
-        <span class="hint">Sin el 0 inicial ni el +54</span>
+        <label for="lUsuario">Nombre y Apellido <span class="req">*</span></label>
+        <input class="fi" type="text" id="lUsuario" placeholder="María González" autocomplete="name">
+      </div>
+
+      <div class="form-field">
+        <label for="lDni">DNI (contraseña) <span class="req">*</span></label>
+        <input class="fi" type="password" id="lDni" placeholder="12345678" inputmode="numeric" autocomplete="off">
       </div>
 
       <button class="btn-main" id="btnLogin" onclick="iniciarSesion()">Ingresar →</button>
@@ -204,21 +208,23 @@
 
     /* ─── Iniciar sesión ─── */
     async function iniciarSesion() {
-      const cel    = document.getElementById('lCelular').value.trim();
-      const status = document.getElementById('loginStatus');
-      const btn    = document.getElementById('btnLogin');
+      const usuario = document.getElementById('lUsuario').value.trim();
+      const dni     = document.getElementById('lDni').value.trim().replace(/\./g,'');
+      const status  = document.getElementById('loginStatus');
+      const btn     = document.getElementById('btnLogin');
 
       status.className = 'status'; status.style.display = 'none';
 
-      if (!cel || cel.replace(/\D/g,'').length < 7) {
-        showStatus(status, 'error', 'Ingresá tu número de WhatsApp.');
-        return;
-      }
+      if (!usuario) { showStatus(status, 'error', 'Ingresá tu nombre y apellido.'); return; }
+      if (!dni || !/^\d{7,8}$/.test(dni)) { showStatus(status, 'error', 'Ingresá un DNI válido (7 u 8 dígitos).'); return; }
 
-      btn.disabled = true; btn.textContent = 'Buscando...';
+      btn.disabled = true; btn.textContent = 'Verificando...';
 
       try {
-        const r = await fetch(`${API_BASE}/api/clientes/buscar?telefono=${encodeURIComponent(cel)}`, {
+        const r = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usuario, dni }),
           signal: AbortSignal.timeout(8000),
         });
         const d = await r.json();
@@ -229,12 +235,10 @@
           showStatus(status, 'ok', `¡Hola, ${p.nombre}! Redirigiendo...`);
           setTimeout(() => location.replace(destino), 900);
         } else {
-          showStatus(status, 'error', d.error || 'No encontramos una cuenta con ese WhatsApp. ¿Querés registrarte?');
+          showStatus(status, 'error', d.error || 'Nombre o DNI incorrecto. ¿Querés registrarte?');
         }
       } catch (e) {
-        // Backend no disponible
-        showStatus(status, 'warn',
-          'No pudimos conectarnos al servidor. Verificá si tu número ya está registrado más tarde, o escribinos por WhatsApp.');
+        showStatus(status, 'warn', 'No pudimos conectarnos al servidor. Intentá de nuevo en unos segundos.');
       }
 
       btn.disabled = false; btn.textContent = 'Ingresar →';
@@ -299,8 +303,9 @@
     }
 
     // Enter key en login
-    document.getElementById('lCelular').addEventListener('keydown', e => {
+    ['lUsuario','lDni'].forEach(id => document.getElementById(id)?.addEventListener('keydown', e => {
       if (e.key === 'Enter') iniciarSesion();
+    }));
     });
   </script>
 </body>
