@@ -405,8 +405,8 @@
         <!-- Mapa con geolocalización -->
         <p style="font-size:0.78rem; color:rgba(255,255,255,0.4); margin-bottom:6px;">La zona verde es casco urbano (envío gratis).</p>
         <div id="mapaZona" style="height:220px; border-radius:14px; border:1px solid rgba(255,255,255,0.1); overflow:hidden; margin-bottom:6px;"></div>
-        <button type="button" onclick="compartirUbicacion()" style="width:100%; padding:10px; background:rgba(94,184,245,0.1); border:1px solid rgba(94,184,245,0.25); border-radius:10px; color:var(--blue-sky); font-family:var(--font); font-size:0.83rem; font-weight:600; cursor:pointer; margin-bottom:18px; display:flex; align-items:center; justify-content:center; gap:6px;">
-          📍 Compartir mi ubicación actual
+        <button type="button" id="btnUbicacion" onclick="compartirUbicacion()" style="width:100%; padding:12px; background:rgba(94,184,245,0.1); border:1px solid rgba(94,184,245,0.25); border-radius:10px; color:var(--blue-sky); font-family:var(--font); font-size:0.85rem; font-weight:700; cursor:pointer; margin-bottom:18px; display:flex; align-items:center; justify-content:center; gap:6px; transition:all .2s;">
+          📍 Compartir mi ubicación (obligatorio)
         </button>
 
         <!-- Edad: chips -->
@@ -680,24 +680,27 @@
 
     /* ─── Geolocalización ─── */
     let userMarker = null;
-    const cascoUrbano = [[-25.6520,-54.0720],[-25.6520,-54.0430],[-25.6780,-54.0430],[-25.6780,-54.0720]];
+    let ubicacionCompartida = false;
 
     function compartirUbicacion() {
       if (!navigator.geolocation) { alert('Tu navegador no soporta geolocalización'); return; }
       navigator.geolocation.getCurrentPosition(pos => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
+        ubicacionCompartida = true;
+        document.getElementById('btnUbicacion').style.background = 'rgba(37,211,102,0.15)';
+        document.getElementById('btnUbicacion').style.borderColor = 'rgba(37,211,102,0.4)';
+        document.getElementById('btnUbicacion').style.color = '#25d366';
+        document.getElementById('btnUbicacion').innerHTML = '✅ Ubicación compartida';
         if (window._leafletMap) {
           if (userMarker) window._leafletMap.removeLayer(userMarker);
           userMarker = L.marker([lat, lng], { title:'Tu ubicación' }).addTo(window._leafletMap)
             .bindPopup('📍 Tu ubicación actual').openPopup();
           window._leafletMap.setView([lat, lng], 15);
-
-          // Detectar zona automáticamente
           const dentroUrbano = lat >= -25.6780 && lat <= -25.6520 && lng >= -54.0720 && lng <= -54.0430;
           selZona(dentroUrbano ? 'urbana' : 'rural');
         }
-      }, () => { alert('No se pudo obtener tu ubicación. Verificá los permisos.'); },
+      }, () => { alert('No se pudo obtener tu ubicación. Verificá los permisos del navegador.'); },
       { enableHighAccuracy: true, timeout: 10000 });
     }
 
@@ -897,6 +900,7 @@
       const superficie = document.getElementById('qSuperficie').value;
       const lluvia     = document.getElementById('qLluvia').value;
 
+      if (!ubicacionCompartida) { error('Compartí tu ubicación tocando el botón 📍 en el Paso 1.'); return; }
       if (!zona)       { error('Seleccioná la zona de entrega (Paso 1).'); return; }
       if (!edadRango)  { error('Seleccioná el rango de edad de los niños.'); return; }
       if (!superficie) { error('Indicá el tipo de superficie.'); return; }
