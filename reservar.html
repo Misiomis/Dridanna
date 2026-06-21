@@ -144,6 +144,27 @@
     .prod-check svg { width: 12px; height: 12px; fill: #fff; }
     .prod-card.selected .prod-check { display: flex; }
 
+    /* ─── Zona cards ─── */
+    .zona-card {
+      display:flex; flex-direction:column; align-items:center; gap:4px;
+      padding:16px 10px; border-radius:14px; cursor:pointer;
+      background:var(--glass-bg); border:2px solid rgba(255,255,255,0.08);
+      color:#e8eaf2; font-family:var(--font); transition:all .2s;
+    }
+    .zona-card:hover { border-color:rgba(255,255,255,0.18); background:rgba(255,255,255,0.06); }
+    .zona-card.active { border-color:var(--accent); background:rgba(201,119,154,0.1); box-shadow:0 0 0 3px rgba(201,119,154,0.15); }
+
+    /* ─── Chip buttons ─── */
+    .chip-btn {
+      padding:8px 16px; border-radius:20px; font-family:var(--font); font-size:0.82rem; font-weight:600;
+      background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.65);
+      cursor:pointer; transition:all .2s; white-space:nowrap;
+    }
+    .chip-btn:hover { border-color:rgba(255,255,255,0.25); color:#fff; }
+    .chip-btn.active { background:rgba(201,119,154,0.15); border-color:var(--accent); color:var(--accent); }
+    .chip-btn.sm { padding:6px 12px; font-size:0.78rem; }
+    .chip-btn.wide { padding:10px 14px; border-radius:12px; font-size:0.83rem; width:100%; }
+
     /* Fallback fondo cuando no carga la imagen */
     .prod-fallback {
       position: absolute; inset: 0;
@@ -329,31 +350,32 @@
     <!-- ═══════ VISTA FORMULARIO ═══════ -->
     <div id="viewForm">
 
+      <!-- ═══ BLOQUEO: debe estar logueado ═══ -->
+      <div id="loginRequired" style="text-align:center; padding:60px 20px;">
+        <p style="font-size:2.5rem; margin-bottom:16px;">🔒</p>
+        <h2 style="font-family:var(--serif); font-size:1.6rem; margin-bottom:10px;">Necesitás una cuenta para reservar</h2>
+        <p style="font-size:0.9rem; color:rgba(255,255,255,0.5); line-height:1.6; margin-bottom:24px;">Ingresá con tu nombre y DNI. Si no tenés cuenta, registrate en un minuto.</p>
+        <a href="./login.html?next=reservar.html" style="display:inline-block; padding:14px 32px; background:linear-gradient(135deg,#c9779a,#a85878); color:#fff; font-weight:700; border-radius:12px; text-decoration:none; font-size:0.95rem;">Ingresar o registrarme →</a>
+      </div>
+
+      <!-- ═══ CONTENIDO (solo si logueado) ═══ -->
+      <div id="reservaContent" style="display:none;">
+
       <!-- Título -->
       <div style="margin-bottom:28px;">
         <p class="s-eyebrow">Reservá tu evento</p>
         <h1 style="font-family:var(--serif); font-size:2rem; font-weight:600; line-height:1.2; margin-bottom:8px;">Elegí tu pelotero y<br>reservá en minutos</h1>
-        <p style="font-size:0.9rem; color:rgba(255,255,255,0.45);">Tres turnos por día · Mañana, tarde y noche</p>
+        <p style="font-size:0.9rem; color:rgba(255,255,255,0.45);">Alquiler por 5 horas · Elegí el horario que quieras</p>
       </div>
 
-      <!-- Banner perfil (se muestra si hay perfil) -->
-      <div class="profile-banner hidden" id="profileBanner">
+      <!-- Banner perfil -->
+      <div class="profile-banner" id="profileBanner">
         <div class="pb-avatar" id="pbInitial">A</div>
         <div class="pb-text">
           <p class="pb-name" id="pbName">—</p>
-          <p class="pb-hint">Tus datos están listos. Solo elegí el pelotero, fecha y turno.</p>
+          <p class="pb-hint">Tus datos están listos. Solo elegí el pelotero, fecha y hora.</p>
         </div>
         <span class="pb-edit" onclick="window.location='./altacliente.html'">Editar</span>
-      </div>
-
-      <!-- Banner registro (se muestra si NO hay perfil) -->
-      <div class="register-banner" id="registerBanner">
-        <span class="rb-icon">✨</span>
-        <div class="rb-text">
-          <p class="rb-title">Hacete cliente y reservá más rápido</p>
-          <p class="rb-sub">Guardamos tus datos. La próxima reserva se llena sola.</p>
-        </div>
-        <a href="./altacliente.html" class="rb-link">Registrarme →</a>
       </div>
 
       <!-- ─── PASO 1: Cuestionario previo ─── -->
@@ -362,63 +384,71 @@
         <h2 class="s-title">Contanos sobre tu evento</h2>
         <p class="s-sub">Así podemos recomendarte el mejor pelotero</p>
 
-        <div class="form-field">
-          <label for="qZona">Zona de entrega</label>
-          <select class="form-input" id="qZona" onchange="actualizarCostoZona()">
-            <option value="">Seleccioná la zona</option>
-            <option value="urbana">Casco Urbano (envío gratis)</option>
-            <option value="rural">Zona Rural (+$10.000 traslado)</option>
-          </select>
+        <!-- Zona: cards visuales -->
+        <p class="f-label">Zona de entrega</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+          <button type="button" class="zona-card" id="zcUrbana" onclick="selZona('urbana')">
+            <span style="font-size:1.5rem">🏘️</span>
+            <span style="font-weight:700; font-size:0.88rem">Casco Urbano</span>
+            <span style="font-size:0.75rem; color:rgba(255,255,255,0.5)">Envío gratis</span>
+          </button>
+          <button type="button" class="zona-card" id="zcRural" onclick="selZona('rural')">
+            <span style="font-size:1.5rem">🌾</span>
+            <span style="font-weight:700; font-size:0.88rem">Zona Rural</span>
+            <span style="font-size:0.75rem; color:rgba(255,255,255,0.5)">+$10.000 traslado</span>
+          </button>
         </div>
+        <input type="hidden" id="qZona" value="">
 
-        <div class="form-field">
-          <label for="qEdad">Rango de edad de los niños</label>
-          <select class="form-input" id="qEdad">
-            <option value="">Seleccioná el rango</option>
-            <option value="1-3">1 a 3 años</option>
-            <option value="4-6">4 a 6 años</option>
-            <option value="7-10">7 a 10 años</option>
-            <option value="11+">11 años o más</option>
-            <option value="mixto">Edades mixtas</option>
-          </select>
+        <div id="costoZonaInfo" style="display:none; padding:10px 14px; border-radius:10px; background:rgba(201,119,154,0.08); border:1px solid rgba(201,119,154,0.2); color:var(--accent); font-size:0.83rem; margin-bottom:14px;"></div>
+
+        <!-- Mapa con geolocalización -->
+        <p style="font-size:0.78rem; color:rgba(255,255,255,0.4); margin-bottom:6px;">La zona verde es casco urbano (envío gratis).</p>
+        <div id="mapaZona" style="height:220px; border-radius:14px; border:1px solid rgba(255,255,255,0.1); overflow:hidden; margin-bottom:6px;"></div>
+        <button type="button" onclick="compartirUbicacion()" style="width:100%; padding:10px; background:rgba(94,184,245,0.1); border:1px solid rgba(94,184,245,0.25); border-radius:10px; color:var(--blue-sky); font-family:var(--font); font-size:0.83rem; font-weight:600; cursor:pointer; margin-bottom:18px; display:flex; align-items:center; justify-content:center; gap:6px;">
+          📍 Compartir mi ubicación actual
+        </button>
+
+        <!-- Edad: chips -->
+        <p class="f-label">Rango de edad de los niños</p>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
+          <button type="button" class="chip-btn" onclick="selChip('qEdad','1-3',this)">1–3 años</button>
+          <button type="button" class="chip-btn" onclick="selChip('qEdad','4-6',this)">4–6 años</button>
+          <button type="button" class="chip-btn" onclick="selChip('qEdad','7-10',this)">7–10 años</button>
+          <button type="button" class="chip-btn" onclick="selChip('qEdad','11+',this)">11+ años</button>
+          <button type="button" class="chip-btn" onclick="selChip('qEdad','mixto',this)">Mixtas</button>
         </div>
+        <input type="hidden" id="qEdad" value="">
 
+        <!-- Metros + Superficie -->
         <div class="form-row">
           <div class="form-field">
-            <label for="qMetros">Metros aprox. del lugar</label>
-            <input class="form-input" type="number" id="qMetros" placeholder="Ej: 25" min="1" inputmode="numeric">
-            <span class="hint">Largo × ancho estimado</span>
+            <label for="qMetros">Metros aprox.</label>
+            <input class="form-input" type="number" id="qMetros" placeholder="25" min="1" inputmode="numeric">
+            <span class="hint">Largo × ancho</span>
           </div>
           <div class="form-field">
-            <label for="qSuperficie">Superficie del suelo</label>
-            <select class="form-input" id="qSuperficie">
-              <option value="">Tipo de piso</option>
-              <option value="pasto">Pasto</option>
-              <option value="tierra">Tierra</option>
-              <option value="cemento">Cemento / Baldosa</option>
-              <option value="otro">Otro</option>
-            </select>
+            <label>Superficie</label>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="chip-btn sm" onclick="selChip('qSuperficie','pasto',this)">🌿 Pasto</button>
+              <button type="button" class="chip-btn sm" onclick="selChip('qSuperficie','tierra',this)">🟤 Tierra</button>
+              <button type="button" class="chip-btn sm" onclick="selChip('qSuperficie','cemento',this)">⬜ Cemento</button>
+            </div>
+            <input type="hidden" id="qSuperficie" value="">
           </div>
         </div>
 
-        <div class="form-field">
-          <label for="qLluvia">En caso de lluvia, ¿tenés un lugar techado alternativo?</label>
-          <select class="form-input" id="qLluvia">
-            <option value="">Seleccioná</option>
-            <option value="si">Sí, puedo moverlo bajo techo</option>
-            <option value="no">No, no tengo techo disponible</option>
-          </select>
+        <!-- Lluvia: dos botones -->
+        <p class="f-label">En caso de lluvia, ¿tenés un techo alternativo?</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+          <button type="button" class="chip-btn wide" onclick="selLluvia('si',this)">✅ Sí, tengo techo</button>
+          <button type="button" class="chip-btn wide" onclick="selLluvia('no',this)">❌ No tengo techo</button>
         </div>
+        <input type="hidden" id="qLluvia" value="">
 
-        <div id="lluviaAviso" style="display:none; padding:12px 14px; border-radius:10px; background:rgba(232,97,78,0.1); border:1px solid rgba(232,97,78,0.25); color:#f7a090; font-size:0.83rem; line-height:1.5; margin-top:-6px; margin-bottom:8px;">
-          ⚠️ Sin techo alternativo, en caso de lluvia nos vemos obligados a cancelar la reserva. Te avisamos con anticipación si hay pronóstico desfavorable.
+        <div id="lluviaAviso" style="display:none; padding:10px 14px; border-radius:10px; background:rgba(232,97,78,0.1); border:1px solid rgba(232,97,78,0.25); color:#f7a090; font-size:0.82rem; line-height:1.5; margin-bottom:8px;">
+          Sin techo alternativo, en caso de lluvia nos vemos obligados a cancelar la reserva. Te avisamos con anticipación.
         </div>
-
-        <div id="costoZonaInfo" style="display:none; padding:12px 14px; border-radius:10px; background:rgba(201,119,154,0.08); border:1px solid rgba(201,119,154,0.2); color:var(--accent); font-size:0.85rem; margin-bottom:8px;">
-        </div>
-
-        <p style="font-size:0.78rem; color:rgba(255,255,255,0.4); margin-bottom:8px;">La zona verde es el casco urbano (envío gratis). Fuera de ella se aplica costo de traslado.</p>
-        <div id="mapaZona" style="height:260px; border-radius:14px; border:1px solid rgba(255,255,255,0.1); overflow:hidden; margin-bottom:8px;"></div>
       </div>
 
       <!-- ─── PASO 2: Elegí el pelotero ─── -->
@@ -541,17 +571,18 @@
       </button>
 
       <p class="notice">
-        Al confirmar enviamos tu solicitud a Dridanna y te avisamos por WhatsApp.<br>
+        Al confirmar se abre WhatsApp para que envíes la pre-reserva a Dridanna.<br>
         <a href="./privacidad.html">Política de privacidad</a> · <a href="./terminos.html">Términos</a>
       </p>
 
+    </div><!-- /#reservaContent -->
     </div><!-- /#viewForm -->
 
     <!-- ═══════ VISTA ÉXITO ═══════ -->
     <div id="viewSuccess" class="hidden">
       <div class="suc-icon">🎉</div>
-      <h2 class="suc-title">¡Reserva enviada!</h2>
-      <p class="suc-msg">En breve vas a recibir un WhatsApp de confirmación de parte de Dridanna. Si no llega en unos minutos, podés escribirnos directamente.</p>
+      <h2 class="suc-title">¡Pre-reserva lista!</h2>
+      <p class="suc-msg">Se abrió WhatsApp con tu pre-reserva. Enviá el mensaje a Estela para confirmar. Si no se abrió, usá el botón de abajo.</p>
 
       <div class="suc-detail" id="sucDetalle">
         <div class="suc-row"><span class="suc-key">Pelotero</span><span class="suc-val" id="sucProducto">—</span></div>
@@ -562,7 +593,7 @@
 
       <a id="btnWaFallback" href="#" target="_blank" rel="noopener" class="btn-wa" style="max-width:380px; margin:0 auto 12px; display:flex; text-decoration:none;">
         <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.116 1.524 5.844L0 24l6.338-1.497A11.93 11.93 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.797 9.797 0 01-5.015-1.378l-.36-.213-3.734.882.932-3.625-.235-.371A9.795 9.795 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
-        Confirmar por WhatsApp también
+        Enviar pre-reserva por WhatsApp
       </a>
 
       <button class="btn-nuevo" onclick="nuevaReserva()">Hacer otra reserva</button>
@@ -608,24 +639,67 @@
       { id:'metegol',             nombre:'Metegol',                    dims:'',          tipo:'Metegol',  img:'metegol/metegol.png' },
     ];
 
+    /* ─── Auth check ─── */
+    const perfilRaw = localStorage.getItem(PERFIL_KEY);
+    if (!perfilRaw) {
+      document.getElementById('loginRequired').style.display = 'block';
+    } else {
+      document.getElementById('loginRequired').style.display = 'none';
+      document.getElementById('reservaContent').style.display = 'block';
+    }
+
     /* ─── Zonas ─── */
     const ZONAS = { urbana: { nombre: 'Casco Urbano', costo: 0 }, rural: { nombre: 'Zona Rural', costo: 10000 } };
 
-    function actualizarCostoZona() {
-      const z = document.getElementById('qZona').value;
+    function selZona(id) {
+      document.getElementById('qZona').value = id;
+      document.querySelectorAll('.zona-card').forEach(c => c.classList.remove('active'));
+      document.getElementById('zc' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('active');
       const info = document.getElementById('costoZonaInfo');
-      if (!z) { info.style.display = 'none'; return; }
-      const zona = ZONAS[z];
+      const zona = ZONAS[id];
       info.style.display = 'block';
       info.textContent = zona.costo > 0
         ? `Traslado ${zona.nombre}: +$${zona.costo.toLocaleString('es-AR')}`
         : `${zona.nombre}: envío sin cargo`;
+      actualizarResumen();
     }
 
-    // Aviso lluvia
-    document.getElementById('qLluvia')?.addEventListener('change', function() {
-      document.getElementById('lluviaAviso').style.display = this.value === 'no' ? 'block' : 'none';
-    });
+    /* ─── Chips ─── */
+    function selChip(hiddenId, value, el) {
+      document.getElementById(hiddenId).value = value;
+      el.parentElement.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function selLluvia(val, el) {
+      document.getElementById('qLluvia').value = val;
+      el.parentElement.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('lluviaAviso').style.display = val === 'no' ? 'block' : 'none';
+    }
+
+    /* ─── Geolocalización ─── */
+    let userMarker = null;
+    const cascoUrbano = [[-25.6520,-54.0720],[-25.6520,-54.0430],[-25.6780,-54.0430],[-25.6780,-54.0720]];
+
+    function compartirUbicacion() {
+      if (!navigator.geolocation) { alert('Tu navegador no soporta geolocalización'); return; }
+      navigator.geolocation.getCurrentPosition(pos => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        if (window._leafletMap) {
+          if (userMarker) window._leafletMap.removeLayer(userMarker);
+          userMarker = L.marker([lat, lng], { title:'Tu ubicación' }).addTo(window._leafletMap)
+            .bindPopup('📍 Tu ubicación actual').openPopup();
+          window._leafletMap.setView([lat, lng], 15);
+
+          // Detectar zona automáticamente
+          const dentroUrbano = lat >= -25.6780 && lat <= -25.6520 && lng >= -54.0720 && lng <= -54.0430;
+          selZona(dentroUrbano ? 'urbana' : 'rural');
+        }
+      }, () => { alert('No se pudo obtener tu ubicación. Verificá los permisos.'); },
+      { enableHighAccuracy: true, timeout: 10000 });
+    }
 
     /* ─── Estado ─── */
     let selProductoId  = null;
@@ -634,7 +708,8 @@
     /* ─── Mapa ─── */
     function initMapa() {
       const map = L.map('mapaZona', { scrollWheelZoom: true, dragging: true, tap: true, touchZoom: true, zoomControl: true })
-        .setView([-25.6710, -54.0578], 14);
+        .setView([-25.6650, -54.0575], 14);
+      window._leafletMap = map;
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap', maxZoom: 18,
       }).addTo(map);
@@ -918,7 +993,10 @@
       document.getElementById('viewSuccess').classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      // Disparar API en background (best-effort, no bloqueante) → WA + Firestore
+      // Abrir WhatsApp para enviar la pre-reserva manualmente a Estela
+      window.open(waUrl, '_blank');
+
+      // Guardar en Firestore en background (best-effort)
       notificarAPI({ celular, nombre, apellido, dni, producto: productoNombre, fechaLabel, turnoLabel, direccion: dir, barrio, referencia: ref });
     }
 
