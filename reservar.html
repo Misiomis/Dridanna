@@ -26,7 +26,9 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { color-scheme: dark; }
     body { background: var(--bg); color: #e8eaf2; font-family: var(--font); min-height: 100vh; }
+    select, option { background: #111827; color: #e8eaf2; }
     a    { color: var(--blue-sky); text-decoration: none; }
     a:hover { text-decoration: underline; }
 
@@ -436,52 +438,34 @@
         <h2 class="s-title">Elegí la fecha y el horario</h2>
 
         <p class="f-label">Fecha del evento</p>
-        <div class="fecha-row">
-          <div>
-            <select class="fecha-sel" id="fDia" aria-label="Día">
-              <option value="">Día</option>
-            </select>
-          </div>
-          <div>
-            <select class="fecha-sel" id="fMes" aria-label="Mes">
-              <option value="">Mes</option>
-              <option value="1">Enero</option>
-              <option value="2">Febrero</option>
-              <option value="3">Marzo</option>
-              <option value="4">Abril</option>
-              <option value="5">Mayo</option>
-              <option value="6">Junio</option>
-              <option value="7">Julio</option>
-              <option value="8">Agosto</option>
-              <option value="9">Septiembre</option>
-              <option value="10">Octubre</option>
-              <option value="11">Noviembre</option>
-              <option value="12">Diciembre</option>
-            </select>
-          </div>
-          <div class="f-anio">
-            <select class="fecha-sel" id="fAnio" aria-label="Año">
-              <option value="">Año</option>
-            </select>
-          </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <select class="fecha-sel" id="fDia" aria-label="Día">
+            <option value="">Día</option>
+          </select>
+          <select class="fecha-sel" id="fMes" aria-label="Mes">
+            <option value="">Mes</option>
+          </select>
         </div>
 
-        <div class="turnos-row">
-          <button class="turno-btn" data-id="manana" onclick="selTurno('manana',this)">
-            <span class="t-emoji">🌅</span>
-            <span class="t-label">Mañana</span>
-            <span class="t-horas">9:00 – 13:00</span>
-          </button>
-          <button class="turno-btn" data-id="tarde" onclick="selTurno('tarde',this)">
-            <span class="t-emoji">☀️</span>
-            <span class="t-label">Tarde</span>
-            <span class="t-horas">14:00 – 18:00</span>
-          </button>
-          <button class="turno-btn" data-id="noche" onclick="selTurno('noche',this)">
-            <span class="t-emoji">🌙</span>
-            <span class="t-label">Noche</span>
-            <span class="t-horas">19:00 – 23:00</span>
-          </button>
+        <div class="form-field" style="margin-top:14px;">
+          <label for="fHora">Hora de inicio</label>
+          <select class="form-input" id="fHora">
+            <option value="">Elegí la hora</option>
+            <option value="08:00">08:00</option>
+            <option value="09:00">09:00</option>
+            <option value="10:00">10:00</option>
+            <option value="11:00">11:00</option>
+            <option value="12:00">12:00</option>
+            <option value="13:00">13:00</option>
+            <option value="14:00">14:00</option>
+            <option value="15:00">15:00</option>
+            <option value="16:00">16:00</option>
+            <option value="17:00">17:00</option>
+            <option value="18:00">18:00</option>
+            <option value="19:00">19:00</option>
+            <option value="20:00">20:00</option>
+          </select>
+          <span class="hint">El alquiler incluye 5 horas de uso. Si necesitás más tiempo, avisanos al confirmar.</span>
         </div>
       </div>
 
@@ -540,7 +524,7 @@
         <p class="resumen-title">Tu reserva</p>
         <div class="resumen-row"><span class="resumen-key">Pelotero</span><span class="resumen-val" id="rProducto">—</span></div>
         <div class="resumen-row"><span class="resumen-key">Fecha</span><span class="resumen-val" id="rFecha">—</span></div>
-        <div class="resumen-row"><span class="resumen-key">Turno</span><span class="resumen-val" id="rTurno">—</span></div>
+        <div class="resumen-row"><span class="resumen-key">Horario</span><span class="resumen-val" id="rTurno">—</span></div>
         <div class="resumen-row"><span class="resumen-key">Zona</span><span class="resumen-val" id="rZona">—</span></div>
         <div class="resumen-row"><span class="resumen-key">Traslado</span><span class="resumen-val" id="rTraslado">—</span></div>
         <div class="resumen-row"><span class="resumen-key">Nombre</span><span class="resumen-val" id="rNombre">—</span></div>
@@ -645,13 +629,12 @@
 
     /* ─── Estado ─── */
     let selProductoId  = null;
-    let selTurnoId     = null;
     let perfil         = null;
 
     /* ─── Mapa ─── */
     function initMapa() {
-      const map = L.map('mapaZona', { scrollWheelZoom: false, dragging: true, zoomControl: true })
-        .setView([-25.6710, -54.0578], 13);
+      const map = L.map('mapaZona', { scrollWheelZoom: true, dragging: true, tap: true, touchZoom: true, zoomControl: true })
+        .setView([-25.6710, -54.0578], 14);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap', maxZoom: 18,
       }).addTo(map);
@@ -673,7 +656,7 @@
     /* ─── Init ─── */
     function init() {
       buildDias();
-      buildAnios();
+      buildMeses();
       renderProductos();
       cargarPerfil();
       try { initMapa(); } catch {}
@@ -696,14 +679,17 @@
       }
     }
 
-    function buildAnios() {
-      const sel = document.getElementById('fAnio');
-      const now = new Date().getFullYear();
-      for (let y = now; y <= now + 2; y++) {
+    function buildMeses() {
+      const sel = document.getElementById('fMes');
+      const hoy = new Date();
+      const mesActual = hoy.getMonth() + 1;
+      MESES_LARGO.forEach((nombre, i) => {
+        const num = i + 1;
+        if (num < mesActual) return;
         const o = document.createElement('option');
-        o.value = y; o.textContent = y;
+        o.value = num; o.textContent = nombre.charAt(0).toUpperCase() + nombre.slice(1);
         sel.appendChild(o);
-      }
+      });
     }
 
     function cargarPerfil() {
@@ -782,30 +768,27 @@
       actualizarResumen();
     }
 
-    /* ─── Selección turno ─── */
-    function selTurno(id, el) {
-      selTurnoId = id;
-      document.querySelectorAll('.turno-btn').forEach(b => b.classList.remove('active'));
-      el.classList.add('active');
-      actualizarResumen();
-    }
+    // Hora change → actualizar resumen
+    document.getElementById('fHora')?.addEventListener('change', actualizarResumen);
 
     /* ─── Actualizar resumen ─── */
     function actualizarResumen() {
       const prod  = CATALOGO.find(p => p.id === selProductoId);
       const dia   = document.getElementById('fDia').value;
       const mes   = document.getElementById('fMes').value;
-      const anio  = document.getElementById('fAnio').value;
+      const hora  = document.getElementById('fHora').value;
+      const anio  = new Date().getFullYear();
 
-      const listo = prod && dia && mes && anio && selTurnoId;
+      const listo = prod && dia && mes && hora;
       const card  = document.getElementById('resumenCard');
       if (!listo) { card.classList.add('hidden'); return; }
       card.classList.remove('hidden');
 
       const fechaLabel = `${dia} de ${MESES_LARGO[parseInt(mes)-1]} de ${anio}`;
+      const horaFin    = (parseInt(hora) + 5).toString().padStart(2,'0') + ':00';
       document.getElementById('rProducto').textContent = prod.nombre + (prod.dims ? ` (${prod.dims})` : '');
       document.getElementById('rFecha').textContent    = fechaLabel;
-      document.getElementById('rTurno').textContent    = TURNOS_LABEL[selTurnoId];
+      document.getElementById('rTurno').textContent    = `${hora} a ${horaFin} (5 hs)`;
       const zVal = document.getElementById('qZona').value;
       const zData = ZONAS[zVal];
       document.getElementById('rZona').textContent     = zData?.nombre || '—';
@@ -818,7 +801,7 @@
     }
 
     // Re-calcular resumen cuando cambian los datos personales o la fecha
-    ['fDia','fMes','fAnio','dNombre','dApellido','dCelular','dDni','dBarrio','dDir'].forEach(id => {
+    ['fDia','fMes','fHora','dNombre','dApellido','dCelular','dDni','dBarrio','dDir'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('change', actualizarResumen);
     });
@@ -850,7 +833,8 @@
       const prod    = CATALOGO.find(p => p.id === selProductoId);
       const dia     = document.getElementById('fDia').value;
       const mes     = document.getElementById('fMes').value;
-      const anio    = document.getElementById('fAnio').value;
+      const hora    = document.getElementById('fHora').value;
+      const anio    = new Date().getFullYear();
       const nombre  = document.getElementById('dNombre').value.trim();
       const apellido= document.getElementById('dApellido').value.trim();
       const celular = document.getElementById('dCelular').value.trim();
@@ -861,8 +845,8 @@
 
       // Validaciones
       if (!prod)    { error('Elegí un pelotero.'); return; }
-      if (!dia || !mes || !anio) { error('Completá la fecha del evento.'); return; }
-      if (!selTurnoId)           { error('Elegí un horario (mañana, tarde o noche).'); return; }
+      if (!dia || !mes) { error('Completá la fecha del evento.'); return; }
+      if (!hora)   { error('Elegí la hora de inicio.'); return; }
       if (!nombre)   { error('Ingresá tu nombre.'); return; }
       if (!celular || celular.replace(/\D/g,'').length < 7) { error('Ingresá un WhatsApp válido.'); return; }
       if (!dni || !/^\d{7,8}$/.test(dni)) { error('Ingresá un DNI válido (7 u 8 dígitos).'); return; }
@@ -870,12 +854,13 @@
       if (!barrio)  { error('Ingresá el barrio.'); return; }
 
       // Validar que la fecha no sea pasada
-      const fechaEvento = new Date(parseInt(anio), parseInt(mes)-1, parseInt(dia));
+      const fechaEvento = new Date(anio, parseInt(mes)-1, parseInt(dia));
       const hoy         = new Date(); hoy.setHours(0,0,0,0);
       if (fechaEvento < hoy) { error('La fecha elegida ya pasó. Elegí una fecha futura.'); return; }
 
-      const fechaLabel = `${dia} de ${MESES_LARGO[parseInt(mes)-1]} de ${anio}`;
-      const turnoLabel = TURNOS_LABEL[selTurnoId];
+      const fechaLabel = `${dia} de ${MESES_LARGO[parseInt(mes)-1]}`;
+      const horaFin    = (parseInt(hora) + 5).toString().padStart(2,'0') + ':00';
+      const turnoLabel = `${hora} a ${horaFin} (5 hs)`;
       const productoNombre = prod.nombre + (prod.dims ? ` (${prod.dims})` : '');
 
       // Guardar en localStorage
@@ -884,8 +869,8 @@
         nombre, apellido, celular, dni, barrio, direccion: dir, referencia: ref,
         zona: zonaNombre, costoTraslado, edadRango, metros, superficie, lluvia,
         producto:  productoNombre,
-        fecha:     `${anio}-${mes.padStart(2,'0')}-${dia.toString().padStart(2,'0')}`,
-        fechaLabel, turno: selTurnoId, turnoLabel,
+        fecha:     `${anio}-${String(mes).padStart(2,'0')}-${String(dia).padStart(2,'0')}`,
+        fechaLabel, turno: hora, turnoLabel,
         estado:    'pendiente',
         ts:        new Date().toISOString(),
       };
@@ -964,12 +949,11 @@
     function nuevaReserva() {
       document.getElementById('viewSuccess').classList.add('hidden');
       document.getElementById('viewForm').classList.remove('hidden');
-      selProductoId = null; selTurnoId = null;
+      selProductoId = null;
       document.querySelectorAll('.prod-card').forEach(c => c.classList.remove('selected'));
-      document.querySelectorAll('.turno-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('fDia').value = '';
       document.getElementById('fMes').value = '';
-      document.getElementById('fAnio').value = '';
+      document.getElementById('fHora').value = '';
       document.getElementById('resumenCard').classList.add('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
