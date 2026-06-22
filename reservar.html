@@ -6,7 +6,7 @@
   <title>Reservar pelotero — Dridanna</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -21,8 +21,8 @@
       --glass-bg:   rgba(255,255,255,0.04);
       --glass-b:    rgba(255,255,255,0.08);
       --glass-r:    20px;
-      --font:       'Nunito', 'Segoe UI', system-ui, sans-serif;
-      --serif:      'Playfair Display', Georgia, serif;
+      --font:       'Poppins', 'Segoe UI', system-ui, sans-serif;
+      --serif:      'Fredoka', 'Poppins', sans-serif;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -406,7 +406,7 @@
         <p style="font-size:0.78rem; color:rgba(255,255,255,0.4); margin-bottom:6px;">La zona verde es casco urbano (envío gratis).</p>
         <div id="mapaZona" style="height:220px; border-radius:14px; border:1px solid rgba(255,255,255,0.1); overflow:hidden; margin-bottom:6px;"></div>
         <button type="button" id="btnUbicacion" onclick="compartirUbicacion()" style="width:100%; padding:12px; background:rgba(94,184,245,0.1); border:1px solid rgba(94,184,245,0.25); border-radius:10px; color:var(--blue-sky); font-family:var(--font); font-size:0.85rem; font-weight:700; cursor:pointer; margin-bottom:18px; display:flex; align-items:center; justify-content:center; gap:6px; transition:all .2s;">
-          📍 Compartir mi ubicación (obligatorio)
+          📍 Compartir mi ubicación
         </button>
 
         <!-- Edad: chips -->
@@ -636,7 +636,6 @@
       { id:'rampa-azul',          nombre:'Rampa Pelotero Azul',        dims:'',          tipo:'Tobogán',  img:'rampa inflable azul/rampa inflable azul.jpg' },
       { id:'inflable-azul-rampa', nombre:'Pelotero Azul con Rampa',    dims:'3×3 m',     tipo:'Tobogán',  img:'inflable azul con rampa 3 po 3/inflable azul.jpg' },
       { id:'inflable-naranja',    nombre:'Pelotero Naranja',           dims:'3×3 m',     tipo:'Castillo', img:'inflable naranja 3 po 3/inflable naranja.jpg' },
-      { id:'metegol',             nombre:'Metegol',                    dims:'',          tipo:'Metegol',  img:'metegol/metegol.png' },
     ];
 
     /* ─── Auth check ─── */

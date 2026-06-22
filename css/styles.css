@@ -113,8 +113,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   --grad-brand: linear-gradient(135deg,var(--accent) 0%,var(--blue-sky) 100%);
   --grad-gold:  linear-gradient(135deg,var(--gold-tower) 0%,var(--coral-roof) 100%);
 
-  --font-serif: 'Playfair Display','Georgia',serif;
-  --font-sans:  'Nunito','Segoe UI',system-ui,sans-serif;
+  --font-serif: 'Fredoka','Nunito',sans-serif;
+  --font-sans:  'Poppins','Segoe UI',system-ui,sans-serif;
 
   --section-py:    clamp(64px,9vw,120px);
   --container-px:  clamp(18px,5vw,72px);
@@ -226,6 +226,8 @@ em {
 }
 .nav-logo img { height:44px; width:auto; object-fit:contain; }
 .nav-logo:hover img { opacity:0.82; }
+.nav-user { font-family:var(--font-serif); font-weight:600; font-size:0.9rem; color:var(--accent); margin-right:auto; padding-left:12px; white-space:nowrap; }
+.nav-user:empty { display:none; }
 .nav-links {
   display:flex; align-items:center; gap:28px;
 }

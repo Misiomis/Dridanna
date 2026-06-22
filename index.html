@@ -8,7 +8,7 @@
   <title>Dridanna — Peloteros &amp; Eventos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
@@ -41,15 +41,17 @@
       <a href="#inicio" class="nav-logo">
         <img src="./img/logo.png" alt="Logo Dridanna" loading="eager">
       </a>
+      <span class="nav-user" id="navUser"></span>
       <button class="nav-toggle" id="navToggle" aria-label="Menú" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
       <ul class="nav-links" id="navLinks">
-        <li><a href="#historia">Historia</a></li>
-        <li><a href="#productos">Peloteros</a></li>
-        <li><a href="./login.html" id="navLoginLink">Ingresar</a></li>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#productos">Elegí tu juego</a></li>
+        <li><a href="#historia">Nosotros</a></li>
+        <li id="navAuthItem"><a href="./login.html" id="navLoginLink">Ingresar</a></li>
         <li>
-          <a href="#reservar" class="nav-cta">
+          <a href="./reservar.html" class="nav-cta">
             Reservar ahora
           </a>
         </li>
@@ -85,10 +87,10 @@
           </a>
         </div>
         <div class="hero-trust">
-          <div class="trust-item"><span class="trust-icon">🛡</span> Equipos certificados</div>
-          <div class="trust-item"><span class="trust-icon">🚚</span> Entrega &amp; armado incluidos</div>
-          <div class="trust-item"><span class="trust-icon">⭐</span> +500 fiestas felices</div>
-          <div class="trust-item"><span class="trust-icon">⏰</span> Puntualidad garantizada</div>
+          <div class="trust-item"><span class="trust-icon">&#x2714;</span> Equipos certificados</div>
+          <div class="trust-item"><span class="trust-icon">&#x2714;</span> Entrega y armado incluidos</div>
+          <div class="trust-item"><span class="trust-icon">&#x2714;</span> +500 fiestas felices</div>
+          <div class="trust-item"><span class="trust-icon">&#x2714;</span> Puntualidad garantizada</div>
         </div>
       </div>
       <div class="hero-scroll-indicator" aria-hidden="true">
@@ -136,7 +138,7 @@
       <div class="container">
         <header class="section-header">
           <span class="section-tag">Nuestros Productos</span>
-          <h2 class="section-title">Peloteros &amp; <em>Metegol</em></h2>
+          <h2 class="section-title">Peloteros &amp; <em>Toboganes</em></h2>
           <p class="section-subtitle">Equipos certificados, limpios y seguros. Entrega, armado y retiro incluidos.</p>
         </header>
 
@@ -145,7 +147,6 @@
           <button class="filtro-btn active" data-filtro="todos">Todos</button>
           <button class="filtro-btn" data-filtro="Castillo">Castillos</button>
           <button class="filtro-btn" data-filtro="Tobogán">Toboganes</button>
-          <button class="filtro-btn" data-filtro="Metegol">Metegol</button>
         </div>
 
         <div class="productos-grid" id="productosGrid">
@@ -154,61 +155,24 @@
       </div>
     </section>
 
-    <!-- PRÓXIMAMENTE -->
-    <section class="section" id="proximamente">
-      <div class="container">
-        <header class="section-header">
-          <span class="section-tag prox-tag">Muy pronto en Dridanna</span>
-          <h2 class="section-title">El Futuro de la <em>Diversión</em></h2>
-          <p class="section-subtitle">Estamos planificando nuestra próxima gran incorporación, inspirada en las últimas tendencias y traída directamente desde Buenos Aires.</p>
-        </header>
-        <div class="glass-card prox-card reveal">
-          <div class="prox-header">
-            <p class="prox-eyebrow">Nueva línea exclusiva &nbsp;·&nbsp; En desarrollo</p>
-            <h3 class="prox-titulo">Plazas Blandas &amp; Peloteros Modulares de Espuma Antigolpes</h3>
-            <p>
-              Diseñado especialmente para la primera infancia (bebés y niños de hasta 4 años), este concepto
-              rompe con lo tradicional: espacios de estimulación temprana y diversión interactiva con pelotitas,
-              fabricados con materiales suaves de alta densidad que protegen de cualquier impacto.
-            </p>
-          </div>
-          <div class="prox-features">
-            <div class="prox-feature reveal">
-              <div class="prox-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-              </div>
-              <div>
-                <strong>Diversión Sin Motor</strong>
-                <p>Sin turbinas eléctricas, sin ruido constante. Un ambiente más armónico y tranquilo para los chicos y los adultos.</p>
-              </div>
+    <!-- PRÓXIMAMENTE — Acordeón -->
+    <section class="section" id="proximamente" style="padding-top:0;">
+      <div class="container" style="max-width:800px;">
+        <details class="glass-card reveal" style="border-radius:16px;overflow:hidden;cursor:pointer;">
+          <summary style="padding:18px 24px;display:flex;align-items:center;justify-content:space-between;list-style:none;font-family:var(--font-serif);font-size:1.1rem;font-weight:600;color:#fff;">
+            <span>Próximamente: Plazas Blandas y Peloteros de Espuma</span>
+            <span style="font-size:1.2rem;transition:transform .3s;">&#9662;</span>
+          </summary>
+          <div style="padding:0 24px 22px;font-size:0.88rem;color:rgba(255,255,255,0.6);line-height:1.65;">
+            <p style="margin-bottom:12px;">Diseñado para la primera infancia (0–4 años). Espacios de estimulación temprana con materiales de espuma antigolpes. Sin motor, sin ruido, ideal para interiores.</p>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;">
+              <span style="font-size:0.8rem;padding:4px 12px;background:rgba(255,255,255,0.06);border-radius:20px;">Sin turbinas</span>
+              <span style="font-size:0.8rem;padding:4px 12px;background:rgba(255,255,255,0.06);border-radius:20px;">Espacios reducidos</span>
+              <span style="font-size:0.8rem;padding:4px 12px;background:rgba(255,255,255,0.06);border-radius:20px;">Inmune al clima</span>
             </div>
-            <div class="prox-feature reveal">
-              <div class="prox-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-              </div>
-              <div>
-                <strong>Ideal para Espacios Reducidos</strong>
-                <p>La solución perfecta para interiores, departamentos, livings o salones donde los peloteros tradicionales no entran.</p>
-              </div>
-            </div>
-            <div class="prox-feature reveal">
-              <div class="prox-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/><line x1="8" y1="16" x2="8.01" y2="16"/><line x1="8" y1="20" x2="8.01" y2="20"/><line x1="12" y1="18" x2="12.01" y2="18"/><line x1="12" y1="22" x2="12.01" y2="22"/><line x1="16" y1="16" x2="16.01" y2="16"/><line x1="16" y1="20" x2="16.01" y2="20"/></svg>
-              </div>
-              <div>
-                <strong>Inmune al Clima</strong>
-                <p>¿Llueve? Sin problema. La plaza de juegos se muda adentro de forma rápida y segura. Sin preocuparse por el pronóstico.</p>
-              </div>
-            </div>
+            <a href="https://wa.me/5493757671088?text=Hola Dridanna! Me interesa la línea de Plazas Blandas." target="_blank" rel="noopener" style="display:inline-block;padding:10px 22px;background:var(--grad-cta);border-radius:10px;color:#fff;font-weight:600;font-size:0.85rem;text-decoration:none;">Me interesa esta línea</a>
           </div>
-          <div class="prox-cta">
-            <p>¿Tenés un evento planificado para los más chiquitos y te gustaría esta opción? Dejanos tu sugerencia y ayudanos a traer los mejores modelos.</p>
-            <a href="https://wa.me/5493757671088?text=¡Hola Dridanna! Tengo un evento para los más chiquitos y me gustaría la opción de Plazas Blandas y Peloteros de Espuma Antigolpes. ¿Cuándo la van a incorporar?"
-               class="btn btn--primary" target="_blank" rel="noopener noreferrer">
-              Me interesa esta línea
-            </a>
-          </div>
-        </div>
+        </details>
       </div>
     </section>
 
@@ -314,8 +278,6 @@
     { id:'inflable-naranja', nombre:'Pelotero Naranja',                dims:'3 × 3 m',      tipo:'Castillo',
       fotos:['inflable naranja 3 po 3/inflable naranja.jpg'] },
 
-    { id:'metegol',          nombre:'Metegol',                         dims:'',             tipo:'Metegol',
-      fotos:['metegol/metegol.png'] },
   ];
 
   /* ── Lee estado de admin desde localStorage ─── */
@@ -515,17 +477,20 @@
   renderProductos();
   initReveal();
 
-  // Mostrar nombre en nav si hay sesión activa
+  // Nav: sesión activa
   try {
     const p = JSON.parse(localStorage.getItem('dridanna_mi_perfil') || 'null');
-    const link = document.getElementById('navLoginLink');
-    if (p && p.nombre && link) {
-      link.textContent = p.nombre;
-      link.href = './altacliente.html';
-      link.style.fontWeight = '700';
-      link.style.color = 'var(--pink-brand, #dda0b8)';
+    if (p && p.nombre) {
+      document.getElementById('navUser').textContent = p.nombre;
+      const authItem = document.getElementById('navAuthItem');
+      authItem.innerHTML = '<a href="#" onclick="cerrarSesion()" style="color:rgba(255,255,255,0.45);font-size:0.85rem">Cerrar sesión</a>';
     }
   } catch {}
+
+  function cerrarSesion() {
+    localStorage.removeItem('dridanna_mi_perfil');
+    location.reload();
+  }
   </script>
 
 </body>
