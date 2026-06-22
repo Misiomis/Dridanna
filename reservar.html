@@ -781,17 +781,24 @@
       badge.classList.remove('hidden');
       regLink.classList.add('hidden');
 
-      // Mostrar banner perfil, ocultar banner registro
-      document.getElementById('profileBanner').classList.remove('hidden');
-      document.getElementById('registerBanner').classList.add('hidden');
-      document.getElementById('pbName').textContent    = [perfil.nombre, perfil.apellido].filter(Boolean).join(' ');
-      document.getElementById('pbInitial').textContent = (perfil.nombre || '?').charAt(0).toUpperCase();
+      // Mostrar banner perfil
+      const pb = document.getElementById('profileBanner');
+      if (pb) pb.classList.remove('hidden');
+      const pbName = document.getElementById('pbName');
+      const pbInit = document.getElementById('pbInitial');
+      if (pbName) pbName.textContent = [perfil.nombre, perfil.apellido].filter(Boolean).join(' ');
+      if (pbInit) pbInit.textContent = (perfil.nombre || '?').charAt(0).toUpperCase();
 
-      // Pre-rellenar campos
+      // Pre-rellenar campos y ocultar los que ya tenemos
       set('dNombre',   perfil.nombre    || '');
       set('dApellido', perfil.apellido  || '');
       set('dCelular',  perfil.celular   || '');
       set('dDni',      perfil.dni       || '');
+      // Ocultar nombre/apellido/dni/celular si ya están en el perfil
+      ['dNombre','dApellido','dCelular','dDni'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.value) el.closest('.form-field')?.style.setProperty('display','none');
+      });
       set('dBarrio',   perfil.barrio    || '');
       set('dDir',      perfil.direccion || '');
 

@@ -225,7 +225,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ usuario, dni }),
-          signal: AbortSignal.timeout(8000),
+          signal: AbortSignal.timeout(60000),
         });
         const d = await r.json();
 
@@ -280,12 +280,12 @@
           fetch(`${API_BASE}/api/notify/alta-cliente`, {
             method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify({ nombre, apellido, dni, celular, barrio, direccion }),
-            signal: AbortSignal.timeout(8000),
+            signal: AbortSignal.timeout(60000),
           }),
           fetch(`${API_BASE}/api/clientes`, {
             method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify({ nombre, apellido, dni, celular, barrio, direccion }),
-            signal: AbortSignal.timeout(8000),
+            signal: AbortSignal.timeout(60000),
           }),
         ]);
       } catch { /* silencioso — perfil ya guardado en localStorage */ }
