@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Catálogo completo de peloteros y toboganes — Dridanna">
+  <title>Nuestros Peloteros — Dridanna</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/styles.css">
+  <style>
+    :root { --font: 'Poppins',system-ui,sans-serif; --serif: 'Fredoka','Poppins',sans-serif; }
+    html { color-scheme: dark; }
+    body { background: #080c18; color: #e8eaf2; font-family: var(--font); }
+
+    .page-nav { position:sticky; top:0; z-index:100; background:rgba(8,12,24,0.92); backdrop-filter:blur(16px); border-bottom:1px solid rgba(255,255,255,0.06); padding:0 24px; height:64px; display:flex; align-items:center; }
+    .page-nav-inner { width:100%; max-width:1240px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; }
+    .page-nav img { height:38px; }
+    .page-nav-links { display:flex; align-items:center; gap:20px; list-style:none; }
+    .page-nav-links a { font-size:0.85rem; color:rgba(255,255,255,0.6); text-decoration:none; transition:color .2s; }
+    .page-nav-links a:hover { color:#fff; }
+    .page-nav-links .nav-cta { padding:8px 18px; background:linear-gradient(135deg,#c9779a,#a85878); border-radius:8px; color:#fff; font-weight:600; font-size:0.82rem; }
+
+    .hero-mini { text-align:center; padding:80px 20px 40px; }
+    .hero-mini h1 { font-family:var(--serif); font-size:clamp(1.8rem,5vw,2.8rem); font-weight:700; margin-bottom:8px; }
+    .hero-mini p { font-size:0.95rem; color:rgba(255,255,255,0.5); max-width:500px; margin:0 auto; }
+
+    .filtros { display:flex; justify-content:center; gap:8px; margin-bottom:32px; flex-wrap:wrap; padding:0 20px; }
+    .filtro-btn { padding:8px 18px; border-radius:20px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.55); font-family:var(--font); font-size:0.82rem; font-weight:600; cursor:pointer; transition:all .2s; }
+    .filtro-btn:hover { border-color:rgba(255,255,255,0.25); color:#fff; }
+    .filtro-btn.active { background:rgba(201,119,154,0.15); border-color:#c9779a; color:#c9779a; }
+
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; max-width:1240px; margin:0 auto; padding:0 20px 60px; }
+
+    .card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; overflow:hidden; transition:transform .2s, box-shadow .2s; }
+    .card:hover { transform:translateY(-3px); box-shadow:0 8px 30px rgba(0,0,0,0.3); }
+    .card-img { width:100%; aspect-ratio:4/3; object-fit:cover; display:block; background:rgba(255,255,255,0.03); }
+    .card-body { padding:14px 16px 18px; }
+    .card-tipo { font-size:0.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#c9779a; margin-bottom:4px; }
+    .card-name { font-family:var(--serif); font-size:1.05rem; font-weight:600; color:#fff; margin-bottom:4px; }
+    .card-dims { font-size:0.78rem; color:rgba(255,255,255,0.4); }
+    .card-cta { display:block; margin-top:10px; padding:10px; text-align:center; background:rgba(201,119,154,0.1); border:1px solid rgba(201,119,154,0.2); border-radius:10px; color:#c9779a; font-weight:600; font-size:0.83rem; text-decoration:none; transition:all .2s; }
+    .card-cta:hover { background:rgba(201,119,154,0.2); text-decoration:none; }
+
+    .wa-float { position:fixed; bottom:22px; right:22px; z-index:200; width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#25d366; box-shadow:0 4px 18px rgba(0,0,0,0.35); transition:transform .2s; }
+    .wa-float:hover { transform:scale(1.07); }
+    .wa-float svg { width:28px; height:28px; fill:#fff; }
+
+    @media(max-width:600px) { .grid { grid-template-columns:1fr 1fr; gap:10px; } }
+  </style>
+</head>
+<body>
+
+  <nav class="page-nav">
+    <div class="page-nav-inner">
+      <a href="./index.html"><img src="./img/logo.png" alt="Dridanna"></a>
+      <ul class="page-nav-links">
+        <li><a href="./index.html">Inicio</a></li>
+        <li><a href="./reservar.html" class="nav-cta">Reservar</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="hero-mini">
+    <h1>Nuestros Peloteros</h1>
+    <p>Todos los juegos disponibles para tu fiesta. Elegí el que más te guste y reservá.</p>
+  </div>
+
+  <div class="filtros">
+    <button class="filtro-btn active" onclick="filtrar('todos',this)">Todos</button>
+    <button class="filtro-btn" onclick="filtrar('Castillo',this)">Castillos</button>
+    <button class="filtro-btn" onclick="filtrar('Tobogán',this)">Toboganes</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <a href="https://wa.me/5493757671088" target="_blank" rel="noopener" class="wa-float" aria-label="WhatsApp">
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.116 1.524 5.844L0 24l6.338-1.497A11.93 11.93 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.797 9.797 0 01-5.015-1.378l-.36-.213-3.734.882.932-3.625-.235-.371A9.795 9.795 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+  </a>
+
+  <script>
+    const CATALOGO = [
+      { id:'castillo-3x3',        nombre:'Castillo Pelotero',           dims:'3×3 m',     tipo:'Castillo', img:'castillo inflable 3 por 3/castillo inflable.jpg' },
+      { id:'princesas-3x3',       nombre:'Pelotero Princesas',          dims:'3×3 m',     tipo:'Castillo', img:'Inflable Princesas 3 por 3/Inflable Princesas.jpg' },
+      { id:'jirafa-tobogan',      nombre:'Jirafa con Tobogán',          dims:'3.5×6.5 m', tipo:'Tobogán',  img:'Inflable Jirafa con tobogan 3 coma 5 por 6 coma 5/Inflable Jirafa con tobogan.jpg' },
+      { id:'gato-tobogan-4x7',    nombre:'Gato Silvestre c/ Tobogán',   dims:'4×7 m',     tipo:'Tobogán',  img:'Inflable Gato Silvestre con Tobogán 4x7/gatosilvestre.jpg' },
+      { id:'gato-pio-3x5',        nombre:'Gato Silvestre y Pío Pío',    dims:'3×5 m',     tipo:'Castillo', img:'Gato Silvestre y Pio Pio  3 por 5/inflable pio y silvestre.jpg' },
+      { id:'rana-4x3',            nombre:'Pelotero Rana',               dims:'4×3 m',     tipo:'Castillo', img:'inflable rana 4 por 3/inflable rana.jpg' },
+      { id:'tigre',               nombre:'Pelotero Tigre',              dims:'',          tipo:'Castillo', img:'inflable tigre/inflable tigre.jpg' },
+      { id:'mickey-minnie',       nombre:'Mickey & Minnie',             dims:'',          tipo:'Castillo', img:'mickey and minii/mickey and minie.jpg' },
+      { id:'toy-story',           nombre:'Toy Story',                   dims:'',          tipo:'Castillo', img:'toy story/Toy  Story.jpg' },
+      { id:'super-rampa',         nombre:'Super Rampa',                 dims:'',          tipo:'Tobogán',  img:'Super Rampa Brasile/super rampa.jpg' },
+      { id:'rampa-lila',          nombre:'Rampa Lila',                  dims:'',          tipo:'Tobogán',  img:'Rampa Lila/rampainflable.jpg' },
+      { id:'rampa-azul',          nombre:'Rampa Azul',                  dims:'',          tipo:'Tobogán',  img:'rampa inflable azul/rampa inflable azul.jpg' },
+      { id:'inflable-azul-rampa', nombre:'Pelotero Azul con Rampa',     dims:'3×3 m',     tipo:'Tobogán',  img:'inflable azul con rampa 3 po 3/inflable azul.jpg' },
+      { id:'inflable-naranja',    nombre:'Pelotero Naranja',            dims:'3×3 m',     tipo:'Castillo', img:'inflable naranja 3 po 3/inflable naranja.jpg' },
+    ];
+
+    function render(tipo) {
+      const items = tipo === 'todos' ? CATALOGO : CATALOGO.filter(p => p.tipo === tipo);
+      document.getElementById('grid').innerHTML = items.map(p => `
+        <div class="card" data-tipo="${p.tipo}">
+          <img class="card-img" src="./img/${p.img}" alt="${p.nombre}" loading="lazy" onerror="this.style.background='linear-gradient(135deg,rgba(201,119,154,0.15),rgba(94,184,245,0.15))'">
+          <div class="card-body">
+            <p class="card-tipo">${p.tipo}</p>
+            <p class="card-name">${p.nombre}</p>
+            ${p.dims ? `<p class="card-dims">${p.dims}</p>` : ''}
+            <a href="./reservar.html?producto=${p.id}" class="card-cta">Reservar este juego</a>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filtrar(tipo, btn) {
+      document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render(tipo);
+    }
+
+    render('todos');
+  </script>
+</body>
+</html>
